@@ -32,7 +32,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function UserGrowthChart() {
+export function ChartUserTrend() {
   const year = new Date().getFullYear();  
   return (
     <Card>
