@@ -35,7 +35,7 @@ const chartConfig = {
 export function ChartUserTrend() {
   const year = new Date().getFullYear();  
   return (
-    <Card>
+    <Card className="flex flex-col h-full">
       <CardHeader>
         <CardTitle>App User Trends</CardTitle>
         <CardDescription>{chartData.at(0)?.month.toString() + " - " + chartData.at(-1)?.month.toString() + " " + year}</CardDescription>

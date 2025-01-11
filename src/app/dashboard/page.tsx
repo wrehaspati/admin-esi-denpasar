@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/sidebar"
 import { ChartUserTrend } from "@/components/chart-user-trend"
 import { ChartEventInfo } from "@/components/chart-event-info"
+import { ChartTicketInfo } from "@/components/chart-ticket-info"
+import { ChartTransaction } from "@/components/chart-transaction"
 
 export default function Page() {
   return (
@@ -28,7 +30,7 @@ export default function Page() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
+                  <BreadcrumbLink href="/dashboard">
                     ESI Kota Denpasar
                   </BreadcrumbLink>
                 </BreadcrumbItem>
@@ -41,16 +43,20 @@ export default function Page() {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="rounded-xl bg-muted/50">
+          <div className="grid auto-rows-min gap-4 lg:grid-cols-3">
+            <div className="rounded-xl bg-muted/50 h-full">
               <ChartUserTrend/>
             </div>
             <div className="rounded-xl bg-muted/50 h-full">
               <ChartEventInfo/>
             </div>
-            <div className="rounded-xl bg-muted/50" />
+            <div className="rounded-xl bg-muted/50 h-full">
+              <ChartTicketInfo/>
+            </div>
           </div>
-          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
+          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
+            <ChartTransaction/>
+          </div>
         </div>
       </SidebarInset>
     </SidebarProvider>

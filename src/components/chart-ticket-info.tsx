@@ -7,7 +7,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -17,40 +16,34 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { MailIcon } from "lucide-react"
 
 const chartData = [
-  { type: "On Going", events: 10, fill: "var(--color-ongoing)" },
-  { type: "Finished", events: 37, fill: "var(--color-finished)" },
-  { type: "Request", events: 2, fill: "var(--color-request)" },]
+  { type: "Seminar", count: 25, fill: "var(--color-seminar)" },
+  { type: "Lomba", count: 25, fill: "var(--color-online)" }]
 
 const chartConfig = {
-  Events: {
-    label: "Events",
+  Tickets: {
+    label: "Tickets",
   },
-  ongoing: {
-    label: "On Going",
+  seminar: {
+    label: "On Seminar",
     color: "hsl(var(--chart-4))",
   },
-  finished: {
-    label: "Finished",
+  online: {
+    label: "On Lomba",
     color: "hsl(var(--chart-2))",
-  },
-  request: {
-    label: "Request",
-    color: "hsl(var(--chart-1))",
   }
 } satisfies ChartConfig
 
-export function ChartEventInfo() {
-  const totalEvents = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.events, 0)
+export function ChartTicketInfo() {
+  const totalTickets = React.useMemo(() => {
+    return chartData.reduce((acc, curr) => acc + curr.count, 1)
   }, [])
 
   return (
     <Card className="flex flex-col h-full">
       <CardHeader className="items-start pb-0">
-        <CardTitle>Event Information</CardTitle>
+        <CardTitle>Ticket Information</CardTitle>
         <CardDescription>January - June 2025</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
@@ -65,7 +58,7 @@ export function ChartEventInfo() {
             />
             <Pie
               data={chartData}
-              dataKey="events"
+              dataKey="count"
               nameKey="type"
               innerRadius={60}
               strokeWidth={10}
@@ -85,14 +78,14 @@ export function ChartEventInfo() {
                           y={viewBox.cy}
                           className="fill-foreground text-3xl font-bold"
                         >
-                          {totalEvents.toLocaleString()}
+                          {totalTickets.toLocaleString()}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          Events
+                          Tickets
                         </tspan>
                       </text>
                     )
@@ -103,11 +96,6 @@ export function ChartEventInfo() {
           </PieChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter>
-        <div className="mx-auto flex items-center gap-2 font-medium leading-none">
-          <MailIcon/> 2 Incoming Event Request <a href="#" className="text-primary text-sm font-normal underline">View All</a>
-        </div>
-      </CardFooter>
     </Card>
   )
 }

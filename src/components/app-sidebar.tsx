@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/sidebar"
 import { AppIcon } from "./app-icon"
 
-// This is sample data.
 const data = {
   user: {
     name: "admin esi",
@@ -38,13 +37,13 @@ const data = {
   navMain: [
     {
       title: "Managements",
-      url: "#",
+      url: "/dashboard",
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
           title: "Users",
-          url: "#",
+          url: "/user",
         },
         {
           title: "Events",
@@ -62,7 +61,7 @@ const data = {
     },
     {
       title: "Requests",
-      url: "#",
+      url: "/#",
       icon: Mail,
       items: [
         {
