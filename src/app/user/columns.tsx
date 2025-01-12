@@ -4,22 +4,26 @@ import { ColumnDef } from "@tanstack/react-table"
 
 export type User = {
   id: string
-  amount: number
-  status: "pending" | "processing" | "success" | "failed"
+  role: number
   email: string
+  token: string
 }
 
 export const columns: ColumnDef<User>[] = [
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "id",
+    header: "ID",
+  },
+  {
+    accessorKey: "role",
+    header: "Role",
   },
   {
     accessorKey: "email",
     header: "Email",
   },
   {
-    accessorKey: "amount",
-    header: "Amount",
+    accessorKey: "token",
+    header: "Token",
   },
 ]
