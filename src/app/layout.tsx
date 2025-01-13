@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "ESI KOTA DENPASAR",
@@ -17,6 +18,7 @@ export default function RootLayout({
         className={`antialiased font-sans`}
       >
         {children}
+        <Toaster />
       </body>
     </html>
   );
