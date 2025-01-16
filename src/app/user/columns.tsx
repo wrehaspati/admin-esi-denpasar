@@ -1,13 +1,8 @@
 "use client"
 
+import { User } from "@/types/UserType"
 import { ColumnDef } from "@tanstack/react-table"
-
-export type User = {
-  id: string
-  role: number
-  email: string
-  token: string
-}
+import { ActionsCell } from "./action-cell"
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -26,4 +21,12 @@ export const columns: ColumnDef<User>[] = [
     accessorKey: "token",
     header: "Token",
   },
+  {
+    id: "actions",
+    enableHiding: false,
+    cell: ({ row }) => {
+      const user = row.original
+      return <ActionsCell user={user} />;
+    },
+  }
 ]
