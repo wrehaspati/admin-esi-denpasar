@@ -40,8 +40,8 @@ export function ChartUserTrend() {
         <CardTitle>App User Trends</CardTitle>
         <CardDescription>{chartData.at(0)?.month.toString() + " - " + chartData.at(-1)?.month.toString() + " " + year}</CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
+      <CardContent className="h-full">
+        <ChartContainer config={chartConfig} className="aspect-auto h-full">
           <LineChart
             accessibilityLayer
             data={chartData}

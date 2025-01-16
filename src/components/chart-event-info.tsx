@@ -17,7 +17,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { MailIcon } from "lucide-react"
+import { MailIcon, SquareArrowOutUpRight } from "lucide-react"
 
 const chartData = [
   { type: "On Going", events: 10, fill: "var(--color-ongoing)" },
@@ -53,10 +53,10 @@ export function ChartEventInfo() {
         <CardTitle>Event Information</CardTitle>
         <CardDescription>January - June 2025</CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
+      <CardContent className="flex-1 pb-0 h-full">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-w-[200] lg:max-w-[300]"
+          className="mx-auto h-full"
         >
           <PieChart>
             <ChartTooltip
@@ -67,7 +67,7 @@ export function ChartEventInfo() {
               data={chartData}
               dataKey="events"
               nameKey="type"
-              innerRadius={60}
+              innerRadius={45}
               strokeWidth={10}
             >
               <Label
@@ -83,14 +83,14 @@ export function ChartEventInfo() {
                         <tspan
                           x={viewBox.cx}
                           y={viewBox.cy}
-                          className="fill-foreground text-3xl font-bold"
+                          className="fill-foreground text-xl font-bold"
                         >
                           {totalEvents.toLocaleString()}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground"
+                          className="fill-muted-foreground text-xs"
                         >
                           Events
                         </tspan>
@@ -104,9 +104,9 @@ export function ChartEventInfo() {
         </ChartContainer>
       </CardContent>
       <CardFooter>
-        <div className="mx-auto flex items-center gap-2 font-medium leading-none">
-          <MailIcon/> 2 Incoming Event Request <a href="#" className="text-primary text-sm font-normal underline">View All</a>
-        </div>
+        <a href="#" className="mx-auto flex items-center gap-1 font-medium leading-none text-sm h-5">
+          Event Request<SquareArrowOutUpRight className="size-4"/>
+        </a>
       </CardFooter>
     </Card>
   )

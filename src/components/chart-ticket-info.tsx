@@ -7,6 +7,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -16,6 +17,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import { MailIcon, TrendingUp } from "lucide-react"
 
 const chartData = [
   { type: "Seminar", count: 25, fill: "var(--color-seminar)" },
@@ -46,10 +48,10 @@ export function ChartTicketInfo() {
         <CardTitle>Ticket Information</CardTitle>
         <CardDescription>January - June 2025</CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
+      <CardContent className="flex-1 pb-0 h-full">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-w-[200] lg:max-w-[300]"
+          className="mx-auto h-full"
         >
           <PieChart>
             <ChartTooltip
@@ -60,7 +62,7 @@ export function ChartTicketInfo() {
               data={chartData}
               dataKey="count"
               nameKey="type"
-              innerRadius={60}
+              innerRadius={45}
               strokeWidth={10}
             >
               <Label
@@ -76,14 +78,14 @@ export function ChartTicketInfo() {
                         <tspan
                           x={viewBox.cx}
                           y={viewBox.cy}
-                          className="fill-foreground text-3xl font-bold"
+                          className="fill-foreground text-xl font-bold"
                         >
                           {totalTickets.toLocaleString()}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground"
+                          className="fill-muted-foreground text-xs"
                         >
                           Tickets
                         </tspan>
@@ -96,6 +98,11 @@ export function ChartTicketInfo() {
           </PieChart>
         </ChartContainer>
       </CardContent>
+      <CardFooter>
+        <div className="mx-auto flex items-center gap-2 font-medium text-sm leading-none h-5">
+          <TrendingUp className="size-4"/>54 tickets was created this month
+        </div>
+      </CardFooter>
     </Card>
   )
 }

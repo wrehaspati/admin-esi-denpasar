@@ -18,10 +18,11 @@ import {
 import { DataTable } from "./data-table"
 import { columns } from "./columns"
 import useSWR from 'swr'
-import { useToast } from "@/hooks/use-toast"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { UserDialog } from "@/components/user-dialog"
 import { DialogProvider } from "@/context/DialogContext"
+import { useToast } from "@/hooks/use-toast"
+import { useEffect } from "react"
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -31,10 +32,16 @@ export default function UserPage() {
 
   const { data, error, isLoading } = useSWR(
     process.env.NEXT_PUBLIC_API_URL + '/users',
-    fetcher
+    fetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false
+  }
   )
 
-  if (error) toast({ title: "Failed to Fetch", description: error, variant: "destructive" })
+  useEffect(() => {
+    if (error) toast({ title: "Failed to Fetch", description: "Error: " + error })
+  }, [error]);
 
   return (
     <SidebarProvider>
@@ -61,7 +68,7 @@ export default function UserPage() {
             </div>
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min overflow-x-auto px-2 md:w-full w-[90vw]">
+            <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min">
               <DataTable columns={columns} data={data ? data.data : []} />
               <UserDialog />
             </div>
