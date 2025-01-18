@@ -1,31 +1,31 @@
-import { User } from '@/types/UserType';
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, ReactNode } from "react";
 
-interface DialogContextType {
+interface DialogContextType<T> {
   isDialogOpen: boolean;
-  currentUser: User | null;
-  openDialog: (user: User) => void;
+  currentItem: T | null;
+  openDialog: (item: T) => void;
   closeDialog: () => void;
 }
 
-export const DialogContext = createContext<DialogContextType | undefined>(undefined);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const DialogContext = createContext<DialogContextType<any> | undefined>(undefined);
 
-export const DialogProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const DialogProvider = <T,>({ children }: { children: ReactNode }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentItem, setCurrentItem] = useState<T | null>(null);
 
-  const openDialog = (user: User) => {
-    setCurrentUser(user);
+  const openDialog = (item: T) => {
+    setCurrentItem(item);
     setIsDialogOpen(true);
   };
 
   const closeDialog = () => {
     setIsDialogOpen(false);
-    setCurrentUser(null);
+    setCurrentItem(null);
   };
 
   return (
-    <DialogContext.Provider value={{ isDialogOpen, currentUser, openDialog, closeDialog }}>
+    <DialogContext.Provider value={{ isDialogOpen, currentItem, openDialog, closeDialog }}>
       {children}
     </DialogContext.Provider>
   );

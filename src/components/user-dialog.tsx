@@ -3,7 +3,7 @@ import { useDialog } from "@/hooks/use-dialog";
 import { UserForm } from "./user-form";
  
 export function UserDialog() {
-  const { isDialogOpen, closeDialog, currentUser } = useDialog();
+  const { isDialogOpen, closeDialog, currentItem } = useDialog();
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={() => closeDialog()}>
@@ -14,7 +14,7 @@ export function UserDialog() {
             Edit the user&apos;s information.
           </DialogDescription>
         </DialogHeader>
-        <UserForm user={currentUser} />
+        <UserForm user={currentItem} />
       </DialogContent>
     </Dialog>
   )

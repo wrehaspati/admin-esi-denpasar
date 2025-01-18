@@ -76,12 +76,12 @@ const data = {
     },
     {
       title: "Settings",
-      url: "#",
+      url: "setting",
       icon: Settings2,
       items: [
         {
           title: "General",
-          url: "",
+          url: "setting",
         }
       ],
     },

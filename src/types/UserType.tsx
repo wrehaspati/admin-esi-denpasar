@@ -3,4 +3,5 @@ export interface User {
   role: number
   email: string
   token: string
+  created_at: string
 }

@@ -23,6 +23,7 @@ import { UserDialog } from "@/components/user-dialog"
 import { DialogProvider } from "@/context/DialogContext"
 import { useToast } from "@/hooks/use-toast"
 import { useEffect } from "react"
+import { User } from "@/types/UserType"
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -41,11 +42,11 @@ export default function UserPage() {
 
   useEffect(() => {
     if (error) toast({ title: "Failed to Fetch", description: "Error: " + error })
-  }, [error]);
+  }, [error, toast]);
 
   return (
     <SidebarProvider>
-      <DialogProvider>
+      <DialogProvider<User>>
         <AppSidebar />
         <SidebarInset>
           <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
@@ -67,7 +68,7 @@ export default function UserPage() {
               </Breadcrumb>
             </div>
           </header>
-          <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <div className="flex flex-1 flex-col gap-4 p-4 pt-0 md:w-full w-screen">
             <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min">
               <DataTable columns={columns} data={data ? data.data : []} />
               <UserDialog />

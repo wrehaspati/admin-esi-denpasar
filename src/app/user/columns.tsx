@@ -3,6 +3,7 @@
 import { User } from "@/types/UserType"
 import { ColumnDef } from "@tanstack/react-table"
 import { ActionsCell } from "./action-cell"
+import { UserRole } from "@/types/RoleType"
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -10,16 +11,41 @@ export const columns: ColumnDef<User>[] = [
     header: "ID",
   },
   {
-    accessorKey: "role",
+    id: "role",
     header: "Role",
+    enableHiding: false,
+    cell: ({ row }) => {
+      const user = row.original
+      switch (user.role) {
+        case UserRole.ADMIN:
+          return "["+UserRole.ADMIN+"] Admin"
+        case UserRole.ORGANIZER:
+          return "["+UserRole.ORGANIZER+"] Organizer"
+        case UserRole.USER:
+          return "["+UserRole.USER+"] User"
+        default:
+          return "Undefined"
+      }
+    },
   },
   {
     accessorKey: "email",
     header: "Email",
   },
   {
-    accessorKey: "token",
-    header: "Token",
+    header: "Created At",
+    cell: ({ row }) => {
+      const user = row.original;
+      const date = new Date(user.created_at);
+      const formattedDate = new Intl.DateTimeFormat("en-GB", {
+        minute: "2-digit",
+        hour: "2-digit",
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      }).format(date);
+      return formattedDate;
+    }
   },
   {
     id: "actions",

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { ThemeProvider } from "next-themes";
+import { ThemeHandler } from "@/lib/theme-handler";
 
 export const metadata: Metadata = {
   title: "ESI KOTA DENPASAR",
@@ -13,11 +15,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`antialiased font-sans`}
       >
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ThemeHandler />
+          {children}
+        </ThemeProvider>
         <Toaster />
       </body>
     </html>

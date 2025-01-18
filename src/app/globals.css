@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  color-scheme: light;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html[data-theme-transition='off'] * {
+  transition: none !important;
+}
+
 body {
   font-family: Arial, Helvetica, sans-serif;
 }

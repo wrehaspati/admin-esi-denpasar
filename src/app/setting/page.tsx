@@ -1,3 +1,5 @@
+"use client"
+
 import { AppSidebar } from "@/components/app-sidebar"
 import {
   Breadcrumb,
@@ -7,18 +9,30 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { ChartUserTrend } from "@/components/chart-user-trend"
-import { ChartEventInfo } from "@/components/chart-event-info"
-import { ChartTicketInfo } from "@/components/chart-ticket-info"
-import { ChartTransaction } from "@/components/chart-transaction"
+import { Switch } from "@/components/ui/switch"
+import { useTheme } from "next-themes"
+import { useEffect, useState } from "react"
 
-export default function Page() {
+export default function SettingPage() {
+  const [mounted, setMounted] = useState(false)
+  const { theme, setTheme } = useTheme()
+
+  // delay rendering until mounted. it avoid Hydration Mismatch 
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null
+  }
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -36,26 +50,21 @@ export default function Page() {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                  <BreadcrumbPage className="flex gap-2 items-center">Settings</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 lg:grid-cols-3">
-            <div className="rounded-xl h-full">
-              <ChartUserTrend/>
-            </div>
-            <div className="rounded-xl h-full">
-              <ChartEventInfo/>
-            </div>
-            <div className="rounded-xl h-full">
-              <ChartTicketInfo/>
-            </div>
-          </div>
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0 md:w-full w-screen">
           <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min">
-            <ChartTransaction/>
+            <section className="p-4 bg-white dark:bg-muted rounded-lg shadow-md grid gap-4">
+              <div className="text-2xl font-semibold leading-none tracking-tight">Theme Customization</div>
+              <div className="flex items-center space-x-2">
+                <Switch id="airplane-mode" defaultChecked={theme == 'dark' ? true : false} onCheckedChange={() => setTheme(theme == 'dark' ? 'light' : 'dark')} />
+                <Label htmlFor="airplane-mode">Dark Mode</Label>
+              </div>
+            </section>
           </div>
         </div>
       </SidebarInset>
