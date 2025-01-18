@@ -3,6 +3,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "next-themes";
 import { ThemeHandler } from "@/lib/theme-handler";
+import GARDevTeamNotch from "@/components/gardevteam-notch";
 
 export const metadata: Metadata = {
   title: "ESI KOTA DENPASAR",
@@ -24,6 +25,7 @@ export default function RootLayout({
           {children}
         </ThemeProvider>
         <Toaster />
+        <GARDevTeamNotch/>
       </body>
     </html>
   );

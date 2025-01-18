@@ -1,6 +1,7 @@
 "use client"
 
 import { AppSidebar } from "@/components/app-sidebar"
+import { Badge } from "@/components/ui/badge"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -59,7 +60,7 @@ export default function SettingPage() {
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0 md:w-full w-screen">
           <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min">
             <section className="p-4 bg-white dark:bg-muted rounded-lg shadow-md grid gap-4">
-              <div className="text-2xl font-semibold leading-none tracking-tight">Theme Customization</div>
+              <div className="text-2xl font-semibold leading-none tracking-tight items-center flex gap-2">Theme Customization<Badge variant="default">Beta</Badge></div>
               <div className="flex items-center space-x-2">
                 <Switch id="airplane-mode" defaultChecked={theme == 'dark' ? true : false} onCheckedChange={() => setTheme(theme == 'dark' ? 'light' : 'dark')} />
                 <Label htmlFor="airplane-mode">Dark Mode</Label>
