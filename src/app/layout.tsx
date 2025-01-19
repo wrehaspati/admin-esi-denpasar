@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { GeistSans } from "geist/font/sans";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "next-themes";
 import { ThemeHandler } from "@/lib/theme-handler";
@@ -18,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`antialiased font-sans`}
+        className={`${GeistSans.className} antialiased`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <ThemeHandler />

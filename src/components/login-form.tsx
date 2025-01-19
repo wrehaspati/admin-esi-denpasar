@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { AppIcon } from "./app-icon"
 
 export function LoginForm({
   className,
@@ -18,6 +19,8 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
+          <div className="font-semibold text-muted-foreground/50 text-sm pb-2">PBESI KOTA DENPASAR</div>
+          <AppIcon className="size-24" type="bordered"/>
           <CardTitle className="text-xl">Welcome back</CardTitle>
           <CardDescription>
             Login with your email and password
