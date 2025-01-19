@@ -3,10 +3,10 @@ import { useDialog } from "@/hooks/use-dialog";
 import { UserForm } from "./user-form";
  
 export function UserDialog() {
-  const { isDialogOpen, closeDialog, currentItem } = useDialog();
+  const { dialogs, closeDialog } = useDialog();
 
   return (
-    <Dialog open={isDialogOpen} onOpenChange={() => closeDialog()}>
+    <Dialog open={dialogs["dialogEditUser"]?.isOpen} onOpenChange={() => closeDialog("dialogEditUser")}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Form Edit User</DialogTitle>
@@ -14,7 +14,7 @@ export function UserDialog() {
             Edit the user&apos;s information.
           </DialogDescription>
         </DialogHeader>
-        <UserForm user={currentItem} />
+        <UserForm user={dialogs["dialogEditUser"]?.currentItem} />
       </DialogContent>
     </Dialog>
   )

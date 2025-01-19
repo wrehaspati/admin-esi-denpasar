@@ -24,6 +24,7 @@ import { DialogProvider } from "@/context/DialogContext"
 import { useToast } from "@/hooks/use-toast"
 import { useEffect } from "react"
 import { User } from "@/types/UserType"
+import UserAlertDialog from "@/components/user-alert-dialog"
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -72,6 +73,7 @@ export default function UserPage() {
             <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min">
               <DataTable columns={columns} data={data ? data.data : []} />
               <UserDialog />
+              <UserAlertDialog />
             </div>
           </div>
         </SidebarInset>

@@ -1,31 +1,38 @@
 import React, { createContext, useState, ReactNode } from "react";
 
-interface DialogContextType<T> {
-  isDialogOpen: boolean;
+interface DialogState<T> {
+  isOpen: boolean;
   currentItem: T | null;
-  openDialog: (item: T) => void;
-  closeDialog: () => void;
+}
+
+interface DialogContextType<T> {
+  dialogs: Record<string, DialogState<T>>;
+  openDialog: (key: string, item: T) => void;
+  closeDialog: (key: string) => void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const DialogContext = createContext<DialogContextType<any> | undefined>(undefined);
 
 export const DialogProvider = <T,>({ children }: { children: ReactNode }) => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [currentItem, setCurrentItem] = useState<T | null>(null);
+  const [dialogs, setDialogs] = useState<Record<string, DialogState<T>>>({});
 
-  const openDialog = (item: T) => {
-    setCurrentItem(item);
-    setIsDialogOpen(true);
+  const openDialog = (key: string, item: T) => {
+    setDialogs((prev) => ({
+      ...prev,
+      [key]: { isOpen: true, currentItem: item },
+    }));
   };
 
-  const closeDialog = () => {
-    setIsDialogOpen(false);
-    setCurrentItem(null);
+  const closeDialog = (key: string) => {
+    setDialogs((prev) => ({
+      ...prev,
+      [key]: { isOpen: false, currentItem: null },
+    }));
   };
 
   return (
-    <DialogContext.Provider value={{ isDialogOpen, currentItem, openDialog, closeDialog }}>
+    <DialogContext.Provider value={{ dialogs, openDialog, closeDialog }}>
       {children}
     </DialogContext.Provider>
   );

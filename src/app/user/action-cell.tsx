@@ -25,8 +25,8 @@ export const ActionsCell: React.FC<ActionsCellProps> = ({ user }) => {
           Copy Password
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => openDialog(user)}>Edit</DropdownMenuItem>
-        <DropdownMenuItem>Remove</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => openDialog("dialogEditUser", user)}>Edit</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => openDialog("dialogRemoveUser", user)}>Remove</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
