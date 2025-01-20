@@ -26,20 +26,27 @@ import { useEffect } from "react"
 import { User } from "@/types/UserType"
 import UserAlertDialog from "@/components/user-alert-dialog"
 
-const fetcher = (url: string) => fetch(url).then((r) => r.json())
+const fetcher = (url: string) => fetch(url, {
+  method: 'GET',
+  headers: {
+    'Accept' : 'application/json',
+    'Content-Type' : 'application/json',
+    'Authorization' : 'Bearer ' + process.env.NEXT_PUBLIC_API_TOKEN
+  }}).then((r) => r.json())
 
 export default function UserPage() {
 
   const { toast } = useToast()
 
   const { data, error, isLoading } = useSWR(
-    process.env.NEXT_PUBLIC_API_URL + '/users',
+    process.env.NEXT_PUBLIC_API_URL + '/admin/users?perPage=100',
     fetcher, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false
-  }
-  )
+  })
+  
+  console.log(data);
 
   useEffect(() => {
     if (error) toast({ title: "Failed to Fetch", description: "Error: " + error })

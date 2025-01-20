@@ -37,7 +37,6 @@ const data = {
   navMain: [
     {
       title: "Managements",
-      url: "/dashboard",
       icon: SquareTerminal,
       isActive: true,
       items: [
@@ -61,8 +60,8 @@ const data = {
     },
     {
       title: "Requests",
-      url: "/#",
       icon: Mail,
+      isActive: true,
       items: [
         {
           title: "Event Organizer Requests",
@@ -76,8 +75,8 @@ const data = {
     },
     {
       title: "Settings",
-      url: "setting",
       icon: Settings2,
+      isActive: true,
       items: [
         {
           title: "General",

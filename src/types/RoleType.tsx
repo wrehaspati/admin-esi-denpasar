@@ -1,5 +1,10 @@
 export enum UserRole{
   ADMIN = 1,
-  ORGANIZER = 2,
-  USER = 3,
+  USER = 2,
+  ORGANIZER = 3
+}
+
+export interface Role{
+  id: number
+  name: string
 }

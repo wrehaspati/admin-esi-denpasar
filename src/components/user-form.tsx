@@ -33,7 +33,7 @@ export function UserForm({ user }: { user: User | null }) {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       email: user?.email ?? "",
-      role: user?.role.toString() ?? "undefined",
+      role: user?.role.id.toString() ?? "undefined",
     },
   })
 
@@ -67,10 +67,6 @@ export function UserForm({ user }: { user: User | null }) {
             </FormItem>
           )}
         />
-        <div className="flex w-full items-center space-x-2">
-          <Input type="text" readOnly placeholder="Change Password" value={"Link to forget password"} />
-          <Button type="button">Copy</Button>
-        </div>
         <FormField
           control={form.control}
           name="role"
@@ -86,8 +82,8 @@ export function UserForm({ user }: { user: User | null }) {
                 <SelectContent>
                   <SelectItem value={"undefined"} disabled>--- Select Role ---</SelectItem>
                   <SelectItem value={UserRole.ADMIN.toString()}>[{UserRole.ADMIN.toString()}] Admin</SelectItem>
-                  <SelectItem value={UserRole.ORGANIZER.toString()}>[{UserRole.ORGANIZER.toString()}] Event Organizer</SelectItem>
                   <SelectItem value={UserRole.USER.toString()}>[{UserRole.USER.toString()}] User</SelectItem>
+                  <SelectItem value={UserRole.ORGANIZER.toString()}>[{UserRole.ORGANIZER.toString()}] Event Organizer</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />

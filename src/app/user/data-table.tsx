@@ -24,8 +24,11 @@ import {
 import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { ChevronDown } from "lucide-react"
+import { ChevronDown, PrinterIcon } from "lucide-react"
 import React from "react"
+import XLSEXPORT from "@/components/xls-export"
+import { User } from "@/types/UserType"
+import { toast } from "@/hooks/use-toast"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -62,10 +65,19 @@ export function DataTable<TData, TValue>({
       rowSelection,
     },
   })
+
+  const printSelectedRows = () => {
+    if(table.getFilteredSelectedRowModel().rows.length === 0) {
+      toast({title: "No rows selected", description: "Please select rows to print"});
+      return;
+    }
+    XLSEXPORT<User>({data: table.getFilteredSelectedRowModel().rows, fileName: "export-esi-user"});
+  }
  
   return (
     <div className="w-full">
-      <div className="flex items-center py-4 sm:gap-0 gap-2">
+      <div className="flex items-center py-4 gap-2">
+        <Button variant={"outline"} onClick={printSelectedRows}><PrinterIcon/></Button>
         <Input
           placeholder="Filter emails..."
           value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
