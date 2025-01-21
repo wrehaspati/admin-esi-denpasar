@@ -18,13 +18,20 @@ import { toast } from "@/hooks/use-toast"
 import { User } from "@/types/UserType"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 import { UserRole } from "@/types/RoleType"
+import axiosInstance from "@/lib/axios"
 
 const FormSchema = z.object({
   email: z.string().email().min(2, {
     message: "Username must be at least 2 characters.",
   }),
-  role: z.string().min(1, {
+  role_id: z.string().min(1, {
     message: "Role must be filled.",
+  }),
+  id: z.string().min(1, {
+    message: "ID must be filled.",
+  }),
+  username: z.string().min(1, {
+    message: "Username must be filled.",
   }),
 })
 
@@ -32,20 +39,24 @@ export function UserForm({ user }: { user: User | null }) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      email: user?.email ?? "",
-      role: user?.role.id.toString() ?? "undefined",
+      id: user?.id.toString() ?? "undefined",
+      email: user?.email ?? "undefined",
+      role_id: user?.role.id.toString() ?? "undefined",
+      username: user?.username ?? "undefined",
     },
   })
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
+    axiosInstance.put('/user/'+data.id, data)
+    .then(function (response) {
+      toast({title: response.data?.message})
     })
+    .catch(function (error) {
+      toast({
+        title: "Failed to submit",
+        description: "Error: " + error + ". " + error?.response?.data?.message,
+      })
+    });
   }
 
   return (
@@ -53,15 +64,15 @@ export function UserForm({ user }: { user: User | null }) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
         <FormField
           control={form.control}
-          name="email"
+          name="id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>ID</FormLabel>
               <FormControl>
-                <Input placeholder="email" {...field} />
+                <Input readOnly autoComplete="" placeholder="user id" {...field} />
               </FormControl>
               <FormDescription>
-                Email will be used for login. Click link below to change password.
+                Unique ID for user.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -69,7 +80,39 @@ export function UserForm({ user }: { user: User | null }) {
         />
         <FormField
           control={form.control}
-          name="role"
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input autoComplete="username" placeholder="username" {...field} />
+              </FormControl>
+              <FormDescription>
+                Unique username for user.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input readOnly autoComplete="email" placeholder="email" {...field} />
+              </FormControl>
+              <FormDescription>
+                Email will be used for login.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="role_id"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Role</FormLabel>

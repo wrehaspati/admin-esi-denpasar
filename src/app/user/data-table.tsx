@@ -76,6 +76,8 @@ export function DataTable<TData, TValue>({
       <div className="flex items-center py-4 gap-2">
         <Button variant={"outline"} onClick={printSelectedRows}><PrinterIcon/></Button>
         <Input
+          type="search"
+          name="search"
           placeholder="Filter emails..."
           value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>

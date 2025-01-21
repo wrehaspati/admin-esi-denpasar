@@ -22,32 +22,29 @@ import { LoadingSpinner } from "@/components/loading-spinner"
 import { UserDialog } from "@/components/user-dialog"
 import { DialogProvider } from "@/context/DialogContext"
 import { useToast } from "@/hooks/use-toast"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { User } from "@/types/UserType"
 import UserAlertDialog from "@/components/user-alert-dialog"
-
-const fetcher = (url: string) => fetch(url, {
-  method: 'GET',
-  headers: {
-    'Accept' : 'application/json',
-    'Content-Type' : 'application/json',
-    'Authorization' : 'Bearer ' + process.env.NEXT_PUBLIC_API_TOKEN
-  }}).then((r) => r.json())
+import axiosInstance from "@/lib/axios"
 
 export default function UserPage() {
+  const [interval, setRefreshInterval] = useState<number>(600000)
 
   const { toast } = useToast()
 
+  const fetcher = (url: string) => axiosInstance.get(url).then((r) => r.data)
+
   const { data, error, isLoading } = useSWR(
-    process.env.NEXT_PUBLIC_API_URL + '/admin/users?perPage=100',
-    fetcher, {
-    revalidateIfStale: false,
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false
-  })
+    process.env.NEXT_PUBLIC_API_URL + '/users?perPage=100',
+    fetcher, { refreshInterval: interval, revalidateOnFocus: false, revalidateIfStale: false, revalidateOnReconnect: false })
 
   useEffect(() => {
-    if (error) toast({ title: "Failed to Fetch", description: "Error: " + error })
+    if (error) {
+      setRefreshInterval(600000)
+      toast({ title: "Failed to Fetch", description: "Error: " + error })
+    } else {
+      setRefreshInterval(10000)
+    }
   }, [error, toast]);
 
   return (
