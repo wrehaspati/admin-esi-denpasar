@@ -5,6 +5,8 @@ import { ColumnDef } from "@tanstack/react-table"
 import { ActionsCell } from "./action-cell"
 import { UserRole } from "@/types/RoleType"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button"
+import { ArrowUpDown } from "lucide-react"
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -15,7 +17,7 @@ export const columns: ColumnDef<User>[] = [
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        onCheckedChange={(value) => table.toggleAllRowsSelected(!!value)}
         aria-label="Select all"
       />
     ),
@@ -31,7 +33,17 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "id",
-    header: "ID",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          ID
+          <ArrowUpDown />
+        </Button>
+      )
+    },
   },
   {
     id: "role",
@@ -55,7 +67,18 @@ export const columns: ColumnDef<User>[] = [
     header: "Email",
   },
   {
-    header: "Created At",
+    id: "created_at",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Created At
+          <ArrowUpDown />
+        </Button>
+      )
+    },
     cell: ({ row }) => {
       const user = row.original;
       const date = new Date(user.created_at);
