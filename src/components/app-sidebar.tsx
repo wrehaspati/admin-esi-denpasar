@@ -46,15 +46,19 @@ const data = {
         },
         {
           title: "Events",
-          url: "#",
+          url: "",
+        },
+        {
+          title: "Applications",
+          url: "/application",
         },
         {
           title: "Payments",
-          url: "#",
+          url: "",
         },
         {
           title: "Leaderboards",
-          url: "#",
+          url: "",
         },
       ],
     },
@@ -64,12 +68,12 @@ const data = {
       isActive: true,
       items: [
         {
-          title: "Event Organizer Requests",
-          url: "#",
+          title: "Event Request",
+          url: "",
         },
         {
-          title: "Champions Applications",
-          url: "#",
+          title: "Champions Request",
+          url: "",
         }
       ],
     },
@@ -88,7 +92,7 @@ const data = {
   projects: [
     {
       name: "QR Scanner",
-      url: "#",
+      url: "",
       icon: QrCode,
     }
   ],

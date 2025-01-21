@@ -16,9 +16,12 @@ import {
 import { Input } from "@/components/ui/input"
 import { toast } from "@/hooks/use-toast"
 import { User } from "@/types/UserType"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select"
 import { UserRole } from "@/types/RoleType"
 import axiosInstance from "@/lib/axios"
+import React from "react"
+import { useDialog } from "@/hooks/use-dialog"
+import { LoadingSpinner } from "@/components/loading-spinner"
 
 const FormSchema = z.object({
   email: z.string().email().min(2, {
@@ -36,6 +39,8 @@ const FormSchema = z.object({
 })
 
 export function UserForm({ user }: { user: User | null }) {
+  const [isLoading, setIsLoading] = React.useState(false)
+  const { closeDialog } = useDialog()
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -45,20 +50,19 @@ export function UserForm({ user }: { user: User | null }) {
       username: user?.username ?? "undefined",
     },
   })
-
   function onSubmit(data: z.infer<typeof FormSchema>) {
     axiosInstance.put('/user/'+data.id, data)
     .then(function (response) {
       toast({title: response.data?.message})
+      closeDialog("dialogEditUser")
     })
     .catch(function (error) {
       toast({
         title: "Failed to submit",
         description: "Error: " + error + ". " + error?.response?.data?.message,
       })
-    });
+    }).finally(() => setIsLoading(false))
   }
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
@@ -133,7 +137,7 @@ export function UserForm({ user }: { user: User | null }) {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit">Submit{isLoading && <LoadingSpinner/>}</Button>
       </form>
     </Form>
   )

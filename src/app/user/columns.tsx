@@ -96,16 +96,16 @@ export const columns: ColumnDef<User>[] = [
       )
     },
     cell: ({ row }) => {
-      const user = row.original;
-      const date = new Date(user.created_at);
+      const user = row.original
+      const date = new Date(user.created_at)
       const formattedDate = new Intl.DateTimeFormat("en-GB", {
         minute: "2-digit",
         hour: "2-digit",
         day: "2-digit",
         month: "long",
         year: "numeric",
-      }).format(date);
-      return formattedDate;
+      }).format(date)
+      return formattedDate
     }
   },
   {
@@ -114,7 +114,7 @@ export const columns: ColumnDef<User>[] = [
     enableSorting: false,
     cell: ({ row }) => {
       const user = row.original
-      return <ActionsCell user={user} />;
+      return <ActionsCell data={user} />
     },
   }
 ]

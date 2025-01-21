@@ -27,6 +27,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { removeToken } from "@/lib/session"
 
 export function NavUser({
   user,
@@ -38,6 +39,11 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+
+  const handleLogout = () => {
+    removeToken()
+    window.location.href = "/login"
+  }
 
   return (
     <SidebarMenu>
@@ -79,7 +85,7 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem disabled>
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
@@ -89,7 +95,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleLogout()}>
               <LogOut />
               Log out
             </DropdownMenuItem>

@@ -1,15 +1,15 @@
-import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
-import { User } from "@/types/UserType";
-import { useDialog } from "@/hooks/use-dialog";
+import { Button } from "@/components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { MoreHorizontal } from "lucide-react"
+import { User } from "@/types/UserType"
+import { useDialog } from "@/hooks/use-dialog"
 
 interface ActionsCellProps {
-  user: User;
+  data: User
 }
 
-export const ActionsCell: React.FC<ActionsCellProps> = ({ user }) => {
-  const { openDialog } = useDialog();
+export const ActionsCell: React.FC<ActionsCellProps> = ({ data }) => {
+  const { openDialog } = useDialog()
 
   return (
     <DropdownMenu>
@@ -21,13 +21,13 @@ export const ActionsCell: React.FC<ActionsCellProps> = ({ user }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => navigator.clipboard.writeText(user.id)}>
+        <DropdownMenuItem onClick={() => navigator.clipboard.writeText(data.id)}>
           Copy Password
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => openDialog("dialogEditUser", user)}>Edit</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => openDialog("dialogRemoveUser", user)}>Remove</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => openDialog("dialogEditUser", data)}>Edit</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => openDialog("dialogRemoveUser", data)}>Remove</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
-};
+  )
+}

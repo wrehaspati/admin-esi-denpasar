@@ -1,6 +1,7 @@
 "use client"
 
 import { AppSidebar } from "@/components/app-sidebar"
+import LoadingScreen from "@/components/loading.screen"
 import { Badge } from "@/components/ui/badge"
 import {
   Breadcrumb,
@@ -18,14 +19,17 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { Switch } from "@/components/ui/switch"
+import useClientMiddleware from "@/hooks/client-middleware"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 
 export default function SettingPage() {
   const [mounted, setMounted] = useState(false)
   const { theme, setTheme } = useTheme()
+  const [isLogin, setLoginState] = useState(true)
 
-  // delay rendering until mounted. it avoid Hydration Mismatch 
+  useClientMiddleware(() => {setLoginState(false)})
+
   useEffect(() => {
     setMounted(true)
   }, [])
@@ -36,6 +40,7 @@ export default function SettingPage() {
 
   return (
     <SidebarProvider>
+      <LoadingScreen isLoading={isLogin} />
       <AppSidebar />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">

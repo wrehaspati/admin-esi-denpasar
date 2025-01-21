@@ -1,3 +1,5 @@
+"use client"
+
 import { AppSidebar } from "@/components/app-sidebar"
 import {
   Breadcrumb,
@@ -17,10 +19,17 @@ import { ChartUserTrend } from "@/components/chart-user-trend"
 import { ChartEventInfo } from "@/components/chart-event-info"
 import { ChartTicketInfo } from "@/components/chart-ticket-info"
 import { ChartTransaction } from "@/components/chart-transaction"
+import useClientMiddleware from "@/hooks/client-middleware"
+import { useState } from "react"
+import LoadingScreen from "@/components/loading.screen"
 
-export default function Page() {
+export default function DashboardPage() {
+  const [isLogin, setLoginState] = useState(true)
+  useClientMiddleware(() => {setLoginState(false)})
+
   return (
     <SidebarProvider>
+      <LoadingScreen isLoading={isLogin} />
       <AppSidebar />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">

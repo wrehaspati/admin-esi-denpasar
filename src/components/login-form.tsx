@@ -1,3 +1,5 @@
+"use client"
+
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -10,27 +12,73 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { AppIcon } from "./app-icon"
+import React from "react"
+import { LoadingSpinner } from "./loading-spinner"
+import { toast } from "@/hooks/use-toast"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
+import axios from "axios"
+import { saveToken } from "@/lib/session"
+import { useRouter } from "next/navigation"
+
+const FormSchema = z.object({
+  email: z.string().email().min(2, {
+    message: "Username must be at least 2 characters.",
+  }),
+  password: z.string().min(8, {
+    message: "Password must be at least 8 characters.",
+  }),
+  remember_token: z.boolean()
+})
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const router = useRouter()
+  const [isLoading, setIsLoading] = React.useState(false)
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      email: "admin@esi.com",
+      password: "password",
+      remember_token: true
+    },
+  })
+  function onSubmit(data: z.infer<typeof FormSchema>) {
+    setIsLoading(true)
+    axios.post(process.env.NEXT_PUBLIC_LOGIN_URL as string, data)
+      .then(function (response) {
+        toast({ title: response.data?.message })
+        saveToken(response.data?.meta?.token, String(response.data?.data?.id))
+        router.replace("/user")
+      })
+      .catch(function (error) {
+        toast({
+          title: "Failed to submit",
+          description: "Error: " + error + ". " + error?.response?.data?.message,
+        })
+      }).finally(() => setIsLoading(false))
+  }
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
           <div className="font-semibold text-muted-foreground/50 text-sm pb-2">PBESI KOTA DENPASAR</div>
-          <AppIcon className="size-24" type="bordered"/>
+          <AppIcon className="size-24" type="bordered" />
           <CardTitle className="text-xl">Welcome back</CardTitle>
           <CardDescription>
             Login with your email and password
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
-            <div className="grid gap-6">
-              {/* keep for future improvement */}
-              {/* <div className="flex flex-col gap-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <div className="grid gap-6">
+                {/* keep for future improvement */}
+                {/* <div className="flex flex-col gap-4">
                 <Button variant="outline" className="w-full">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path
@@ -55,40 +103,61 @@ export function LoginForm({
                   Or continue with
                 </span>
               </div> */}
-              <div className="grid gap-6">
-                <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="m@example.com"
-                    required
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <div className="flex items-center">
-                    <Label htmlFor="password">Password</Label>
-                    <a
-                      href="#"
-                      className="ml-auto text-sm underline-offset-4 hover:underline"
-                    >
-                      Forgot your password?
-                    </a>
+                <div className="grid gap-6">
+                  <div className="grid gap-2">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input autoComplete="email webauthn" type="email" placeholder="esi@example.com" {...field} />
+                          </FormControl>
+                          <FormDescription></FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
-                  <Input id="password" type="password" required />
+                  <div className="grid gap-2">
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            <div className="flex items-center">
+                              <Label htmlFor="password">Password</Label>
+                              <a
+                                href="#"
+                                className="ml-auto text-sm underline-offset-4 hover:underline"
+                              >
+                                Forgot your password?
+                              </a>
+                            </div></FormLabel>
+                          <FormControl>
+                            <Input autoComplete="current-password webauthn" type="password" placeholder="" {...field} />
+                          </FormControl>
+                          <FormDescription></FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <Button type="submit" className="w-full">
+                    Login {isLoading ? <LoadingSpinner className="size-4" /> : ""}
+                  </Button>
                 </div>
-                <Button type="submit" className="w-full">
-                  Login
-                </Button>
+                <div className="text-center text-sm">
+                  Don&apos;t have an account?{" "}
+                  <a href="#" className="underline underline-offset-4">
+                    Sign up
+                  </a>
+                </div>
               </div>
-              <div className="text-center text-sm">
-                Don&apos;t have an account?{" "}
-                <a href="#" className="underline underline-offset-4">
-                  Sign up
-                </a>
-              </div>
-            </div>
-          </form>
+            </form>
+          </Form>
         </CardContent>
       </Card>
       <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary  ">

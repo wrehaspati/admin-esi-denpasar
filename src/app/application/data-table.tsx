@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import {
   ColumnDef,
-  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -27,12 +27,16 @@ import { Button } from "@/components/ui/button"
 import { ChevronDown, PrinterIcon } from "lucide-react"
 import React from "react"
 import XLSEXPORT from "@/components/xls-export"
-import { User } from "@/types/UserType"
 import { toast } from "@/hooks/use-toast"
+import { Application } from "@/types/ApplicationType"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+}
+
+interface GlobalFilter {
+  globalFilter: any
 }
 
 export function DataTable<TData, TValue>({
@@ -40,35 +44,43 @@ export function DataTable<TData, TValue>({
   data,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const [globalFilter, setGlobalFilter] = React.useState<GlobalFilter>()
+  
+  React.useEffect(() => {
+    setColumnVisibility({
+      note: false,
+      updated_at: false,
+      created_at: false,
+    })
+  ;}, [])
  
   const table = useReactTable({
     data,
     columns,
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onGlobalFilterChange: setGlobalFilter,
     state: {
       sorting,
-      columnFilters,
+      globalFilter,
       columnVisibility,
-      rowSelection,
-    },
+      rowSelection
+    }
   })
-
+  
   const printSelectedRows = () => {
     if(table.getFilteredSelectedRowModel().rows.length === 0) {
-      toast({title: "No rows selected", description: "Please select rows to print"})
-      return
+      toast({title: "No rows selected", description: "Please select rows to print"});
+      return;
     }
-    XLSEXPORT<User>({data: table.getFilteredSelectedRowModel().rows, fileName: "export-esi-user"})
+    XLSEXPORT<Application>({data: table.getFilteredSelectedRowModel().rows, fileName: "export-esi-user"});
   }
  
   return (
@@ -78,11 +90,9 @@ export function DataTable<TData, TValue>({
         <Input
           type="search"
           name="search"
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
-          }
+          placeholder="Filter events..."
+          value={globalFilter?.globalFilter}
+          onChange={e => table.setGlobalFilter(String(e.target.value))}
           className="max-w-sm"
         />
         <DropdownMenu>
