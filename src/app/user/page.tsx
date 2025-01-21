@@ -45,8 +45,6 @@ export default function UserPage() {
     revalidateOnFocus: false,
     revalidateOnReconnect: false
   })
-  
-  console.log(data);
 
   useEffect(() => {
     if (error) toast({ title: "Failed to Fetch", description: "Error: " + error })
@@ -78,7 +76,7 @@ export default function UserPage() {
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0 md:w-full w-screen">
             <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min">
-              <DataTable columns={columns} data={data ? data.data : []} />
+              <DataTable columns={columns} data={data?.length ? data.data : []} />
               <UserDialog />
               <UserAlertDialog />
             </div>
