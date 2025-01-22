@@ -19,49 +19,73 @@ import { User } from "@/types/UserType"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select"
 import { UserRole } from "@/types/RoleType"
 import axiosInstance from "@/lib/axios"
-import React from "react"
 import { useDialog } from "@/hooks/use-dialog"
 import { LoadingSpinner } from "@/components/loading-spinner"
+import React from "react"
 
 const FormSchema = z.object({
+  id: z.string(),
   email: z.string().email().min(2, {
     message: "Username must be at least 2 characters.",
   }),
   role_id: z.string().min(1, {
     message: "Role must be filled.",
   }),
-  id: z.string().min(1, {
-    message: "ID must be filled.",
-  }),
   username: z.string().min(1, {
     message: "Username must be filled.",
   }),
+  password: z.string().min(8, {
+    message: "Password must be at least 8 characters.",
+  })
 })
 
 export function UserForm({ user }: { user: User | null }) {
   const [isLoading, setIsLoading] = React.useState(false)
+  const isNullRef = React.useRef(false)
   const { closeDialog } = useDialog()
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      id: user?.id.toString() ?? "undefined",
-      email: user?.email ?? "undefined",
-      role_id: user?.role.id.toString() ?? "undefined",
-      username: user?.username ?? "undefined",
+      id: user?.id.toString() ?? "",
+      email: user?.email ?? "",
+      role_id: user?.role.id.toString() ?? "",
+      username: user?.username ?? "",
+      password: "",
     },
   })
+
+  React.useEffect(() => {
+    if (isNullRef.current) return
+    if (user) isNullRef.current = false
+    if (!user) isNullRef.current = true
+  })
+
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    axiosInstance.put('/user/'+data.id, data)
-    .then(function (response) {
-      toast({title: response.data?.message})
-      closeDialog("dialogEditUser")
-    })
-    .catch(function (error) {
-      toast({
-        title: "Failed to submit",
-        description: "Error: " + error + ". " + error?.response?.data?.message,
+    if (user?.id != null) {
+      axiosInstance.put('/admin/user/'+data.id, data)
+      .then(function (response) {
+        toast({title: response.data?.message})
+        closeDialog("dialogEditUser")
       })
-    }).finally(() => setIsLoading(false))
+      .catch(function (error) {
+        toast({
+          title: "Failed to submit",
+          description: "Error: " + error + ". " + error?.response?.data?.message,
+        })
+      }).finally(() => setIsLoading(false))
+    } else {
+      axiosInstance.post('/admin/user', data)
+      .then(function (response) {
+        toast({title: response.data?.message})
+        closeDialog("dialogAddUser")
+      })
+      .catch(function (error) {
+        toast({
+          title: "Failed to submit",
+          description: "Error: " + error + ". " + error?.response?.data?.message,
+        })
+      }).finally(() => setIsLoading(false))
+    }
   }
   return (
     <Form {...form}>
@@ -73,7 +97,7 @@ export function UserForm({ user }: { user: User | null }) {
             <FormItem>
               <FormLabel>ID</FormLabel>
               <FormControl>
-                <Input readOnly autoComplete="" placeholder="user id" {...field} />
+                <Input readOnly disabled autoComplete="" placeholder="unique user id (automatically)" {...field} />
               </FormControl>
               <FormDescription>
                 Unique ID for user.
@@ -89,7 +113,7 @@ export function UserForm({ user }: { user: User | null }) {
             <FormItem>
               <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input autoComplete="username" placeholder="username" {...field} />
+                <Input autoComplete="" placeholder="username" {...field} />
               </FormControl>
               <FormDescription>
                 Unique username for user.
@@ -105,7 +129,7 @@ export function UserForm({ user }: { user: User | null }) {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input readOnly autoComplete="email" placeholder="email" {...field} />
+                <Input autoComplete="" placeholder="email" {...field} />
               </FormControl>
               <FormDescription>
                 Email will be used for login.
@@ -114,6 +138,24 @@ export function UserForm({ user }: { user: User | null }) {
             </FormItem>
           )}
         />
+        {!user && (
+          <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input autoComplete="" placeholder="password" {...field} />
+              </FormControl>
+              <FormDescription>
+                Password will be used for login.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        )}
         <FormField
           control={form.control}
           name="role_id"
@@ -123,11 +165,10 @@ export function UserForm({ user }: { user: User | null }) {
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a verified email to display" />
+                    <SelectValue placeholder="Select user authorization role" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value={"undefined"} disabled>--- Select Role ---</SelectItem>
                   <SelectItem value={UserRole.ADMIN.toString()}>[{UserRole.ADMIN.toString()}] Admin</SelectItem>
                   <SelectItem value={UserRole.USER.toString()}>[{UserRole.USER.toString()}] User</SelectItem>
                   <SelectItem value={UserRole.ORGANIZER.toString()}>[{UserRole.ORGANIZER.toString()}] Event Organizer</SelectItem>

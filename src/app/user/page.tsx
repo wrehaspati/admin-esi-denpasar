@@ -31,24 +31,24 @@ import LoadingScreen from "@/components/loading.screen"
 
 export default function UserPage() {
   const [interval, setRefreshInterval] = useState<number>(600000)
+  const [isLogin, setLoginState] = useState(true)
   const { toast } = useToast()
   const fetcher = (url: string) => axiosInstance.get(url).then((r) => r.data)
-  const [isLogin, setLoginState] = useState(true)
   
   useClientMiddleware(() => {setLoginState(false)})
   
   const { data, error, isLoading } = useSWR(
-    process.env.NEXT_PUBLIC_API_URL + '/users?perPage=1000',
+    process.env.NEXT_PUBLIC_API_URL + '/admin/users',
     fetcher, { refreshInterval: interval, revalidateOnFocus: false, revalidateIfStale: false, revalidateOnReconnect: false })
 
   useEffect(() => {
-    if (error && isLogin) {
+    if (error) {
       setRefreshInterval(600000)
-      toast({ title: "Failed to Fetch", description: "Error: " + error })
+      toast({ title: "Action Failed", description: error?.response?.data?.message })
     } else {
       setRefreshInterval(10000)
     }
-  }, [error, toast, isLogin])
+  }, [error, toast])
 
   return (
     <SidebarProvider>

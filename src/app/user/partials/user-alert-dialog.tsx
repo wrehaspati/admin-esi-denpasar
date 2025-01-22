@@ -6,7 +6,7 @@ import { toast } from "@/hooks/use-toast"
 import axiosInstance from "@/lib/axios"
 
 const confirmDelete = async (id: string) => {
-  axiosInstance.delete('/user/'+id.toString())
+  axiosInstance.delete('/admin/user/'+id.toString())
     .then(function (response) {
       toast({title: response.data?.message})
     })

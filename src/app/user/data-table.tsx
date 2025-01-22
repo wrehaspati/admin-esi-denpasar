@@ -24,11 +24,12 @@ import {
 import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { ChevronDown, PrinterIcon } from "lucide-react"
+import { ChevronDown, CirclePlus, PrinterIcon } from "lucide-react"
 import React from "react"
 import XLSEXPORT from "@/components/xls-export"
 import { User } from "@/types/UserType"
 import { toast } from "@/hooks/use-toast"
+import { useDialog } from "@/hooks/use-dialog"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -43,7 +44,15 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const { openDialog } = useDialog()
  
+  React.useEffect(() => {
+    setColumnVisibility({
+      updated_at: false,
+      created_at: false,
+    })
+  ;}, [])
+
   const table = useReactTable({
     data,
     columns,
@@ -74,6 +83,7 @@ export function DataTable<TData, TValue>({
   return (
     <div className="w-full">
       <div className="flex items-center py-4 gap-2">
+        <Button variant={"outline"} onClick={() => openDialog("dialogAddUser", null)}><CirclePlus/></Button>
         <Button variant={"outline"} onClick={printSelectedRows}><PrinterIcon/></Button>
         <Input
           type="search"

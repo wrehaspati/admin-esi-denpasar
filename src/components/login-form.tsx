@@ -49,18 +49,28 @@ export function LoginForm({
   })
   function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true)
-    axios.post(process.env.NEXT_PUBLIC_LOGIN_URL as string, data)
+    axios.post(process.env.NEXT_PUBLIC_API_URL + "/login", data)
       .then(function (response) {
-        toast({ title: response.data?.message })
-        saveToken(response.data?.meta?.token, String(response.data?.data?.id))
-        router.replace("/user")
+        try{
+          saveToken(response.data?.meta?.token, String(response.data?.data?.id))
+          toast({ title: response.data?.message })
+          router.replace("/dashboard")
+        }
+        catch(error){
+          toast({
+            title: "Authentication System Failed",
+            description: <pre><code>{JSON.stringify(error)}</code></pre>,
+          })
+          setIsLoading(false)
+        }
       })
       .catch(function (error) {
         toast({
-          title: "Failed to submit",
-          description: "Error: " + error + ". " + error?.response?.data?.message,
+          title: "Login Failed",
+          description: error?.response?.data?.message,
         })
-      }).finally(() => setIsLoading(false))
+        setIsLoading(false)
+      })
   }
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>

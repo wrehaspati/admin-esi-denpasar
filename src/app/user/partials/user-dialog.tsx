@@ -6,6 +6,7 @@ export function UserDialog() {
   const { dialogs, closeDialog } = useDialog()
 
   return (
+    <>
     <Dialog open={dialogs["dialogEditUser"]?.isOpen} onOpenChange={() => closeDialog("dialogEditUser")}>
       <DialogContent>
         <DialogHeader>
@@ -17,5 +18,17 @@ export function UserDialog() {
         <UserForm user={dialogs["dialogEditUser"]?.currentItem} />
       </DialogContent>
     </Dialog>
+    <Dialog open={dialogs["dialogAddUser"]?.isOpen} onOpenChange={() => closeDialog("dialogAddUser")}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Form Create User</DialogTitle>
+          <DialogDescription>
+            Create an user account.
+          </DialogDescription>
+        </DialogHeader>
+        <UserForm user={null} />
+      </DialogContent>
+    </Dialog>
+    </>
   )
 }

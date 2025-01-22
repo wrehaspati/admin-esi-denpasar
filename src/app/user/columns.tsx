@@ -83,6 +83,7 @@ export const columns: ColumnDef<User>[] = [
     header: "Email",
   },
   {
+    accessorKey: "created_at",
     id: "created_at",
     header: ({ column }) => {
       return (
@@ -95,18 +96,21 @@ export const columns: ColumnDef<User>[] = [
         </Button>
       )
     },
-    cell: ({ row }) => {
-      const user = row.original
-      const date = new Date(user.created_at)
-      const formattedDate = new Intl.DateTimeFormat("en-GB", {
-        minute: "2-digit",
-        hour: "2-digit",
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-      }).format(date)
-      return formattedDate
-    }
+  },
+  {
+    accessorKey: "updated_at",
+    id: "updated_at",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Updated At
+          <ArrowUpDown />
+        </Button>
+      )
+    },
   },
   {
     id: "actions",

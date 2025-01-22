@@ -17,7 +17,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { MailIcon, TrendingUp } from "lucide-react"
+import { TrendingUp } from "lucide-react"
 
 const chartData = [
   { type: "Seminar", count: 25, fill: "var(--color-seminar)" },

@@ -38,17 +38,17 @@ export default function ApplicationPage() {
   useClientMiddleware(() => {setLoginState(false)})
 
   const { data, error, isLoading } = useSWR(
-    process.env.NEXT_PUBLIC_API_URL + '/applications?perPage=1000',
+    process.env.NEXT_PUBLIC_API_URL + '/admin/applications',
     fetcher, { refreshInterval: interval, revalidateOnFocus: false, revalidateIfStale: false, revalidateOnReconnect: false })
 
   useEffect(() => {
     if (error) {
       setRefreshInterval(600000)
-      toast({ title: "Failed to Fetch", description: "Error: " + error })
+      toast({ title: "Action Failed", description: error?.response?.data?.message })
     } else {
       setRefreshInterval(10000)
     }
-  }, [error, toast]);
+  }, [error, toast])
 
   return (
     <SidebarProvider>

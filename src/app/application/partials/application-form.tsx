@@ -85,7 +85,7 @@ export function ApplicationForm({ application }: { application: Application | nu
   })
   function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true);
-    axiosInstance.put('/application/' + data?.id, data)
+    axiosInstance.put('/admin/application/' + data?.id, data)
       .then(function (response) {
         toast({ title: response.data?.message })
         closeDialog("dialogEditApplication")

@@ -27,7 +27,7 @@ export const ActionsCell: React.FC<ActionsCellProps> = ({ data }) => {
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => openDialog("dialogEditUser", data)}>Edit</DropdownMenuItem>
         <DropdownMenuItem onClick={() => openDialog("dialogRemoveUser", data)}>Remove</DropdownMenuItem>
-      </DropdownMenuContent>
+      </DropdownMenuContent>  
     </DropdownMenu>
   )
 }
