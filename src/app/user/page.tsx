@@ -26,7 +26,7 @@ import { useEffect, useState } from "react"
 import { User } from "@/types/UserType"
 import UserAlertDialog from "@/app/user/partials/user-alert-dialog"
 import axiosInstance from "@/lib/axios"
-import useClientMiddleware from "@/hooks/client-middleware"
+import useClientMiddleware from "@/hooks/use-client-middleware"
 import LoadingScreen from "@/components/loading.screen"
 
 export default function UserPage() {

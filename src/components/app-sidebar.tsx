@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import {
+  LayoutDashboard,
   Mail,
   QrCode,
   Settings2,
@@ -21,29 +22,14 @@ import {
 } from "@/components/ui/sidebar"
 import { AppIcon } from "./app-icon"
 import { User } from "@/types/UserType"
-import { getUserData } from "@/lib/session"
-import { toast } from "@/hooks/use-toast"
+import { useUser } from "@/hooks/use-user"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [userData, setUserData] = React.useState<User | null>(null)
-  React.useEffect(() => {
-    try {
-      async function fetchData() {
-        const userData: User = await getUserData()
-        setUserData(userData)
-      }
-      fetchData()
-    } catch (error) {
-      toast({ title: "Profiling Error", description: error + "" })
-    }
-  }, [])
+  const { userData } = useUser();
+  console.log(userData);
+  const user: User | null = userData;
 
-  const data = {
-    user: {
-      name: userData?.username ?? "error",
-      email: userData?.email ?? "error",    
-      avatar: "https://avatars.githubusercontent.com/u/98689945?v=4",
-    },
+  const temp = {
     teams: [
       {
         name: "ESI Kota Denpasar",
@@ -52,6 +38,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       }
     ],
     navMain: [
+      {
+        title: "Dashboard",
+        icon: LayoutDashboard,
+        url: "/dashboard",
+      },
       {
         title: "Managements",
         icon: SquareTerminal,
@@ -117,14 +108,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <TeamSwitcher teams={temp.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <NavMain items={temp.navMain} />
+        <NavProjects projects={temp.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

@@ -22,6 +22,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import axios from "axios"
 import { saveToken } from "@/lib/session"
 import { useRouter } from "next/navigation"
+import { useUser } from "@/hooks/use-user"
 
 const FormSchema = z.object({
   email: z.string().email().min(2, {
@@ -39,6 +40,7 @@ export function LoginForm({
 }: React.ComponentPropsWithoutRef<"div">) {
   const router = useRouter()
   const [isLoading, setIsLoading] = React.useState(false)
+  const { setUserData } = useUser()
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -52,9 +54,18 @@ export function LoginForm({
     axios.post(process.env.NEXT_PUBLIC_API_URL + "/login", data)
       .then(function (response) {
         try{
-          saveToken(response.data?.meta?.token, String(response.data?.data?.id))
-          toast({ title: response.data?.message })
-          router.replace("/dashboard")
+          if (response.data?.data?.role.id == 1 || response.data?.data?.role.id == 3){
+            saveToken(response.data?.meta?.token)
+            toast({ title: response.data?.message })
+            setUserData(response.data?.data)
+            router.replace("/dashboard")
+          } else {
+            toast({
+              title: "Login Failed",
+              description: "You are not authorized to access this page",
+            })
+            setIsLoading(false)
+          }
         }
         catch(error){
           toast({
@@ -160,7 +171,7 @@ export function LoginForm({
                   </Button>
                 </div>
                 <div className="text-center text-sm">
-                  Don&apos;t have an account?{" "}
+                  Don&apost have an account?{" "}
                   <a href="#" className="underline underline-offset-4">
                     Sign up
                   </a>

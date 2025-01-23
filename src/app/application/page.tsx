@@ -27,7 +27,7 @@ import { ApplicationDialog } from "./partials/application-dialog"
 import ApplicationAlertDialog from "./partials/application-alert-dialog"
 import { Application } from "@/types/ApplicationType"
 import LoadingScreen from "@/components/loading.screen"
-import useClientMiddleware from "@/hooks/client-middleware"
+import useClientMiddleware from "@/hooks/use-client-middleware"
 
 export default function ApplicationPage() {
   const [interval, setRefreshInterval] = useState<number>(600000)

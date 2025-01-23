@@ -19,7 +19,7 @@ import { ChartUserTrend } from "@/components/chart-user-trend"
 import { ChartEventInfo } from "@/components/chart-event-info"
 import { ChartTicketInfo } from "@/components/chart-ticket-info"
 import { ChartTransaction } from "@/components/chart-transaction"
-import useClientMiddleware from "@/hooks/client-middleware"
+import useClientMiddleware from "@/hooks/use-client-middleware"
 import { useState } from "react"
 import LoadingScreen from "@/components/loading.screen"
 

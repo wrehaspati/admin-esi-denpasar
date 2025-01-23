@@ -19,13 +19,13 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { Switch } from "@/components/ui/switch"
-import useClientMiddleware from "@/hooks/client-middleware"
+import useClientMiddleware from "@/hooks/use-client-middleware"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 
 export default function SettingPage() {
   const [mounted, setMounted] = useState(false)
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme, resolvedTheme } = useTheme()
   const [isLogin, setLoginState] = useState(true)
 
   useClientMiddleware(() => {setLoginState(false)})
@@ -67,7 +67,7 @@ export default function SettingPage() {
             <section className="p-4 bg-white dark:bg-muted rounded-lg shadow-md grid gap-4">
               <div className="text-2xl font-semibold leading-none tracking-tight items-center flex gap-2">Theme Customization<Badge variant="default">Beta</Badge></div>
               <div className="flex items-center space-x-2">
-                <Switch id="airplane-mode" defaultChecked={theme == 'dark' ? true : false} onCheckedChange={() => setTheme(theme == 'dark' ? 'light' : 'dark')} />
+                <Switch id="airplane-mode" checked={resolvedTheme === 'dark'} onCheckedChange={() => setTheme(theme == 'dark' ? 'light' : 'dark')} />
                 <Label htmlFor="airplane-mode">Dark Mode</Label>
               </div>
             </section>
