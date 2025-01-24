@@ -23,10 +23,24 @@ import {
 import { AppIcon } from "./app-icon"
 import { User } from "@/types/UserType"
 import { useUser } from "@/hooks/use-user"
+import axiosInstance from "@/lib/axios"
+import { toast } from "@/hooks/use-toast"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { userData } = useUser();
-  console.log(userData);
+  const { userData, setUserData } = useUser();
+  React.useEffect(() => {
+    if (!userData) {
+      const fetchUser = async () => {
+        try {
+          const user = await axiosInstance.get("/auth/user").then((res) => { return res.data?.data })
+          setUserData(user)
+        } catch {
+          toast({ title: "Failed to fetch user data" })
+        }
+      }
+      fetchUser()
+    }
+  }, [userData, setUserData]);
   const user: User | null = userData;
 
   const temp = {
@@ -77,7 +91,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         items: [
           {
             title: "Event Request",
-            url: "",
+            url: "/request/application",
           },
           {
             title: "Champions Request",
@@ -92,7 +106,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         items: [
           {
             title: "General",
-            url: "setting",
+            url: "/setting",
           }
         ],
       },

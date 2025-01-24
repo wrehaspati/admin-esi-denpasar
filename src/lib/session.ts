@@ -7,7 +7,6 @@ const secretKey = String(process.env.SECRET_KEY)
 let cachedToken: { token: string } | null = null
 let tokenVerified = false
 
-
 export const saveToken = (token: string) => {
   const encrypted = CryptoJS.AES.encrypt(token, secretKey).toString()
   sessionStorage.setItem("authToken", encrypted)
@@ -25,7 +24,7 @@ export const getToken = async () => {
     const bytes = CryptoJS.AES.decrypt(encrypted, secretKey)
     const token = bytes.toString(CryptoJS.enc.Utf8)
 
-    const isValid = await verifyTokenID(token)
+    const isValid = await verifyToken(token)
     if (!isValid) {
       removeToken()
       return null
@@ -40,7 +39,7 @@ export const getToken = async () => {
   }
 }
 
-const verifyTokenID = async (token: string): Promise<boolean> => {
+const verifyToken = async (token: string): Promise<boolean> => {
   try {
     const response = await axios.get(
       process.env.NEXT_PUBLIC_API_URL+"/auth/check", 
