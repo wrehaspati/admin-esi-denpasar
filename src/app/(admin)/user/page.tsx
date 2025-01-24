@@ -19,23 +19,19 @@ import { DataTable } from "./data-table"
 import { columns } from "./columns"
 import useSWR from 'swr'
 import { LoadingSpinner } from "@/components/loading-spinner"
-import { UserDialog } from "@/app/user/partials/user-dialog"
+import { UserDialog } from "@/app/(admin)/user/partials/user-dialog"
 import { DialogProvider } from "@/context/DialogContext"
 import { useToast } from "@/hooks/use-toast"
 import { useEffect, useState } from "react"
 import { User } from "@/types/UserType"
-import UserAlertDialog from "@/app/user/partials/user-alert-dialog"
+import UserAlertDialog from "@/app/(admin)/user/partials/user-alert-dialog"
 import axiosInstance from "@/lib/axios"
-import useClientMiddleware from "@/hooks/use-client-middleware"
-import LoadingScreen from "@/components/loading.screen"
 
 export default function UserPage() {
   const [interval, setRefreshInterval] = useState<number>(600000)
-  const [isLogin, setLoginState] = useState(true)
   const { toast } = useToast()
+
   const fetcher = (url: string) => axiosInstance.get(url).then((r) => r.data)
-  
-  useClientMiddleware(() => {setLoginState(false)})
   
   const { data, error, isLoading } = useSWR(
     process.env.NEXT_PUBLIC_API_URL + '/admin/users',
@@ -52,7 +48,6 @@ export default function UserPage() {
 
   return (
     <SidebarProvider>
-      <LoadingScreen isLoading={(isLogin && isLoading)} />
       <DialogProvider<User>>
         <AppSidebar />
         <SidebarInset>

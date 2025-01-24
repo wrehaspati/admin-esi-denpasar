@@ -20,16 +20,36 @@ import { ChartEventInfo } from "@/components/chart-event-info"
 import { ChartTicketInfo } from "@/components/chart-ticket-info"
 import { ChartTransaction } from "@/components/chart-transaction"
 import useClientMiddleware from "@/hooks/use-client-middleware"
-import { useState } from "react"
-import LoadingScreen from "@/components/loading.screen"
+import LoadingScreen from "@/components/loading-screen"
+import React from "react"
+import axiosInstance from "@/lib/axios"
+import { useUser } from "@/hooks/use-user"
 
 export default function DashboardPage() {
-  const [isLogin, setLoginState] = useState(true)
-  useClientMiddleware(() => {setLoginState(false)})
+  const [isLogin, setLoginState] = React.useState(true)
+  const { setUserData } = useUser()
+  useClientMiddleware(() => {})
+  
+  React.useEffect(() => {
+    async function fetchUser() {
+      try {
+        const user = await axiosInstance.get("/auth/user").then((res) => { return res.data?.data })
+        setUserData(user)
+      } catch {
+        console.warn("Something went wrong. Please try again later")
+      } finally {
+        setLoginState(false)
+      }
+    }
+    fetchUser()
+  }, [setUserData])
+
+  if (isLogin) {
+    return <LoadingScreen />
+  }
 
   return (
     <SidebarProvider>
-      <LoadingScreen isLoading={isLogin} />
       <AppSidebar />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">

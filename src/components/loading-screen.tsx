@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 import React from 'react'
 import { LoadingSpinner } from './loading-spinner'
 
-const LoadingScreen: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
+const LoadingScreen: React.FC<{ isLoading?: boolean }> = ({ isLoading = true }) => {
   return (
     <>
       {isLoading && (

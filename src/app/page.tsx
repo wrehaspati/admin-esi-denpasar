@@ -3,7 +3,7 @@
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { getToken } from "../lib/session"
-import LoadingScreen from "@/components/loading.screen"
+import LoadingScreen from "@/components/loading-screen"
 
 export default function Home() {
   const router = useRouter()

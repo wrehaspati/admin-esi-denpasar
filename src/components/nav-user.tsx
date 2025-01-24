@@ -28,7 +28,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { removeToken } from "@/lib/session"
+import { logout } from "@/lib/session"
 import { User } from "@/types/UserType"
 
 
@@ -36,7 +36,7 @@ export function NavUser({ user }: { user: User | null }) {
   const { isMobile } = useSidebar()
 
   const handleLogout = () => {
-    removeToken()
+    logout()
     window.location.href = "/login"
   }
 

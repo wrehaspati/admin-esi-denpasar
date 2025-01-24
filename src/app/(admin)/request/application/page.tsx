@@ -26,19 +26,14 @@ import axiosInstance from "@/lib/axios"
 import { ApplicationDialog } from "./partials/application-dialog"
 import ApplicationAlertDialog from "./partials/application-alert-dialog"
 import { Application } from "@/types/ApplicationType"
-import LoadingScreen from "@/components/loading.screen"
-import useClientMiddleware from "@/hooks/use-client-middleware"
 
-export default function ApplicationPage() {
+export default function RequestApplicationPage() {
   const [interval, setRefreshInterval] = useState<number>(600000)
-  const [isLogin, setLoginState] = useState(true)
   const { toast } = useToast()
   const fetcher = (url: string) => axiosInstance.get(url).then((r) => r.data)
 
-  useClientMiddleware(() => {setLoginState(false)})
-
   const { data, error, isLoading } = useSWR(
-    process.env.NEXT_PUBLIC_API_URL + '/admin/applications',
+    process.env.NEXT_PUBLIC_API_URL + '/admin/applications?status=pending',
     fetcher, { refreshInterval: interval, revalidateOnFocus: false, revalidateIfStale: false, revalidateOnReconnect: false })
 
   useEffect(() => {
@@ -52,7 +47,6 @@ export default function ApplicationPage() {
 
   return (
     <SidebarProvider>
-      <LoadingScreen isLoading={(isLogin && isLoading)} />
       <DialogProvider<Application>>
         <AppSidebar />
         <SidebarInset>
@@ -69,7 +63,7 @@ export default function ApplicationPage() {
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />
                   <BreadcrumbItem>
-                    <BreadcrumbPage className="flex gap-2 items-center">Event Applications{isLoading ? <LoadingSpinner className="size-4" /> : ""}</BreadcrumbPage>
+                    <BreadcrumbPage className="flex gap-2 items-center">Event Request Applications{isLoading ? <LoadingSpinner className="size-4" /> : ""}</BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>

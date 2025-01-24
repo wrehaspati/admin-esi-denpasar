@@ -2,6 +2,7 @@
 
 import axios from "axios"
 import CryptoJS from "crypto-js"
+import axiosInstance from "./axios"
 
 const secretKey = String(process.env.SECRET_KEY)
 let cachedToken: { token: string } | null = null
@@ -24,11 +25,7 @@ export const getToken = async () => {
     const bytes = CryptoJS.AES.decrypt(encrypted, secretKey)
     const token = bytes.toString(CryptoJS.enc.Utf8)
 
-    const isValid = await verifyToken(token)
-    if (!isValid) {
-      removeToken()
-      return null
-    }
+    await verifyToken(token)
 
     cachedToken = { token }
     tokenVerified = true
@@ -39,18 +36,21 @@ export const getToken = async () => {
   }
 }
 
-const verifyToken = async (token: string): Promise<boolean> => {
+export const verifyToken = async (token: string | null) => {
   try {
     const response = await axios.get(
       process.env.NEXT_PUBLIC_API_URL+"/auth/check", 
       { 
         headers: { Authorization: `Bearer ${token}` } 
       }
-    );
-    return response.data.authenticated;
+    )
+    if (!response.data.authenticated) {
+      console.warn("Failed to verify token")
+      throw new Error
+    }
   } catch {
-    console.warn("Failed to verify token");
-    return false;
+    console.warn("Failed to verify token")
+    removeToken()
   }
 }
 
@@ -58,4 +58,12 @@ export const removeToken = () => {
   sessionStorage.removeItem("authToken")
   cachedToken = null
   tokenVerified = false
+}
+
+export const logout = async () => {
+  const token = await getToken()
+  if (token) {
+    await axiosInstance.delete( process.env.NEXT_PUBLIC_API_URL+"/logout" )
+  }
+  removeToken()
 }

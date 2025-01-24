@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { getToken } from "./session";
+import { getToken, verifyToken } from "./session";
 
 const getAuthorization = async () => {
     const token = await getToken();
@@ -25,5 +25,24 @@ axiosInstance.interceptors.request.use(async (config) => {
     }
     return config;
 });
+
+axiosInstance.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        if (error.response && error.response.status === 403) {
+            console.warn("Forbidden : Attempting to verify token...");
+            try {
+                const token = await getToken()
+                if (token) {
+                    await verifyToken(token.token)
+                } else throw new Error
+            } catch {
+                console.warn("Token verification failed")
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
 
 export default axiosInstance;

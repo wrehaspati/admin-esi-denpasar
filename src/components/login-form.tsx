@@ -22,7 +22,6 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import axios from "axios"
 import { saveToken } from "@/lib/session"
 import { useRouter } from "next/navigation"
-import { useUser } from "@/hooks/use-user"
 
 const FormSchema = z.object({
   email: z.string().email().min(2, {
@@ -40,13 +39,12 @@ export function LoginForm({
 }: React.ComponentPropsWithoutRef<"div">) {
   const router = useRouter()
   const [isLoading, setIsLoading] = React.useState(false)
-  const { setUserData } = useUser()
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       email: "admin@esi.com",
       password: "password",
-      remember_token: false
+      remember_token: true
     },
   })
   function onSubmit(data: z.infer<typeof FormSchema>) {
@@ -57,7 +55,6 @@ export function LoginForm({
           if (response.data?.data?.role.id == 1 || response.data?.data?.role.id == 3) {
             saveToken(response.data?.meta?.token)
             toast({ title: response.data?.message })
-            setUserData(response.data?.data)
             router.replace("/dashboard")
           } else {
             toast({

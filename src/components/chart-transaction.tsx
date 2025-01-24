@@ -116,11 +116,11 @@ const chartConfig = {
   },
   transaction: {
     label: "Transaction",
-    color: "hsl(var(--chart-1))",
+    color: "hsl(var(--chart-2))",
   },
   cash: {
     label: "Cash",
-    color: "hsl(var(--chart-2))",
+    color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig
 

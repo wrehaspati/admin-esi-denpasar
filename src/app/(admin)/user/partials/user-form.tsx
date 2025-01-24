@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { toast } from "@/hooks/use-toast"
 import { User } from "@/types/UserType"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../components/ui/select"
 import { UserRole } from "@/types/RoleType"
 import axiosInstance from "@/lib/axios"
 import { useDialog } from "@/hooks/use-dialog"
@@ -41,7 +41,6 @@ const FormSchema = z.object({
 
 export function UserForm({ user }: { user: User | null }) {
   const [isLoading, setIsLoading] = React.useState(false)
-  const isNullRef = React.useRef(false)
   const { closeDialog } = useDialog()
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -50,14 +49,8 @@ export function UserForm({ user }: { user: User | null }) {
       email: user?.email ?? "",
       role_id: user?.role.id.toString() ?? "",
       username: user?.username ?? "",
-      password: "",
+      password: user?.id ? "********" : "",
     },
-  })
-
-  React.useEffect(() => {
-    if (isNullRef.current) return
-    if (user) isNullRef.current = false
-    if (!user) isNullRef.current = true
   })
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
@@ -138,24 +131,22 @@ export function UserForm({ user }: { user: User | null }) {
             </FormItem>
           )}
         />
-        {!user && (
-          <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input autoComplete="" placeholder="password" {...field} />
-              </FormControl>
-              <FormDescription>
-                Password will be used for login.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <FormField
+        control={form.control}
+        name="password"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Password</FormLabel>
+            <FormControl>
+              <Input autoComplete="" disabled={(user?.id != null)} placeholder="password" {...field} />
+            </FormControl>
+            <FormDescription>
+              Password will be used for login.
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
         )}
+        />
         <FormField
           control={form.control}
           name="role_id"
