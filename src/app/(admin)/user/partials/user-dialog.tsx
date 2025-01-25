@@ -8,7 +8,7 @@ export function UserDialog() {
   return (
     <>
     <Dialog open={dialogs["dialogEditUser"]?.isOpen} onOpenChange={() => closeDialog("dialogEditUser")}>
-      <DialogContent>
+      <DialogContent className="max-h-screen overflow-y-auto no-scrollbar max-w-3xl">
         <DialogHeader>
           <DialogTitle>Form Edit User</DialogTitle>
           <DialogDescription>

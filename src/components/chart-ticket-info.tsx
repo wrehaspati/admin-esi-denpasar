@@ -51,7 +51,7 @@ export function ChartTicketInfo() {
       <CardContent className="flex-1 pb-0 h-full">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto h-full"
+          className="mx-auto lg:h-full h-fit"
         >
           <PieChart>
             <ChartTooltip

@@ -19,7 +19,7 @@ import { format } from "date-fns"
 import axiosInstance from "@/lib/axios"
 import { Application } from "@/types/ApplicationType"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon } from "lucide-react"
+import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
 import { cn } from "@/lib/utils"
 import { Textarea } from "@/components/ui/textarea"
@@ -27,6 +27,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import React from "react"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { useDialog } from "@/hooks/use-dialog"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { User } from "@/types/UserType"
 
 const FormSchema = z.object({
   id: z.string().min(1, {
@@ -52,37 +54,42 @@ const FormSchema = z.object({
     .max(160, {
       message: "Note must not be longer than 30 characters.",
     }),
-  // user: z.object({
-  //   id: z.string().min(1, {
-  //     message: "User ID must be filled.",
-  //   }),
-  //   username: z.string().min(1, {
-  //     message: "Username must be filled.",
-  //   }),
-  //   email: z.string().min(1, {
-  //     message: "Email must be filled.",
-  //   }),
-  //   role_id: z.string().min(1, {
-  //     message: "Role must be filled.",
-  //   }),
-  // }),
+  user_id: z.string().min(1, {
+    message: "User must be filled.",
+  })
 })
 
 export function ApplicationForm({ application }: { application: Application | null }) {
   const [isLoading, setIsLoading] = React.useState(false)
   const { closeDialog } = useDialog()
+  const [users, setUsers] = React.useState<User[]>([])
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       id: application?.id.toString() ?? "",
       event_name: application?.event_name ?? "",
       event_date: application?.event_date ?? "",
+      user_id: application?.user?.id.toString() ?? "",
       organizer_name: application?.organizer_name ?? "",
       total_prizepool: application?.total_prizepool ?? "",
       status: application?.status ?? "",
       note: application?.note ?? "",
     },
   })
+  React.useEffect(() => {
+    if (users.length === 0) {
+      console.log("fetching users")
+      axiosInstance.get('/admin/users')
+        .then((r) => setUsers(r.data.data))
+        .catch(function (error) {
+          toast({
+            title: "Action Failed",
+            description: "Error: " + error + ". " + error?.response?.data?.message,
+          })
+        })
+    }
+  }, [users])
   function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true);
     axiosInstance.put('/admin/application/' + data?.id, data)
@@ -99,7 +106,7 @@ export function ApplicationForm({ application }: { application: Application | nu
   }
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField
           control={form.control}
           name="id"
@@ -145,7 +152,7 @@ export function ApplicationForm({ application }: { application: Application | nu
                       disabled
                       variant={"outline"}
                       className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
+                        "w-full pl-3 text-left font-normal",
                         !field.value && "text-muted-foreground"
                       )}
                     >
@@ -179,6 +186,70 @@ export function ApplicationForm({ application }: { application: Application | nu
         />
         <FormField
           control={form.control}
+          name="user_id"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Source Email</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      disabled
+                      variant="outline"
+                      role="combobox"
+                      className={cn(
+                        "w-full justify-between",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value
+                        ? users.find(
+                          (user) => user.id.toString() === field.value.toString()
+                        )?.email
+                        : "Select user by email"}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0">
+                  <Command>
+                    <CommandInput placeholder="Search user by email..." />
+                    <CommandList>
+                      <CommandEmpty>No user found.</CommandEmpty>
+                      <CommandGroup>
+                        {users.map((user) => (
+                          <CommandItem
+                            value={user.id.toString()}
+                            key={user.id}
+                            onSelect={() => {
+                              form.setValue("user_id", user.id.toString())
+                            }}
+                          >
+                            {user.email}
+                            <Check
+                              className={cn(
+                                "ml-auto",
+                                user.id === field.value
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              <FormDescription>
+                This is the email of the user who submitted the application.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name="organizer_name"
           render={({ field }) => (
             <FormItem>
@@ -189,29 +260,6 @@ export function ApplicationForm({ application }: { application: Application | nu
               <FormDescription>
                 Name of the organizer group.
               </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="status"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Role</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a verified email to display" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value={"undefined"} disabled>--- Select Role ---</SelectItem>
-                  <SelectItem value={"approved"}>Approved</SelectItem>
-                  <SelectItem value={"rejected"}>Rejected</SelectItem>
-                  <SelectItem value={"pending"}>Pending</SelectItem>
-                </SelectContent>
-              </Select>
               <FormMessage />
             </FormItem>
           )}
@@ -236,6 +284,34 @@ export function ApplicationForm({ application }: { application: Application | nu
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="status"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Status</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a status for the application request" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value={"approved"}>Approved</SelectItem>
+                  <SelectItem value={"rejected"}>Rejected</SelectItem>
+                  <SelectItem value={"pending"}>Pending</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div></div>
+        <Button type="button" asChild>
+          <a href={application?.application_file} target="_blank">
+            Download Document
+          </a>
+        </Button>
         <Button type="submit">Submit{isLoading && (<LoadingSpinner />)}</Button>
       </form>
     </Form>

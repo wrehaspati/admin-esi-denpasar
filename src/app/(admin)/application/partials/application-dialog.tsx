@@ -7,7 +7,7 @@ export function ApplicationDialog() {
 
   return (
     <Dialog open={dialogs["dialogEditApplication"]?.isOpen} onOpenChange={() => closeDialog("dialogEditApplication")}>
-      <DialogContent>
+      <DialogContent className="max-h-screen overflow-y-auto no-scrollbar max-w-3xl">
         <DialogHeader>
           <DialogTitle>Form Edit Application</DialogTitle>
           <DialogDescription>

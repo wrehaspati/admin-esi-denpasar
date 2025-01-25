@@ -54,10 +54,13 @@ export default function SettingPage() {
   if (!mounted) {
     return null
   }
+  
+  if (isLogin) {
+    return <LoadingScreen />
+  }
 
   return (
     <SidebarProvider>
-      <LoadingScreen isLoading={isLogin} />
       <AppSidebar />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">

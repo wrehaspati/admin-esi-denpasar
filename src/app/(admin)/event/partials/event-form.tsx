@@ -13,14 +13,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
 import { Input } from "@/components/ui/input"
 import { toast } from "@/hooks/use-toast"
 import { format } from "date-fns"
@@ -35,6 +27,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import React from "react"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { useDialog } from "@/hooks/use-dialog"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { User } from "@/types/UserType"
 
 const FormSchema = z.object({
@@ -63,24 +56,13 @@ const FormSchema = z.object({
     }),
   user_id: z.string().min(1, {
     message: "User must be filled.",
-  }),
-  category_id: z.string({
-    message: "Category must be selected.",
-  }),
+  })
 })
 
-interface EventFormProps {
-  application_id: string
-  user_id: string
-  category_id: string
-  name: string
-  prizepool: string
-}
-
-export function ApplicationForm({ application }: { application: Application | null }) {
-  const [users, setUsers] = React.useState<User[]>([])
+export function EventForm({ application }: { application: Application | null }) {
   const [isLoading, setIsLoading] = React.useState(false)
   const { closeDialog } = useDialog()
+  const [users, setUsers] = React.useState<User[]>([])
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -92,12 +74,12 @@ export function ApplicationForm({ application }: { application: Application | nu
       organizer_name: application?.organizer_name ?? "",
       total_prizepool: application?.total_prizepool ?? "",
       status: application?.status ?? "",
-      note: application?.note ?? ""
+      note: application?.note ?? "",
     },
   })
-
   React.useEffect(() => {
     if (users.length === 0) {
+      console.log("fetching users")
       axiosInstance.get('/admin/users')
         .then((r) => setUsers(r.data.data))
         .catch(function (error) {
@@ -108,31 +90,16 @@ export function ApplicationForm({ application }: { application: Application | nu
         })
     }
   }, [users])
-
-  function createEvent(data: z.infer<typeof FormSchema>) {
-    const event: EventFormProps = { ...data, prizepool: data.total_prizepool, application_id: data.id, name: data.event_name }
-    axiosInstance.post('/admin/event', event)
-      .catch(function (error) {
-        toast({
-          title: "Action Failed",
-          description: "Error: " + error + ". " + error?.response?.data?.message
-        })
-      })
-  }
-
   function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true);
     axiosInstance.put('/admin/application/' + data?.id, data)
       .then(function (response) {
         toast({ title: response.data?.message })
-        if (data.status === "approved") {
-          createEvent(data)
-        }
         closeDialog("dialogEditApplication")
       })
       .catch(function (error) {
         toast({
-          title: "Action Failed",
+          title: "Failed to submit",
           description: "Error: " + error + ". " + error?.response?.data?.message,
         })
       }).finally(() => setIsLoading(false));
@@ -339,29 +306,7 @@ export function ApplicationForm({ application }: { application: Application | nu
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="category_id"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Event Category</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a category for the event" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value={"1"}>Local</SelectItem>
-                  <SelectItem value={"2"}>Regional</SelectItem>
-                  <SelectItem value={"3"}>National</SelectItem>
-                  <SelectItem value={"4"}>International</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div></div>
         <Button type="button" asChild>
           <a href={application?.application_file} target="_blank">
             Download Document

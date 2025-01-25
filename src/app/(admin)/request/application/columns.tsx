@@ -68,6 +68,14 @@ export const columns: ColumnDef<Application>[] = [
     header: "Organizer Name",
   },
   {
+    accessorKey: "user",
+    header: "Managed By",
+    cell: ({ row }) => {
+      const application = row.original;
+      return application.user.email;
+    }
+  },
+  {
     accessorKey: "total_prizepool",
     header: "Total Prizepool",
     cell: ({ row }) => {

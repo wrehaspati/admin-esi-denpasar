@@ -80,7 +80,7 @@ export function DataTable<TData, TValue>({
       toast({title: "No rows selected", description: "Please select rows to print"});
       return;
     }
-    XLSEXPORT<Application>({data: table.getFilteredSelectedRowModel().rows, fileName: "export-esi-user"});
+    XLSEXPORT<Application>({data: table.getFilteredSelectedRowModel().rows, fileName: "export-esi-request"});
   }
  
   return (

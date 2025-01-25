@@ -4,11 +4,11 @@ import { ColumnDef } from "@tanstack/react-table"
 import { ActionsCell } from "./action-cell"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
-import { ArrowUpDown, CircleCheckIcon, CircleMinusIcon, CircleXIcon } from "lucide-react"
-import { Application } from "@/types/ApplicationType"
+import { ArrowUpDown } from "lucide-react"
 import FormatToRupiah from "@/lib/format-to-rupiah"
+import { Event } from "@/types/EventType"
 
-export const columns: ColumnDef<Application>[] = [
+export const columns: ColumnDef<Event>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -34,7 +34,7 @@ export const columns: ColumnDef<Application>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "event_name",
+    accessorKey: "name",
     enableColumnFilter: true,
     header: ({ column }) => {
       return (
@@ -49,48 +49,39 @@ export const columns: ColumnDef<Application>[] = [
     },
   },
   {
-    accessorKey: "event_date",
-    enableColumnFilter: true,
+    accessorKey: "organizer",
+    header: "Managed By",
+    cell: ({ row }) => {
+      const event = row.original;
+      return event.organizer?.email;
+    }
+  },
+  {
+    accessorKey: "prizepool",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Event Date
+          Total Prizepool
           <ArrowUpDown />
         </Button>
       )
-    }
-  },
-  {
-    accessorKey: "organizer_name",
-    header: "Organizer Name",
-  },
-  {
-    accessorKey: "user",
-    header: "Managed By",
+    },
     cell: ({ row }) => {
-      const application = row.original;
-      return application.user.email;
+      const event = row.original;
+      return FormatToRupiah(parseFloat(event.prizepool));
     }
   },
   {
-    accessorKey: "total_prizepool",
-    header: "Total Prizepool",
-    cell: ({ row }) => {
-      const application = row.original;
-      return FormatToRupiah(parseFloat(application.total_prizepool));
-    }
-  },
-  {
-    accessorKey: "application_file",
+    accessorKey: "application",
     header: "Application File",
     cell: ({ row }) => {
-      const application = row.original;
+      const event = row.original;
       return (
         <a
-          href={application.application_file}
+          href={event.application.application_file}
           target="_blank"
           rel="noreferrer"
           className="text-blue-500"
@@ -101,25 +92,23 @@ export const columns: ColumnDef<Application>[] = [
     }
   },
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "category",
+    header: "Category",
     cell: ({ row }) => {
-      const application = row.original;
-      switch(application.status) {
-        case "pending":
-          return <CircleMinusIcon className="text-yellow-600" />
-        case "approved":
-          return <CircleCheckIcon className="text-green-600" />
-        case "rejected":
-          return <CircleXIcon className="text-red-600" />
+      const event = row.original;
+      switch(event.category.id.toString()) {
+        case "1":
+          return "Local"
+        case "2":
+          return "Region"
+        case "3":
+          return "Nasional"
+        case "4":
+          return "Internasional"
         default:
           return "Undefined"
       }
     }
-  },
-  {
-    accessorKey: "note",
-    header: "Note",
   },
   {
     accessorKey: "created_at",
@@ -154,8 +143,8 @@ export const columns: ColumnDef<Application>[] = [
     enableHiding: false,
     enableSorting: false,
     cell: ({ row }) => {
-      const application = row.original
-      return <ActionsCell data={application} />;
+      const event = row.original
+      return <ActionsCell data={event} />;
     },
   }
 ]

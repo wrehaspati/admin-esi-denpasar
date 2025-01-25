@@ -6,7 +6,7 @@ import { toast } from "@/hooks/use-toast";
 import axiosInstance from "@/lib/axios";
 
 const confirmDelete = async (id: string) => {
-  axiosInstance.delete('/admin/application/'+id.toString())
+  axiosInstance.delete('/admin/event/'+id.toString())
     .then(function (response) {
       toast({title: response.data?.message})
     })
@@ -18,25 +18,25 @@ const confirmDelete = async (id: string) => {
     });
 }
 
-const ApplicationAlertDialog = () => {
+const EventAlertDialog = () => {
   const { dialogs, closeDialog } = useDialog();
   return (
-    <AlertDialog open={dialogs["dialogRemoveRequestApp"]?.isOpen} onOpenChange={() => closeDialog("dialogRemoveRequestApp")}>
+    <AlertDialog open={dialogs["dialogRemoveEvent"]?.isOpen} onOpenChange={() => closeDialog("dialogRemoveEvent")}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete {'"'} {dialogs["dialogRemoveRequestApp"]?.currentItem?.event_name} {'" '}
+            This action cannot be undone. This will permanently delete {'"'} {dialogs["dialogRemoveEvent"]?.currentItem?.name} {'" '}
             and remove the data from our servers.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={() => confirmDelete(dialogs["dialogRemoveRequestApp"]?.currentItem?.id)}>Continue</AlertDialogAction>
+          <AlertDialogAction onClick={() => confirmDelete(dialogs["dialogRemoveEvent"]?.currentItem?.id)}>Continue</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   )
 }
 
-export default ApplicationAlertDialog;
+export default EventAlertDialog;

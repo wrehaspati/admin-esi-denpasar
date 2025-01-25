@@ -2,10 +2,10 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 import { useDialog } from "@/hooks/use-dialog";
-import { Application } from "@/types/ApplicationType";
+import { Event } from "@/types/EventType";
 
 interface ActionsCellProps {
-  data: Application;
+  data: Event;
 }
 
 export const ActionsCell: React.FC<ActionsCellProps> = ({ data }) => {
@@ -21,7 +21,8 @@ export const ActionsCell: React.FC<ActionsCellProps> = ({ data }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => openDialog("dialogEditRequestApp", data)}>Check Detail</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => openDialog("dialogEditEvent", data)}>Edit</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => openDialog("dialogRemoveEvent", data)}>Remove</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
