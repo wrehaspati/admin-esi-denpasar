@@ -15,10 +15,10 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { ChartUserTrend } from "@/components/chart-user-trend"
-import { ChartEventInfo } from "@/components/chart-event-info"
-import { ChartTicketInfo } from "@/components/chart-ticket-info"
-import { ChartTransaction } from "@/components/chart-transaction"
+import { ChartUserTrend } from "@/app/dashboard/partials/chart-user-trend"
+import { ChartEventInfo } from "@/app/dashboard/partials/chart-event-info"
+import { ChartTicketInfo } from "@/app/dashboard/partials/chart-ticket-info"
+import { ChartTransaction } from "@/app/dashboard/partials/chart-transaction"
 import useClientMiddleware from "@/hooks/use-client-middleware"
 import LoadingScreen from "@/components/loading-screen"
 import React from "react"

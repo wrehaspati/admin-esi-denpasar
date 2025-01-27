@@ -1,5 +1,8 @@
-import { User } from "./UserType";
 
-export interface TypeList {
-  data: User | null;
+export interface Type {
+  id: string
+  name: string
+  flow: string
+  created_at: string
+  updated_at: string
 }

@@ -34,6 +34,21 @@ export const columns: ColumnDef<Event>[] = [
     enableHiding: false,
   },
   {
+    accessorKey: "id",
+    enableColumnFilter: true,
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          ID
+          <ArrowUpDown />
+        </Button>
+      )
+    },
+  },
+  {
     accessorKey: "name",
     enableColumnFilter: true,
     header: ({ column }) => {

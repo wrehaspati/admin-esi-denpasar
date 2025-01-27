@@ -21,7 +21,7 @@ export const ActionsCell: React.FC<ActionsCellProps> = ({ data }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => openDialog("dialogEditRequestApp", data)}>Check Detail</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => openDialog("editDialog", data)}>Check Detail</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

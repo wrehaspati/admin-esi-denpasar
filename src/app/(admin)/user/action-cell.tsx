@@ -21,12 +21,12 @@ export const ActionsCell: React.FC<ActionsCellProps> = ({ data }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => navigator.clipboard.writeText(data.id)}>
-          Copy Password
+        <DropdownMenuItem onClick={() => navigator.clipboard.writeText(data.email)}>
+          Copy Email
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => openDialog("dialogEditUser", data)}>Edit</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => openDialog("dialogRemoveUser", data)}>Remove</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => openDialog("editDialog", data)}>Edit</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => openDialog("deleteDialog", data)}>Remove</DropdownMenuItem>
       </DropdownMenuContent>  
     </DropdownMenu>
   )

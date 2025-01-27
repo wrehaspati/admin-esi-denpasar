@@ -39,26 +39,26 @@ const FormSchema = z.object({
   })
 })
 
-export function UserForm({ user }: { user: User | null }) {
+export function ActionForm({ data }: { data: User | null }) {
   const [isLoading, setIsLoading] = React.useState(false)
   const { closeDialog } = useDialog()
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      id: user?.id.toString() ?? "",
-      email: user?.email ?? "",
-      role_id: user?.role.id.toString() ?? "",
-      username: user?.username ?? "",
-      password: user?.id ? "********" : "",
+      id: data?.id.toString() ?? "",
+      email: data?.email ?? "",
+      role_id: data?.role.id.toString() ?? "",
+      username: data?.username ?? "",
+      password: data?.id ? "********" : "",
     },
   })
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    if (user?.id != null) {
-      axiosInstance.put('/admin/user/'+data.id, data)
+  function onSubmit(formData: z.infer<typeof FormSchema>) {
+    if (data?.id != null) {
+      axiosInstance.put('/admin/user/'+formData.id, formData)
       .then(function (response) {
         toast({title: response.data?.message})
-        closeDialog("dialogEditUser")
+        closeDialog("editDialog")
       })
       .catch(function (error) {
         toast({
@@ -67,10 +67,10 @@ export function UserForm({ user }: { user: User | null }) {
         })
       }).finally(() => setIsLoading(false))
     } else {
-      axiosInstance.post('/admin/user', data)
+      axiosInstance.post('/admin/user', formData)
       .then(function (response) {
         toast({title: response.data?.message})
-        closeDialog("dialogAddUser")
+        closeDialog("addDialog")
       })
       .catch(function (error) {
         toast({
@@ -138,7 +138,7 @@ export function UserForm({ user }: { user: User | null }) {
           <FormItem>
             <FormLabel>Password</FormLabel>
             <FormControl>
-              <Input autoComplete="" disabled={(user?.id != null)} placeholder="password" {...field} />
+              <Input autoComplete="" disabled={(data?.id != null)} placeholder="password" {...field} />
             </FormControl>
             <FormDescription>
               Password will be used for login.

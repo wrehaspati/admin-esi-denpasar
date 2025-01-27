@@ -59,7 +59,7 @@ const FormSchema = z.object({
   })
 })
 
-export function EventForm({ application }: { application: Application | null }) {
+export function ActionForm({ data }: { data: Application | null }) {
   const [isLoading, setIsLoading] = React.useState(false)
   const { closeDialog } = useDialog()
   const [users, setUsers] = React.useState<User[]>([])
@@ -67,19 +67,18 @@ export function EventForm({ application }: { application: Application | null }) 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      id: application?.id.toString() ?? "",
-      event_name: application?.event_name ?? "",
-      event_date: application?.event_date ?? "",
-      user_id: application?.user?.id.toString() ?? "",
-      organizer_name: application?.organizer_name ?? "",
-      total_prizepool: application?.total_prizepool ?? "",
-      status: application?.status ?? "",
-      note: application?.note ?? "",
+      id: data?.id.toString() ?? "",
+      event_name: data?.event_name ?? "",
+      event_date: data?.event_date ?? "",
+      user_id: data?.user?.id.toString() ?? "",
+      organizer_name: data?.organizer_name ?? "",
+      total_prizepool: data?.total_prizepool ?? "",
+      status: data?.status ?? "",
+      note: data?.note ?? "",
     },
   })
   React.useEffect(() => {
     if (users.length === 0) {
-      console.log("fetching users")
       axiosInstance.get('/admin/users')
         .then((r) => setUsers(r.data.data))
         .catch(function (error) {
@@ -90,12 +89,12 @@ export function EventForm({ application }: { application: Application | null }) 
         })
     }
   }, [users])
-  function onSubmit(data: z.infer<typeof FormSchema>) {
+  function onSubmit(formData: z.infer<typeof FormSchema>) {
     setIsLoading(true);
-    axiosInstance.put('/admin/application/' + data?.id, data)
+    axiosInstance.put('/admin/application/' + formData?.id, formData)
       .then(function (response) {
         toast({ title: response.data?.message })
-        closeDialog("dialogEditApplication")
+        closeDialog("editDialog")
       })
       .catch(function (error) {
         toast({
@@ -308,7 +307,7 @@ export function EventForm({ application }: { application: Application | null }) 
         />
         <div></div>
         <Button type="button" asChild>
-          <a href={application?.application_file} target="_blank">
+          <a href={data?.application_file} target="_blank">
             Download Document
           </a>
         </Button>

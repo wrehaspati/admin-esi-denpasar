@@ -4,11 +4,10 @@ import { ColumnDef } from "@tanstack/react-table"
 import { ActionsCell } from "./action-cell"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
-import { ArrowUpDown, CircleCheckIcon, CircleMinusIcon, CircleXIcon } from "lucide-react"
-import { Application } from "@/types/ApplicationType"
-import FormatToRupiah from "@/lib/format-to-rupiah"
+import { ArrowUpDown } from "lucide-react"
+import { Activity } from "@/types/ActivityType"
 
-export const columns: ColumnDef<Application>[] = [
+export const columns: ColumnDef<Activity>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -49,7 +48,7 @@ export const columns: ColumnDef<Application>[] = [
     },
   },
   {
-    accessorKey: "event_name",
+    accessorKey: "name",
     enableColumnFilter: true,
     header: ({ column }) => {
       return (
@@ -57,84 +56,68 @@ export const columns: ColumnDef<Application>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Event Name
+          Activity Name
           <ArrowUpDown />
         </Button>
       )
     },
   },
   {
-    accessorKey: "event_date",
-    enableColumnFilter: true,
+    accessorKey: "start_at",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Event Date
+          Start At
           <ArrowUpDown />
         </Button>
       )
-    }
+    },
   },
   {
-    accessorKey: "organizer_name",
-    header: "Organizer Name",
+    accessorKey: "end_at",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          End At
+          <ArrowUpDown />
+        </Button>
+      )
+    },
   },
   {
-    accessorKey: "user",
-    header: "Managed By",
+    accessorKey: "location",
+    header: "Location",
+  },
+  {
+    accessorKey: "map_link",
+    header: "Map Link",
     cell: ({ row }) => {
-      const application = row.original;
-      return application.user.email;
-    }
-  },
-  {
-    accessorKey: "total_prizepool",
-    header: "Total Prizepool",
-    cell: ({ row }) => {
-      const application = row.original;
-      return FormatToRupiah(parseFloat(application.total_prizepool));
-    }
-  },
-  {
-    accessorKey: "application_file",
-    header: "Application File",
-    cell: ({ row }) => {
-      const application = row.original;
+      const data = row.original;
       return (
         <a
-          href={application.application_file}
+          href={data.map_link}
           target="_blank"
           rel="noreferrer"
           className="text-blue-500"
         >
-          Download
+          Link
         </a>
       );
     }
   },
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "type",
+    header: "Type",
     cell: ({ row }) => {
-      const application = row.original;
-      switch(application.status) {
-        case "pending":
-          return <CircleMinusIcon className="text-yellow-600" />
-        case "approved":
-          return <CircleCheckIcon className="text-green-600" />
-        case "rejected":
-          return <CircleXIcon className="text-red-600" />
-        default:
-          return "Undefined"
-      }
+      const data = row.original;
+      return data.type.name;
     }
-  },
-  {
-    accessorKey: "note",
-    header: "Note",
   },
   {
     accessorKey: "created_at",
@@ -169,8 +152,8 @@ export const columns: ColumnDef<Application>[] = [
     enableHiding: false,
     enableSorting: false,
     cell: ({ row }) => {
-      const application = row.original
-      return <ActionsCell data={application} />;
+      const data = row.original
+      return <ActionsCell data={data} />;
     },
   }
 ]

@@ -77,7 +77,7 @@ interface EventFormProps {
   prizepool: string
 }
 
-export function ApplicationForm({ application }: { application: Application | null }) {
+export function ActionForm({ data }: { data: Application | null }) {
   const [users, setUsers] = React.useState<User[]>([])
   const [isLoading, setIsLoading] = React.useState(false)
   const { closeDialog } = useDialog()
@@ -85,14 +85,14 @@ export function ApplicationForm({ application }: { application: Application | nu
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      id: application?.id.toString() ?? "",
-      event_name: application?.event_name ?? "",
-      event_date: application?.event_date ?? "",
-      user_id: application?.user?.id.toString() ?? "",
-      organizer_name: application?.organizer_name ?? "",
-      total_prizepool: application?.total_prizepool ?? "",
-      status: application?.status ?? "",
-      note: application?.note ?? ""
+      id: data?.id.toString() ?? "",
+      event_name: data?.event_name ?? "",
+      event_date: data?.event_date ?? "",
+      user_id: data?.user?.id.toString() ?? "",
+      organizer_name: data?.organizer_name ?? "",
+      total_prizepool: data?.total_prizepool ?? "",
+      status: data?.status ?? "",
+      note: data?.note ?? ""
     },
   })
 
@@ -109,8 +109,8 @@ export function ApplicationForm({ application }: { application: Application | nu
     }
   }, [users])
 
-  function createEvent(data: z.infer<typeof FormSchema>) {
-    const event: EventFormProps = { ...data, prizepool: data.total_prizepool, application_id: data.id, name: data.event_name }
+  function createEvent(formData: z.infer<typeof FormSchema>) {
+    const event: EventFormProps = { ...formData, prizepool: formData.total_prizepool, application_id: formData.id, name: formData.event_name }
     axiosInstance.post('/admin/event', event)
       .catch(function (error) {
         toast({
@@ -120,15 +120,15 @@ export function ApplicationForm({ application }: { application: Application | nu
       })
   }
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
+  function onSubmit(formData: z.infer<typeof FormSchema>) {
     setIsLoading(true);
-    axiosInstance.put('/admin/application/' + data?.id, data)
+    axiosInstance.put('/admin/application/' + formData?.id, formData)
       .then(function (response) {
         toast({ title: response.data?.message })
-        if (data.status === "approved") {
-          createEvent(data)
+        if (formData.status === "approved") {
+          createEvent(formData)
         }
-        closeDialog("dialogEditApplication")
+        closeDialog("editDialog")
       })
       .catch(function (error) {
         toast({
@@ -363,7 +363,7 @@ export function ApplicationForm({ application }: { application: Application | nu
           )}
         />
         <Button type="button" asChild>
-          <a href={application?.application_file} target="_blank">
+          <a href={data?.application_file} target="_blank">
             Download Document
           </a>
         </Button>

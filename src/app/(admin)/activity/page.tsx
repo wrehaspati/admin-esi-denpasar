@@ -23,17 +23,39 @@ import { DialogProvider } from "@/context/DialogContext"
 import { useToast } from "@/hooks/use-toast"
 import { useEffect, useState } from "react"
 import axiosInstance from "@/lib/axios"
-import { Event } from "@/types/EventType"
+import { Activity } from "@/types/ActivityType"
 import { ActionDialog } from "./partials/action-dialog"
 
 export default function EventPage() {
-  const [interval, setRefreshInterval] = useState<number>(600000)
+  const [interval, setRefreshInterval] = useState<number>(600000) 
   const { toast } = useToast()
   const fetcher = (url: string) => axiosInstance.get(url).then((r) => r.data)
+  const [processedData, setProcessedData] = useState<Activity[]>([])
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const key = urlParams.get("id");
 
   const { data, error, isLoading } = useSWR(
-    process.env.NEXT_PUBLIC_API_URL + '/admin/events',
-    fetcher, { refreshInterval: interval, revalidateOnFocus: false, revalidateIfStale: false, revalidateOnReconnect: false })
+    process.env.NEXT_PUBLIC_API_URL + "/admin/activities" + (key ? "/" + key : ""),
+    fetcher,
+    {
+      refreshInterval: interval,
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
+      revalidateOnReconnect: false,
+    }
+  )
+
+  useEffect(() => {
+    if (data?.data && key) {
+      const updatedData = data.data.map((item: Activity) => ({
+        ...item, event_id: key,
+      }));
+      setProcessedData(updatedData);
+    } else {
+      setProcessedData(data?.data || []); 
+    }
+  }, [data, key]);
 
   useEffect(() => {
     if (error) {
@@ -45,7 +67,7 @@ export default function EventPage() {
   }, [error, toast])
 
   const confirmDelete = async (id: string) => {
-    axiosInstance.delete('/admin/event/'+id.toString())
+    axiosInstance.delete('/admin/activity/'+id.toString())
       .then(function (response) {
         toast({title: response.data?.message})
       })
@@ -59,7 +81,7 @@ export default function EventPage() {
 
   return (
     <SidebarProvider>
-      <DialogProvider<Event>>
+      <DialogProvider<Activity>>
         <AppSidebar />
         <SidebarInset>
           <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
@@ -75,7 +97,7 @@ export default function EventPage() {
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />
                   <BreadcrumbItem>
-                    <BreadcrumbPage className="flex gap-2 items-center">Events{isLoading ? <LoadingSpinner className="size-4" /> : ""}</BreadcrumbPage>
+                    <BreadcrumbPage className="flex gap-2 items-center">Activities{isLoading ? <LoadingSpinner className="size-4" /> : ""}</BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
@@ -83,8 +105,8 @@ export default function EventPage() {
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0 md:w-full w-screen">
             <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min">
-              <DataTable columns={columns} data={data?.data?.length ? data.data : []} />
-              <ActionDialog onRemoveConfirm={confirmDelete} dialogName="Event" />
+              <DataTable columns={columns} data={processedData?.length ? processedData : []} />
+              <ActionDialog onRemoveConfirm={confirmDelete} dialogName="Activity"/>
             </div>
           </div>
         </SidebarInset>

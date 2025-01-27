@@ -23,8 +23,8 @@ import { DialogProvider } from "@/context/DialogContext"
 import { useToast } from "@/hooks/use-toast"
 import { useEffect, useState } from "react"
 import axiosInstance from "@/lib/axios"
-import { ApplicationRequestDialog } from "./partials/application-dialog"
 import { Application } from "@/types/ApplicationType"
+import { ActionDialog } from "./partials/action-dialog"
 
 export default function RequestApplicationPage() {
   const [interval, setRefreshInterval] = useState<number>(600000)
@@ -71,7 +71,7 @@ export default function RequestApplicationPage() {
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0 md:w-full w-screen">
             <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min">
               <DataTable columns={columns} data={data?.data?.length ? data.data : []} />
-              <ApplicationRequestDialog />
+              <ActionDialog dialogName="Event Request" />
             </div>
           </div>
         </SidebarInset>

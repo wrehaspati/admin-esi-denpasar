@@ -72,7 +72,7 @@ export const columns: ColumnDef<Application>[] = [
     header: "Managed By",
     cell: ({ row }) => {
       const application = row.original;
-      return application.user.email;
+      return application.user?.email;
     }
   },
   {
