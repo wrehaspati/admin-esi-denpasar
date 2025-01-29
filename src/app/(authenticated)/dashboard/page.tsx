@@ -15,39 +15,13 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { ChartUserTrend } from "@/app/dashboard/partials/chart-user-trend"
-import { ChartEventInfo } from "@/app/dashboard/partials/chart-event-info"
-import { ChartTicketInfo } from "@/app/dashboard/partials/chart-ticket-info"
-import { ChartTransaction } from "@/app/dashboard/partials/chart-transaction"
-import useClientMiddleware from "@/hooks/use-client-middleware"
-import LoadingScreen from "@/components/loading-screen"
+import { ChartUserTrend } from "@/app/(authenticated)/dashboard/partials/chart-user-trend"
+import { ChartEventInfo } from "@/app/(authenticated)/dashboard/partials/chart-event-info"
+import { ChartTicketInfo } from "@/app/(authenticated)/dashboard/partials/chart-ticket-info"
+import { ChartTransaction } from "@/app/(authenticated)/dashboard/partials/chart-transaction"
 import React from "react"
-import axiosInstance from "@/lib/axios"
-import { useUser } from "@/hooks/use-user"
 
 export default function DashboardPage() {
-  const [isLogin, setLoginState] = React.useState(true)
-  const { setUserData } = useUser()
-  useClientMiddleware(() => {})
-  
-  React.useEffect(() => {
-    async function fetchUser() {
-      try {
-        const user = await axiosInstance.get("/auth/user").then((res) => { return res.data?.data })
-        setUserData(user)
-      } catch {
-        console.warn("Something went wrong. Please try again later")
-      } finally {
-        setLoginState(false)
-      }
-    }
-    fetchUser()
-  }, [setUserData])
-
-  if (isLogin) {
-    return <LoadingScreen />
-  }
-
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -74,17 +48,17 @@ export default function DashboardPage() {
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <div className="grid auto-rows-min gap-4 md:grid-cols-3 h-fit">
             <div className="rounded-xl h-full">
-              <ChartUserTrend/>
+              <ChartUserTrend />
             </div>
             <div className="rounded-xl h-full">
-              <ChartEventInfo/>
+              <ChartEventInfo />
             </div>
             <div className="rounded-xl h-full">
-              <ChartTicketInfo/>
+              <ChartTicketInfo />
             </div>
           </div>
           <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min">
-            <ChartTransaction/>
+            <ChartTransaction />
           </div>
         </div>
       </SidebarInset>

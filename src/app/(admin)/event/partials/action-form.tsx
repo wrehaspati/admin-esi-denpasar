@@ -45,7 +45,7 @@ export function ActionForm({ data }: { data: Event | null }) {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       id: data?.id?.toString() ?? "",
-      category_id: data?.category.id.toString() ?? "",
+      category_id: data?.category?.id?.toString() ?? "",
       name: data?.name ?? "",
       prizepool: data?.prizepool ?? "",
     },

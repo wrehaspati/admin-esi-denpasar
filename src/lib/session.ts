@@ -45,11 +45,9 @@ export const verifyToken = async (token: string | null) => {
       }
     )
     if (!response.data.authenticated) {
-      console.warn("Failed to verify token")
       throw new Error
     }
   } catch {
-    console.warn("Failed to verify token")
     removeToken()
   }
 }

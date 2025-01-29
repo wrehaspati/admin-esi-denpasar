@@ -19,7 +19,6 @@ const useClientMiddleware = (onAuthorized: () => void) => {
         onAuthorized()
       } else {
         isAuthorizedRef.current = true
-        console.warn("Unauthorized access. Redirecting to login...")
         removeToken()
         router.push("/login")
       }

@@ -2,18 +2,20 @@
 
 import * as React from "react"
 import {
-  AppWindow,
+  Box,
+  Gamepad2,
   LayoutDashboard,
   Mail,
   QrCode,
   Settings2,
   SquareTerminal,
+  Trophy,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
+import { EventSwitcher } from "@/components/event-switcher"
 import {
   Sidebar,
   SidebarContent,
@@ -21,23 +23,26 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { AppIcon } from "./app-icon"
 import { User } from "@/types/UserType"
 import { useUser } from "@/hooks/use-user"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const {userData} = useUser()
+  const { userData, userEvents } = useUser()
   const user: User | null = userData
   const isAdmin = user?.role?.name?.includes("admin")
   let configuration
-
+  
   if (isAdmin){
     configuration = {
       teams: [
         {
-          name: "ESI Kota Denpasar",
-          logo: AppIcon,
-          plan: "Administrator",
+          name: "Admin",
+          organizer: "ESI KOTA DENPASAR",
+          prizepool: "0",
+          category: {
+            name: "Admin",
+          },
+          application: "default",
         }
       ],
       navMain: [
@@ -62,10 +67,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             {
               title: "Events",
               url: "/event",
-            },
-            {
-              title: "Activities",
-              url: "/activity",
             },
             {
               title: "Tickets",
@@ -99,13 +100,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {
           title: "Settings",
           icon: Settings2,
-          isActive: true,
-          items: [
-            {
-              title: "General",
-              url: "/setting",
-            }
-          ],
+          url: "/setting"
         },
       ],
       projects: [
@@ -119,13 +114,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }
   else {
     configuration = {
-      teams: [
-        {
-          name: "Glory of School",
-          logo: AppWindow,
-          plan: "Event Organizer",
-        }
-      ],
+      teams: userEvents ?? [],
       navMain: [
         {
           title: "Dashboard",
@@ -133,15 +122,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           url: "/dashboard",
         },
         {
+          title: "Event Activities",
+          icon: Gamepad2,
+          url: "/organizer/activity",
+        },
+        {
+          title: "Champions Form",
+          icon: Trophy,
+          url: "/organizer/form/champion",
+        },
+        {
+          title: "Archives",
+          icon: Box,
+          url: "/organizer/application",
+        },
+        {
           title: "Settings",
           icon: Settings2,
-          isActive: true,
-          items: [
-            {
-              title: "General",
-              url: "/setting",
-            }
-          ],
+          url: "/setting"
         },
       ],
       projects: [
@@ -153,11 +151,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       ], 
     }
   }
-
+  if (!configuration.teams) return null
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={configuration.teams} />
+        <EventSwitcher event={configuration.teams} />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={configuration.navMain} />

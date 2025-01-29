@@ -1,7 +1,6 @@
 "use client"
 
 import { AppSidebar } from "@/components/app-sidebar"
-import LoadingScreen from "@/components/loading-screen"
 import { Badge } from "@/components/ui/badge"
 import {
   Breadcrumb,
@@ -19,34 +18,12 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { Switch } from "@/components/ui/switch"
-import useClientMiddleware from "@/hooks/use-client-middleware"
-import { useUser } from "@/hooks/use-user"
-import axiosInstance from "@/lib/axios"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 
 export default function SettingPage() {
   const [mounted, setMounted] = useState(false)
   const { theme, setTheme, resolvedTheme } = useTheme()
-  const { setUserData } = useUser()
-  const [isLogin, setLoginState] = useState(true)
-
-  useClientMiddleware(() => {})
-
-  useEffect(() => {
-    async function fetchUser() {
-      try {
-        const user = await axiosInstance.get("/auth/user").then((res) => { return res.data?.data })
-        setUserData(user)
-      } catch {
-        console.warn("Something went wrong. Please try again later")
-      } finally {
-        setLoginState(false)
-      }
-    }
-    fetchUser()
-  }, [setUserData])
-
   useEffect(() => {
     setMounted(true)
   }, [])
@@ -55,10 +32,6 @@ export default function SettingPage() {
     return null
   }
   
-  if (isLogin) {
-    return <LoadingScreen />
-  }
-
   return (
     <SidebarProvider>
       <AppSidebar />

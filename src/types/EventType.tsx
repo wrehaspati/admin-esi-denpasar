@@ -7,8 +7,8 @@ export interface Event {
   name: string
   prizepool: string
   category: Category
-  organizer: User
-  application: Application
+  organizer: User | string
+  application: Application | string
   location?: string
   created_at?: string
   update_at?: string

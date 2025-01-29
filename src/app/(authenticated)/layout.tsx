@@ -6,24 +6,29 @@ import { useUser } from "@/hooks/use-user";
 import axiosInstance from "@/lib/axios";
 import React from "react";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
   const [isAuthorized, setIsAuthorized] = React.useState(false)
   const [isLoading, setIsLoading] = React.useState(true)
-  const { userData, setUserData } = useUser()
+  const { userData, setUserData, setUserEvents } = useUser()
   const message = React.useRef("Something went wrong. Please try again later")
 
   React.useEffect(() => {
     async function fetchUser() {
       try {
-        if (!userData){
+        let isEO: boolean|undefined = false
+        if (!userData) {
           const user = await axiosInstance.get("/auth/user").then((res) => { return res.data?.data })
+          isEO = user?.role?.name?.includes("event_organizer")
           setUserData(user)
         }
-        const isAdmin = userData?.role?.name?.includes("admin")
-        if (!isAdmin) {
-          setIsAuthorized(false)
-          message.current = "You are not authorized to access this page"
-          return
+        if (isEO) {
+          const events = await axiosInstance.get("/eo/events").then((res) => { return res.data?.data })
+          if (events.length === 0) {
+            setIsAuthorized(false)
+            message.current = "There is no event that you manage. Please contact the administrator for further information."
+            return
+          }
+          setUserEvents(events)
         }
         setIsAuthorized(true)
       } catch {
@@ -33,9 +38,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       }
     }
     fetchUser()
-  }, [setUserData, userData])
+  }, [setUserData, setUserEvents, userData])
 
-  useClientMiddleware(() => {})
+  useClientMiddleware(() => { })
 
   if (isLoading) {
     return <LoadingScreen />

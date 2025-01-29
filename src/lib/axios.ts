@@ -30,7 +30,6 @@ axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
         if (error.response && error.response.status === 403) {
-            console.warn("Forbidden : Attempting to verify token...");
             try {
                 const token = await getToken()
                 if (token) {

@@ -8,7 +8,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
@@ -17,19 +16,26 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { useUser } from "@/hooks/use-user"
+import { Event } from "@/types/EventType"
+import { AppIcon } from "./app-icon"
 
-export function TeamSwitcher({
-  teams,
+export function EventSwitcher({
+  event,
 }: {
-  teams: {
-    name: string
-    logo: React.ElementType
-    plan: string
-  }[]
+  event: Event[]
 }) {
   const { isMobile } = useSidebar()
-  const [activeTeam, setActiveTeam] = React.useState(teams[0])
+  const { activeEvent, setActiveEvent } = useUser()
 
+  React.useEffect(() => {
+    if (!activeEvent && event.length > 0) {
+      setActiveEvent(event[0])
+    }
+  }, [activeEvent, event, setActiveEvent])
+
+  if (!activeEvent && event.length > 0) return null
+  
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -40,13 +46,15 @@ export function TeamSwitcher({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <activeTeam.logo className="size-6" />
+                <AppIcon className="size-6" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">
-                  {activeTeam.name}
+                  {activeEvent?.name}
                 </span>
-                <span className="truncate text-xs">{activeTeam.plan}</span>
+                <span className="truncate text-xs">
+                  {typeof activeEvent?.organizer !== "string" ? activeEvent?.organizer.username : activeEvent?.organizer}
+                </span>
               </div>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
@@ -58,19 +66,18 @@ export function TeamSwitcher({
             sideOffset={4}
           >
             <DropdownMenuLabel className="text-xs text-muted-foreground">
-              Account switcher
+              Event switcher
             </DropdownMenuLabel>
-            {teams.map((team, index) => (
+            {event.map((event) => (
               <DropdownMenuItem
-                key={team.name}
-                onClick={() => setActiveTeam(team)}
+                key={event.name}
+                onClick={() => setActiveEvent(event)}
                 className="gap-2 p-2"
               >
                 <div className="flex size-6 items-center justify-center rounded-sm border">
-                  <team.logo className="size-4 shrink-0" />
+                  <AppIcon className="size-4 shrink-0" />
                 </div>
-                {team.name}
-                <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
+                {event.name}
               </DropdownMenuItem>
             ))}
             {/* Account Switcher Add */}
