@@ -96,7 +96,7 @@ export const columns: ColumnDef<Event>[] = [
       const event = row.original;
       return (
         <a
-          href={event.application.application_file}
+          href={event.application?.application_file}
           target="_blank"
           rel="noreferrer"
           className="text-blue-500"
@@ -111,7 +111,7 @@ export const columns: ColumnDef<Event>[] = [
     header: "Category",
     cell: ({ row }) => {
       const event = row.original;
-      switch(event.category.id.toString()) {
+      switch(event.category.id?.toString()) {
         case "1":
           return "Local"
         case "2":

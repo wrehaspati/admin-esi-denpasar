@@ -49,12 +49,13 @@ export function LoginForm({
   })
   function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true)
-    axios.post(process.env.NEXT_PUBLIC_API_URL + "/login", data)
+    axios.post(process.env.NEXT_PUBLIC_API_URL + "/login", {...data, role_id: 1})
       .then(function (response) {
         try {
           if (response.data?.data?.role.id == 1 || response.data?.data?.role.id == 3) {
             saveToken(response.data?.meta?.token)
             toast({ title: response.data?.message })
+            localStorage.removeItem("activeEvent");
             router.replace("/dashboard")
           } else {
             toast({

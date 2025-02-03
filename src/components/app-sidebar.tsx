@@ -37,12 +37,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       teams: [
         {
           name: "Admin",
-          organizer: "ESI KOTA DENPASAR",
+          organizer: user as User,
           prizepool: "0",
           category: {
             name: "Admin",
           },
-          application: "default",
         }
       ],
       navMain: [

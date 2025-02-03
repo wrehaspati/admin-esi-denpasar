@@ -56,6 +56,7 @@ export const removeToken = () => {
   sessionStorage.removeItem("authToken")
   cachedToken = null
   tokenVerified = false
+  localStorage.removeItem("activeEvent");
 }
 
 export const logout = async () => {

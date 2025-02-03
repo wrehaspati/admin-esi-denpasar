@@ -57,7 +57,7 @@ export default function DashboardPage() {
               <ChartTicketInfo />
             </div>
           </div>
-          <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min">
+          <div className="md:min-h-[100vh] flex-1 rounded-xl min-h-min">
             <ChartTransaction />
           </div>
         </div>

@@ -34,7 +34,7 @@ export default function EventPage() {
   const { activeEvent } = useUser()
 
   const { data, error, isLoading } = useSWR(
-    process.env.NEXT_PUBLIC_API_URL + "/eo/activity/" + activeEvent?.id,
+    process.env.NEXT_PUBLIC_API_URL + "/eo/activities/" + activeEvent?.id,
     fetcher,
     {
       refreshInterval: interval,
