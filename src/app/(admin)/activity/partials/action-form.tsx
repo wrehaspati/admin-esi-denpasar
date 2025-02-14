@@ -19,14 +19,14 @@ import axiosInstance from "@/lib/axios"
 import React from "react"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { useDialog } from "@/hooks/use-dialog"
-import { Activity } from "@/types/ActivityType"
+import { IActivity } from "@/types/activity"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { Calendar } from "@/components/ui/calendar"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
-import { Type } from "@/types/TypeList"
+import { ITypeEvent } from "@/types/event-type"
 
 const FormSchema = z.object({
   id: z.string().min(1, {
@@ -41,10 +41,10 @@ const FormSchema = z.object({
   name: z.string().min(1, {
     message: "Event name must be filled.",
   }),
-  start_at: z.string().min(1, {
-    message: "Start date must be filled.",
+  start_at: z.date({
+    message: "Start date must be filled",
   }),
-  end_at: z.string().min(1, {
+  end_at: z.date({
     message: "End date must be filled.",
   }),
   location: z.string().min(1, {
@@ -52,12 +52,12 @@ const FormSchema = z.object({
   }),
   map_link: z.string().min(1, {
     message: "Map link must be filled.",
-  }), 
+  }),
 })
 
-export function ActionForm({ data }: { data: Activity | null }) {
+export function ActionForm({ data }: { data: IActivity | null }) {
   const [isLoading, setIsLoading] = React.useState(false)
-  const [types, setTypes] = React.useState<Type[]>([])
+  const [types, setTypes] = React.useState<ITypeEvent[]>([])
   const { closeDialog } = useDialog()
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -67,8 +67,8 @@ export function ActionForm({ data }: { data: Activity | null }) {
       type_id: data?.type.id.toString() ?? "",
       event_id: data?.event_id ?? "",
       name: data?.name ?? "",
-      start_at: data?.start_at ?? "",
-      end_at: data?.end_at ?? "",
+      start_at: data?.start_at ? new Date(data.start_at) : undefined,
+      end_at: data?.end_at ? new Date(data.end_at) : undefined,
       location: data?.location ?? "",
       map_link: data?.map_link ?? "",
     },
@@ -87,7 +87,12 @@ export function ActionForm({ data }: { data: Activity | null }) {
   }, [types])
   function onSubmit(formData: z.infer<typeof FormSchema>) {
     setIsLoading(true);
-    axiosInstance.put('/admin/activity/' + formData?.id, formData)
+    const sanitizedData = {
+      ...formData,
+      start_at: format(formData.start_at, "yyyy-MM-dd"),
+      end_at: format(formData.end_at, "yyyy-MM-dd"),
+    }
+    axiosInstance.put('/admin/activity/' + sanitizedData?.id, sanitizedData)
       .then(function (response) {
         toast({ title: response.data?.message })
         closeDialog("editDialog")
@@ -99,11 +104,11 @@ export function ActionForm({ data }: { data: Activity | null }) {
         })
       }).finally(() => setIsLoading(false));
   }
-  
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
-      <FormField
+        <FormField
           control={form.control}
           name="event_id"
           render={({ field }) => (
@@ -297,7 +302,7 @@ export function ActionForm({ data }: { data: Activity | null }) {
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
-                <PopoverContent className="w-full p-0"> 
+                <PopoverContent className="w-full p-0">
                   <Command>
                     <CommandInput placeholder="Search type..." />
                     <CommandList>

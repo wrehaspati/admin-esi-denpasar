@@ -22,19 +22,37 @@ import { LoadingSpinner } from "@/components/loading-spinner"
 import { DialogProvider } from "@/context/dialog-context"
 import { useToast } from "@/hooks/use-toast"
 import { useEffect, useState } from "react"
-import { IUser } from "@/types/user"
 import axiosInstance from "@/lib/axios"
+import { IActivity } from "@/types/activity"
 import { ActionDialog } from "./partials/action-dialog"
 
-export default function UserPage() {
+export default function EventPage() {
   const [interval, setRefreshInterval] = useState<number>(600000)
   const { toast } = useToast()
-
   const fetcher = (url: string) => axiosInstance.get(url).then((r) => r.data)
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const key = urlParams.get("id");
+
+  const { data: activityData, isLoading: activityLoading } = useSWR("/admin/activity" + (key ? "/" + key : ""),
+    fetcher,
+    {
+      refreshInterval: interval,
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
+      revalidateOnReconnect: false
+    })
+
   const { data, error, isLoading } = useSWR(
-    process.env.NEXT_PUBLIC_API_URL + '/admin/users',
-    fetcher, { refreshInterval: interval, revalidateOnFocus: false, revalidateIfStale: false, revalidateOnReconnect: false })
+    process.env.NEXT_PUBLIC_API_URL + "/admin/competitions" + (key ? "/" + key : ""),
+    fetcher,
+    {
+      refreshInterval: interval,
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
+      revalidateOnReconnect: false,
+    }
+  )
 
   useEffect(() => {
     if (error) {
@@ -46,7 +64,7 @@ export default function UserPage() {
   }, [error, toast])
 
   const confirmDelete = async (id: string) => {
-    axiosInstance.delete('/admin/user/' + id.toString())
+    axiosInstance.delete('/admin/competition/' + id.toString())
       .then(function (response) {
         toast({ title: response.data?.message })
       })
@@ -55,12 +73,12 @@ export default function UserPage() {
           title: "Failed to submit",
           description: "Error: " + error + ". " + error?.response?.data?.message,
         })
-      })
+      });
   }
 
   return (
     <SidebarProvider>
-      <DialogProvider<IUser>>
+      <DialogProvider<IActivity>>
         <AppSidebar />
         <SidebarInset>
           <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
@@ -75,8 +93,16 @@ export default function UserPage() {
                     </BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />
+                  {activityLoading ? <LoadingSpinner className="size-4" /> : (
+                    <BreadcrumbItem className="hidden md:block">
+                      <BreadcrumbLink href={"/event"}>
+                        {activityData?.data?.name}
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                  )}
+                  <BreadcrumbSeparator className="hidden md:block" />
                   <BreadcrumbItem>
-                    <BreadcrumbPage className="flex gap-2 items-center">User{isLoading ? <LoadingSpinner className="size-4" /> : ""}</BreadcrumbPage>
+                    <BreadcrumbPage className="flex gap-2 items-center">Competitions{isLoading ? <LoadingSpinner className="size-4" /> : ""}</BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
@@ -84,8 +110,8 @@ export default function UserPage() {
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0 md:w-full w-screen">
             <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min">
-              <DataTable columns={columns} data={data?.data ?? []} />
-              <ActionDialog onRemoveConfirm={confirmDelete} dialogName="User" />
+              <DataTable columns={columns} data={data?.data?.length ? data?.data : []} activityId={key ? parseInt(key) : undefined} />
+              <ActionDialog onRemoveConfirm={confirmDelete} dialogName="Activity" />
             </div>
           </div>
         </SidebarInset>

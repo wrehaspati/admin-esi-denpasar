@@ -17,13 +17,13 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { useUser } from "@/hooks/use-user"
-import { Event } from "@/types/EventType"
+import { IEvent } from "@/types/event"
 import { AppIcon } from "./app-icon"
 
 export function EventSwitcher({
   event,
 }: {
-  event: Event[]
+  event: IEvent[]
 }) {
   const { isMobile } = useSidebar()
   const { activeEvent, setActiveEvent } = useUser()

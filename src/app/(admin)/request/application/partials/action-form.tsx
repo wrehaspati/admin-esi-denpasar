@@ -25,7 +25,7 @@ import { Input } from "@/components/ui/input"
 import { toast } from "@/hooks/use-toast"
 import { format } from "date-fns"
 import axiosInstance from "@/lib/axios"
-import { Application } from "@/types/ApplicationType"
+import { IApplication } from "@/types/application"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
@@ -35,7 +35,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import React from "react"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { useDialog } from "@/hooks/use-dialog"
-import { User } from "@/types/UserType"
+import { IUser } from "@/types/user"
 
 const FormSchema = z.object({
   id: z.string().min(1, {
@@ -67,6 +67,12 @@ const FormSchema = z.object({
   category_id: z.string({
     message: "Category must be selected.",
   }),
+  event_logo: z.instanceof(File).refine((file) => file.size < 3000000, {
+    message: 'File must be less than 3MB.',
+  }).refine((file) => file.type.includes("image"), { message: 'File must be an image.' }),
+  event_banner: z.instanceof(File).refine((file) => file.size < 3000000, {
+    message: 'File must be less than 3MB.'
+  }).refine((file) => file.type.includes("image"), { message: 'File must be an image.' })
 })
 
 interface EventFormProps {
@@ -75,10 +81,12 @@ interface EventFormProps {
   category_id: string
   name: string
   prizepool: string
+  event_banner: File,
+  event_logo: File,
 }
 
-export function ActionForm({ data }: { data: Application | null }) {
-  const [users, setUsers] = React.useState<User[]>([])
+export function ActionForm({ data }: { data: IApplication | null }) {
+  const [users, setUsers] = React.useState<IUser[]>([])
   const [isLoading, setIsLoading] = React.useState(false)
   const { closeDialog } = useDialog()
 
@@ -92,7 +100,7 @@ export function ActionForm({ data }: { data: Application | null }) {
       organizer_name: data?.organizer_name ?? "",
       total_prizepool: data?.total_prizepool ?? "",
       status: data?.status ?? "",
-      note: data?.note ?? ""
+      note: data?.note ?? "",
     },
   })
 
@@ -109,37 +117,45 @@ export function ActionForm({ data }: { data: Application | null }) {
     }
   }, [users])
 
-  function createEvent(formData: z.infer<typeof FormSchema>) {
-    const event: EventFormProps = { ...formData, prizepool: formData.total_prizepool, application_id: formData.id, name: formData.event_name }
-    axiosInstance.post('/admin/event', event)
-      .catch(function (error) {
-        toast({
-          title: "Action Failed",
-          description: "Error: " + error + ". " + error?.response?.data?.message
-        })
-      })
+  async function createEvent(formData: z.infer<typeof FormSchema>) {
+    if (formData.status === "approved") {
+      const event: EventFormProps = { ...formData, prizepool: formData.total_prizepool, application_id: formData.id, name: formData.event_name, event_logo: formData.event_logo, event_banner: formData.event_banner }
+      const err = await axiosInstance.post('/admin/event', event, { headers: { "Content-Type": "multipart/form-data" } }).catch(function (error) { throw error })
+      if (err.status !== 201) {
+        throw err.data
+      }
+    }
   }
 
-  function onSubmit(formData: z.infer<typeof FormSchema>) {
+  async function onSubmit(formData: z.infer<typeof FormSchema>) {
     setIsLoading(true);
-    axiosInstance.put('/admin/application/' + formData?.id, formData)
-      .then(function (response) {
-        toast({ title: response.data?.message })
-        if (formData.status === "approved") {
-          createEvent(formData)
-        }
-        closeDialog("editDialog")
-      })
-      .catch(function (error) {
-        toast({
-          title: "Action Failed",
-          description: "Error: " + error + ". " + error?.response?.data?.message,
+    try {
+      await axiosInstance.put('/admin/application/' + formData?.id, formData)
+        .then(function (response) {
+          toast({ title: response.data?.message })
+          closeDialog("editDialog")
         })
-      }).finally(() => setIsLoading(false));
+        .catch(function (error) {
+          toast({
+            title: "Action Failed",
+            description: "Error: " + error + ". " + error?.response?.data?.message,
+          })
+        })
+      createEvent(formData)
+    } catch (error) {
+      console.log(error)
+      toast({
+        title: "Action Failed",
+        description: "Error: " + error
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full grid grid-cols-1 md:grid-cols-2 gap-6" encType="multipart/form-data">
         <FormField
           control={form.control}
           name="id"
@@ -358,6 +374,50 @@ export function ActionForm({ data }: { data: Application | null }) {
                   <SelectItem value={"4"}>International</SelectItem>
                 </SelectContent>
               </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="event_logo"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Event Logo</FormLabel>
+              <FormControl>
+                <Input
+                  type="file"
+                  onChange={(e) => field.onChange(e.target.files?.[0])}
+                  onBlur={field.onBlur}
+                  name={field.name}
+                  ref={field.ref}
+                />
+              </FormControl>
+              <FormDescription>
+                Logo of the event.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="event_banner"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Event Banner</FormLabel>
+              <FormControl>
+                <Input
+                  type="file"
+                  onChange={(e) => field.onChange(e.target.files?.[0])}
+                  onBlur={field.onBlur}
+                  name={field.name}
+                  ref={field.ref}
+                />
+              </FormControl>
+              <FormDescription>
+                Banner of the event.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

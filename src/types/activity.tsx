@@ -1,6 +1,7 @@
-import { Type } from "./TypeList";
+import { ITypeEvent } from "./event-type"
 
-export interface Activity {
+
+export interface IActivity {
   event_id: string
   id: string
   name: string
@@ -10,5 +11,5 @@ export interface Activity {
   map_link: string
   created_at: string
   updated_at: string
-  type: Type
+  type: ITypeEvent
 }

@@ -19,11 +19,11 @@ import { DataTable } from "./data-table"
 import { columns } from "./columns"
 import useSWR from 'swr'
 import { LoadingSpinner } from "@/components/loading-spinner"
-import { DialogProvider } from "@/context/DialogContext"
+import { DialogProvider } from "@/context/dialog-context"
 import { useToast } from "@/hooks/use-toast"
 import { useEffect, useState } from "react"
 import axiosInstance from "@/lib/axios"
-import { Application } from "@/types/ApplicationType"
+import { IApplication } from "@/types/application"
 
 export default function ApplicationPage() {
   const [interval, setRefreshInterval] = useState<number>(600000)
@@ -45,7 +45,7 @@ export default function ApplicationPage() {
 
   return (
     <SidebarProvider>
-      <DialogProvider<Application>>
+      <DialogProvider<IApplication>>
         <AppSidebar />
         <SidebarInset>
           <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
@@ -69,7 +69,7 @@ export default function ApplicationPage() {
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0 md:w-full w-screen">
             <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min">
-              <DataTable columns={columns} data={data?.data?.length ? data.data : []} />
+              <DataTable columns={columns} data={data?.data ?? []} />
             </div>
           </div>
         </SidebarInset>

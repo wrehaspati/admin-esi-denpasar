@@ -19,11 +19,11 @@ import { DataTable } from "./data-table"
 import { columns } from "./columns"
 import useSWR from 'swr'
 import { LoadingSpinner } from "@/components/loading-spinner"
-import { DialogProvider } from "@/context/DialogContext"
+import { DialogProvider } from "@/context/dialog-context"
 import { useToast } from "@/hooks/use-toast"
 import { useEffect, useState } from "react"
 import axiosInstance from "@/lib/axios"
-import { Event } from "@/types/EventType"
+import { IEvent } from "@/types/event"
 import { ActionDialog } from "./partials/action-dialog"
 
 export default function EventPage() {
@@ -59,7 +59,7 @@ export default function EventPage() {
 
   return (
     <SidebarProvider>
-      <DialogProvider<Event>>
+      <DialogProvider<IEvent>>
         <AppSidebar />
         <SidebarInset>
           <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
@@ -83,7 +83,7 @@ export default function EventPage() {
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0 md:w-full w-screen">
             <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min">
-              <DataTable columns={columns} data={data?.data?.length ? data.data : []} />
+              <DataTable columns={columns} data={data?.data ?? []} />
               <ActionDialog onRemoveConfirm={confirmDelete} dialogName="Event" />
             </div>
           </div>

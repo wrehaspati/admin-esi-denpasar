@@ -28,7 +28,7 @@ import { ChevronDown, PrinterIcon } from "lucide-react"
 import React from "react"
 import XLSEXPORT from "@/components/xls-export"
 import { toast } from "@/hooks/use-toast"
-import { Activity } from "@/types/ActivityType"
+import { IActivity } from "@/types/activity"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -79,7 +79,7 @@ export function DataTable<TData, TValue>({
       toast({title: "No rows selected", description: "Please select rows to print"});
       return;
     }
-    XLSEXPORT<Activity>({data: table.getFilteredSelectedRowModel().rows, fileName: "export-esi-activities"});
+    XLSEXPORT<IActivity>({data: table.getFilteredSelectedRowModel().rows, fileName: "export-esi-activities"});
   }
  
   return (

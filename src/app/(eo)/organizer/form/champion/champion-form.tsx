@@ -1,0 +1,333 @@
+"use client"
+
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useFieldArray, useForm } from "react-hook-form"
+import { z } from "zod"
+import { Button } from "@/components/ui/button"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { toast } from "@/hooks/use-toast"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Check, ChevronsUpDown } from "lucide-react"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import React from "react"
+import { IGame } from "@/types/game"
+import axiosInstance from "@/lib/axios"
+import LoadingScreen from "@/components/loading-screen"
+import { cn } from "@/lib/utils"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { LoadingSpinner } from "@/components/loading-spinner"
+
+const FormSchema = z.object({
+  game_id: z.string().min(1,{
+    message: "Please select a game."
+  }),
+  category_id: z.string().min(1, {
+    message: "Please select a category."
+  }),
+  tournament_name: z.string().min(1, {
+    message: "Please enter a tournament name."
+  }),
+  team_name: z.string().min(1, {
+    message: "Please enter a team name."
+  }),
+  rank: z.string().min(1, {
+    message: "Please select a rank."
+  }),
+  teams: z.array(
+    z.object({
+      name: z.string().min(1, {
+        message: "Please enter a player name."
+      }),
+      nickname: z.string().min(1, {
+        message: "Please enter a player nickname."
+      }),
+      phone: z.string().min(1, { 
+        message: "Please enter a player phone number."
+      }),
+      id_game: z.string().min(1, {
+        message: "Please enter a player in-game ID."
+      })
+    })
+  )
+})
+
+export function ChampionForm() {
+  const [games, setGames] = React.useState<IGame[]>([])
+  const [isLoading, setIsLoading] = React.useState(false)
+
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      game_id: "",
+      category_id: "",
+      tournament_name: "",
+      team_name: "",
+      rank: "",
+      teams: [
+        { name: "", nickname: "", phone: "", id_game: "" },
+        { name: "", nickname: "", phone: "", id_game: "" },
+        { name: "", nickname: "", phone: "", id_game: "" },
+        { name: "", nickname: "", phone: "", id_game: "" },
+        { name: "", nickname: "", phone: "", id_game: "" },
+      ],
+    },
+  })
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "teams",
+  });
+
+  React.useEffect(() => {
+    if (games.length === 0) {
+      axiosInstance.get('/eo/games')
+        .then((r) => setGames(r.data.data))
+        .catch(function (error) {
+          toast({
+            title: "Action Failed",
+            description: "Error: " + error + ". " + error?.response?.data?.message,
+          })
+        })
+    }
+  }, [games])
+
+  function onSubmit(formData: z.infer<typeof FormSchema>) {
+    setIsLoading(true);
+    axiosInstance.post('/eo/leaderboard', formData)
+      .then(function (response) {
+        toast({ title: response.data?.message })
+      })
+      .catch(function (error) {
+        toast({
+          title: "Failed to submit",
+          description: "Error: " + error + ". " + error?.response?.data?.message,
+        })
+      }).finally(() => setIsLoading(false));
+  }
+
+  if (!games) {
+    return <LoadingScreen />
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+        <FormField
+          control={form.control}
+          name="game_id"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Games</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className={cn(
+                        "w-full justify-between",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value && games
+                        ? games.find(
+                          (game) => game.id.toString() === field.value.toString()
+                        )?.name
+                        : "Select game name"}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0">
+                  <Command>
+                    <CommandInput placeholder="Search type..." />
+                    <CommandList>
+                      <CommandEmpty>No games found.</CommandEmpty>
+                      <CommandGroup>
+                        {games.map((game) => (
+                          <CommandItem
+                            value={game.id.toString()}
+                            key={game.id.toString()}
+                            onSelect={() => {
+                              form.setValue("game_id", game.id.toString())
+                            }}
+                          >
+                            {game.name}
+                            <Check
+                              className={cn(
+                                "ml-auto",
+                                game.id == field.value
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              <FormDescription>
+                Select the game name.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="tournament_name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tournament Name</FormLabel>
+              <FormControl>
+                <Input placeholder="tournament name" {...field} />
+              </FormControl>
+              <FormDescription>
+                Name of the tournament.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="team_name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Team Name</FormLabel>
+              <FormControl>
+                <Input placeholder="team name" {...field} />
+              </FormControl>
+              <FormDescription>
+                Name of the winner team.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="rank"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Team Ranking</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select winner team rank" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value={"1"}>Rank #1</SelectItem>
+                  <SelectItem value={"2"}>Rank #2</SelectItem>
+                  <SelectItem value={"3"}>Rank #3</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div className="space-y-6">
+          {fields.map((field, index) => (
+            <Card key={field.id}>
+              <CardHeader>
+                <CardTitle>
+                  <div className="flex items-center justify-between">
+                    <span>
+                      {`Player ${index + 1}`}
+                    </span>
+                    {fields.length > 1 && (
+                      <Button type="button" variant="destructive" onClick={() => remove(index)}>
+                        Remove
+                      </Button>
+                    )}
+                  </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name={`teams.${index}.name`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{"Player's Name"}</FormLabel>
+                      <FormControl>
+                        <Input placeholder={`player's ${index + 1} name`} {...field} />
+                      </FormControl>
+                      <FormDescription>
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name={`teams.${index}.nickname`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{"Player's Game Nickname"}</FormLabel>
+                      <FormControl>
+                        <Input placeholder={`player's ${index + 1} game nickname`} {...field} />
+                      </FormControl>
+                      <FormDescription>
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name={`teams.${index}.phone`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{"Player's Phone Number"}</FormLabel>
+                      <FormControl>
+                        <Input placeholder={`player's ${index + 1} phone number`} {...field} />
+                      </FormControl>
+                      <FormDescription>
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name={`teams.${index}.id_game`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{"Player's In-Game ID"}</FormLabel>
+                      <FormControl>
+                        <Input placeholder={`player's ${index + 1} in-game id`} {...field} />
+                      </FormControl>
+                      <FormDescription>
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+          ))}
+          {fields.length < 5 && (
+            <Button type="button" onClick={() => append({ id_game: "", name: "", nickname: "", phone: "" })}>
+              Add Player
+            </Button>
+          )}
+        </div>
+        <Button type="submit">Submit {isLoading && <LoadingSpinner/>}</Button>
+      </form>
+    </Form>
+  )
+}

@@ -2,16 +2,14 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 import { useDialog } from "@/hooks/use-dialog";
-import { IEvent } from "@/types/event";
-import { useRouter } from "next/navigation";
+import { ICompetition } from "@/types/competition";
 
 interface ActionsCellProps {
-  data: IEvent
+  data: ICompetition;
 }
 
 export const ActionsCell: React.FC<ActionsCellProps> = ({ data }) => {
-  const router = useRouter()
-  const { openDialog } = useDialog()
+  const { openDialog } = useDialog();
 
   return (
     <DropdownMenu>
@@ -23,8 +21,9 @@ export const ActionsCell: React.FC<ActionsCellProps> = ({ data }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => router.replace("/activity/?id="+data.id)}>View</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => openDialog("editDialog", data)}>Edit</DropdownMenuItem>
+        {data.id && (
+          <DropdownMenuItem onClick={() => openDialog("editDialog", data)}>Edit</DropdownMenuItem>
+        )}
         <DropdownMenuItem onClick={() => openDialog("deleteDialog", data)}>Remove</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

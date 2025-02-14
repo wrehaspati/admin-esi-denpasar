@@ -2,10 +2,10 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 import { useDialog } from "@/hooks/use-dialog";
-import { Application } from "@/types/ApplicationType";
+import { IApplication } from "@/types/application";
 
 interface ActionsCellProps {
-  data: Application;
+  data: IApplication;
 }
 
 export const ActionsCell: React.FC<ActionsCellProps> = ({ data }) => {

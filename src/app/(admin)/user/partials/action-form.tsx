@@ -15,9 +15,9 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { toast } from "@/hooks/use-toast"
-import { User } from "@/types/UserType"
+import { IUser } from "@/types/user"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../components/ui/select"
-import { UserRole } from "@/types/RoleType"
+import { IUserRole } from "@/types/role"
 import axiosInstance from "@/lib/axios"
 import { useDialog } from "@/hooks/use-dialog"
 import { LoadingSpinner } from "@/components/loading-spinner"
@@ -39,7 +39,7 @@ const FormSchema = z.object({
   })
 })
 
-export function ActionForm({ data }: { data: User | null }) {
+export function ActionForm({ data }: { data: IUser | null }) {
   const [isLoading, setIsLoading] = React.useState(false)
   const { closeDialog } = useDialog()
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -160,9 +160,9 @@ export function ActionForm({ data }: { data: User | null }) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value={UserRole.ADMIN.toString()}>[{UserRole.ADMIN.toString()}] Admin</SelectItem>
-                  <SelectItem value={UserRole.USER.toString()}>[{UserRole.USER.toString()}] User</SelectItem>
-                  <SelectItem value={UserRole.ORGANIZER.toString()}>[{UserRole.ORGANIZER.toString()}] Event Organizer</SelectItem>
+                  <SelectItem value={IUserRole.ADMIN.toString()}>[{IUserRole.ADMIN.toString()}] Admin</SelectItem>
+                  <SelectItem value={IUserRole.USER.toString()}>[{IUserRole.USER.toString()}] User</SelectItem>
+                  <SelectItem value={IUserRole.ORGANIZER.toString()}>[{IUserRole.ORGANIZER.toString()}] Event Organizer</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />

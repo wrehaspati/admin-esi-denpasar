@@ -27,7 +27,7 @@ import { Button } from "@/components/ui/button"
 import { ChevronDown, CirclePlus, PrinterIcon } from "lucide-react"
 import React from "react"
 import XLSEXPORT from "@/components/xls-export"
-import { User } from "@/types/UserType"
+import { IUser } from "@/types/user"
 import { toast } from "@/hooks/use-toast"
 import { useDialog } from "@/hooks/use-dialog"
 
@@ -82,7 +82,7 @@ export function DataTable<TData, TValue>({
       toast({ title: "No rows selected", description: "Please select rows to print" })
       return
     }
-    XLSEXPORT<User>({ data: table.getFilteredSelectedRowModel().rows, fileName: "export-esi-user" })
+    XLSEXPORT<IUser>({ data: table.getFilteredSelectedRowModel().rows, fileName: "export-esi-user" })
   }
 
   return (

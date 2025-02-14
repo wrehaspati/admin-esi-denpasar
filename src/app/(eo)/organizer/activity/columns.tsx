@@ -5,9 +5,9 @@ import { ActionsCell } from "./action-cell"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import { ArrowUpDown } from "lucide-react"
-import { Activity } from "@/types/ActivityType"
+import { IActivity } from "@/types/activity"
 
-export const columns: ColumnDef<Activity>[] = [
+export const columns: ColumnDef<IActivity>[] = [
   {
     id: "select",
     header: ({ table }) => (

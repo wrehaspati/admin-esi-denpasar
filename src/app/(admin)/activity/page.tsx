@@ -19,18 +19,18 @@ import { DataTable } from "./data-table"
 import { columns } from "./columns"
 import useSWR from 'swr'
 import { LoadingSpinner } from "@/components/loading-spinner"
-import { DialogProvider } from "@/context/DialogContext"
+import { DialogProvider } from "@/context/dialog-context"
 import { useToast } from "@/hooks/use-toast"
 import { useEffect, useState } from "react"
 import axiosInstance from "@/lib/axios"
-import { Activity } from "@/types/ActivityType"
+import { IActivity } from "@/types/activity"
 import { ActionDialog } from "./partials/action-dialog"
 
 export default function EventPage() {
   const [interval, setRefreshInterval] = useState<number>(600000) 
   const { toast } = useToast()
   const fetcher = (url: string) => axiosInstance.get(url).then((r) => r.data)
-  const [processedData, setProcessedData] = useState<Activity[]>([])
+  const [processedData, setProcessedData] = useState<IActivity[]>([])
   
   const urlParams = new URLSearchParams(window.location.search);
   const key = urlParams.get("id");
@@ -48,7 +48,7 @@ export default function EventPage() {
 
   useEffect(() => {
     if (data?.data && key) {
-      const updatedData = data.data.map((item: Activity) => ({
+      const updatedData = data.data.map((item: IActivity) => ({
         ...item, event_id: key,
       }));
       setProcessedData(updatedData);
@@ -81,7 +81,7 @@ export default function EventPage() {
 
   return (
     <SidebarProvider>
-      <DialogProvider<Activity>>
+      <DialogProvider<IActivity>>
         <AppSidebar />
         <SidebarInset>
           <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">

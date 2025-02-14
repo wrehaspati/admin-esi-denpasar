@@ -23,12 +23,12 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { User } from "@/types/UserType"
+import { IUser } from "@/types/user"
 import { useUser } from "@/hooks/use-user"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { userData, userEvents } = useUser()
-  const user: User | null = userData
+  const user: IUser | null = userData
   const isAdmin = user?.role?.name?.includes("admin")
   let configuration
   
@@ -37,7 +37,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       teams: [
         {
           name: "Admin",
-          organizer: user as User,
+          organizer: user as IUser,
           prizepool: "0",
           category: {
             name: "Admin",

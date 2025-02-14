@@ -25,7 +25,7 @@ export default function AuthenticatedLayout({ children }: { children: React.Reac
           const events = await axiosInstance.get("/eo/events").then((res) => { return res.data?.data })
           if (events.length === 0) {
             setIsAuthorized(false)
-            message.current = "There is no event that you manage. Please contact the administrator for further information."
+            message.current = "There is no event currently you can manage. Please contact the administrator for further information."
             return
           }
           setUserEvents(events)

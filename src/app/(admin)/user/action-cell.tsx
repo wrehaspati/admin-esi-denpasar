@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { MoreHorizontal } from "lucide-react"
-import { User } from "@/types/UserType"
+import { IUser } from "@/types/user"
 import { useDialog } from "@/hooks/use-dialog"
 
 interface ActionsCellProps {
-  data: User
+  data: IUser
 }
 
 export const ActionsCell: React.FC<ActionsCellProps> = ({ data }) => {

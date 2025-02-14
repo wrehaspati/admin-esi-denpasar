@@ -6,9 +6,9 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import { ArrowUpDown } from "lucide-react"
 import FormatToRupiah from "@/lib/format-to-rupiah"
-import { Event } from "@/types/EventType"
+import { IEvent } from "@/types/event"
 
-export const columns: ColumnDef<Event>[] = [
+export const columns: ColumnDef<IEvent>[] = [
   {
     id: "select",
     header: ({ table }) => (

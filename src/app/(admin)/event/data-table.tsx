@@ -28,7 +28,7 @@ import { ChevronDown, PrinterIcon } from "lucide-react"
 import React from "react"
 import XLSEXPORT from "@/components/xls-export"
 import { toast } from "@/hooks/use-toast"
-import { Event } from "@/types/EventType"
+import { IEvent } from "@/types/event"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -80,7 +80,7 @@ export function DataTable<TData, TValue>({
       toast({title: "No rows selected", description: "Please select rows to print"});
       return;
     }
-    XLSEXPORT<Event>({data: table.getFilteredSelectedRowModel().rows, fileName: "export-esi-event"});
+    XLSEXPORT<IEvent>({data: table.getFilteredSelectedRowModel().rows, fileName: "export-esi-event"});
   }
  
   return (

@@ -29,10 +29,10 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { logout } from "@/lib/session"
-import { User } from "@/types/UserType"
+import { IUser } from "@/types/user"
 
 
-export function NavUser({ user }: { user: User | null }) {
+export function NavUser({ user }: { user: IUser | null }) {
   const { isMobile } = useSidebar()
 
   const handleLogout = () => {

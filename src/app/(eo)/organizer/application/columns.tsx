@@ -4,10 +4,10 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import { ArrowUpDown, CircleCheckIcon, CircleMinusIcon, CircleXIcon } from "lucide-react"
-import { Application } from "@/types/ApplicationType"
+import { IApplication } from "@/types/application"
 import FormatToRupiah from "@/lib/format-to-rupiah"
 
-export const columns: ColumnDef<Application>[] = [
+export const columns: ColumnDef<IApplication>[] = [
   {
     id: "select",
     header: ({ table }) => (

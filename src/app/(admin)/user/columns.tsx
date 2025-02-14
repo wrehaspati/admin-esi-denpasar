@@ -1,14 +1,14 @@
 "use client"
 
-import { User } from "@/types/UserType"
+import { IUser } from "@/types/user"
 import { ColumnDef } from "@tanstack/react-table"
 import { ActionsCell } from "./action-cell"
-import { UserRole } from "@/types/RoleType"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import { ArrowUpDown } from "lucide-react"
+import { IUserRole } from "@/types/role"
 
-export const columns: ColumnDef<User>[] = [
+export const columns: ColumnDef<IUser>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -67,12 +67,12 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const user = row.original
       switch (user.role.id) {
-        case UserRole.ADMIN:
-          return "["+UserRole.ADMIN+"] Admin"
-        case UserRole.ORGANIZER:
-          return "["+UserRole.ORGANIZER+"] Organizer"
-        case UserRole.USER:
-          return "["+UserRole.USER+"] User"
+        case IUserRole.ADMIN:
+          return "["+IUserRole.ADMIN+"] Admin"
+        case IUserRole.ORGANIZER:
+          return "["+IUserRole.ORGANIZER+"] Organizer"
+        case IUserRole.USER:
+          return "["+IUserRole.USER+"] User"
         default:
           return "Undefined"
       }

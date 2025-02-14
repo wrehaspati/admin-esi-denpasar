@@ -1,6 +1,6 @@
-import { User } from "./UserType";
+import { IUser } from "./user";
 
-export interface Application {
+export interface IApplication {
   id: string
   event_name: string
   event_date: string
@@ -11,5 +11,5 @@ export interface Application {
   note: string
   created_at: string
   updated_at: string
-  user: User
+  user: IUser
 }

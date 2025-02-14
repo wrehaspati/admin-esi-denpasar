@@ -16,29 +16,24 @@ import {
 import { Input } from "@/components/ui/input"
 import { toast } from "@/hooks/use-toast"
 import axiosInstance from "@/lib/axios"
-import React from "react"
-import { LoadingSpinner } from "@/components/loading-spinner"
 import { useDialog } from "@/hooks/use-dialog"
-import { IActivity } from "@/types/activity"
+import { LoadingSpinner } from "@/components/loading-spinner"
+import React from "react"
+import { ICompetition } from "@/types/competition"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { format } from "date-fns"
-import { Calendar } from "@/components/ui/calendar"
+import { IGame } from "@/types/game"
+import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
-import { ITypeEvent } from "@/types/event-type"
-import { useUser } from "@/hooks/use-user"
+import { Calendar } from "@/components/ui/calendar"
+import { format } from "date-fns"
 
 const FormSchema = z.object({
-  id: z.string(),
-  type_id: z.string().min(1, {
-    message: "Type ID must be filled.",
+  activity_id: z.string().min(1, {
+    message: "Activity must be filled.",
   }),
-  event_id: z.string().min(1, {
-    message: "Event ID must be filled.",
-  }),
-  name: z.string().min(1, {
-    message: "Event name must be filled.",
+  game_id: z.string().min(1, {
+    message: "Game must be filled.",
   }),
   start_at: z.date({
     message: "Start date must be filled",
@@ -46,37 +41,35 @@ const FormSchema = z.object({
   end_at: z.date({
     message: "End date must be filled.",
   }),
-  location: z.string().min(1, {
-    message: "Location must be filled.",
+  price: z.string().min(1, {
+    message: "Price must be filled.",
   }),
-  map_link: z.string().min(1, {
-    message: "Map link must be filled.",
-  }),
+  quantity: z.string().min(1, {
+    message: "Quantity must be filled.",
+  })
 })
 
-export function ActionForm({ data }: { data: IActivity | null }) {
+export function ActionForm({ data }: { data: ICompetition | null }) {
   const [isLoading, setIsLoading] = React.useState(false)
-  const [types, setTypes] = React.useState<ITypeEvent[]>([])
+  const [games, setGames] = React.useState<IGame[]>([])
   const { closeDialog } = useDialog()
-  const { activeEvent } = useUser()
-
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      id: data?.id?.toString() ?? "",
-      type_id: data?.type.id.toString() ?? "",
-      event_id: activeEvent?.id?.toString(),
-      name: data?.name ?? "",
+      activity_id: data?.activity?.id?.toString() ?? "",
+      game_id: data?.game?.id.toString() ?? "",
       start_at: data?.start_at ? new Date(data.start_at) : undefined,
       end_at: data?.end_at ? new Date(data.end_at) : undefined,
-      location: data?.location ?? "",
-      map_link: data?.map_link ?? "",
+      price: data?.price?.toString() ?? "",
+      quantity: data?.quantity?.toString() ?? ""
     },
   })
+
+
   React.useEffect(() => {
-    if (types.length === 0) {
-      axiosInstance.get('/eo/types')
-        .then((r) => setTypes(r.data.data))
+    if (games.length === 0) {
+      axiosInstance.get('/admin/games')
+        .then((r) => setGames(r.data.data))
         .catch(function (error) {
           toast({
             title: "Action Failed",
@@ -84,28 +77,16 @@ export function ActionForm({ data }: { data: IActivity | null }) {
           })
         })
     }
-  }, [types])
+  }, [games])
+
   function onSubmit(formData: z.infer<typeof FormSchema>) {
     const sanitizedData = {
       ...formData,
       start_at: format(formData.start_at, "yyyy-MM-dd"),
       end_at: format(formData.end_at, "yyyy-MM-dd"),
     }
-    setIsLoading(true);
-    if (sanitizedData.id == null || sanitizedData.id == "") {
-      axiosInstance.post('/eo/activity', sanitizedData)
-        .then(function (response) {
-          toast({ title: response.data?.message })
-          closeDialog("addDialog")
-        })
-        .catch(function (error) {
-          toast({
-            title: "Failed to submit",
-            description: "Error: " + error + ". " + error?.response?.data?.message,
-          })
-        }).finally(() => setIsLoading(false));
-    } else {
-      axiosInstance.put('/eo/activity/' + sanitizedData?.id, sanitizedData)
+    if (data?.id != null) {
+      axiosInstance.put('/admin/competition/' + data?.id, sanitizedData)
         .then(function (response) {
           toast({ title: response.data?.message })
           closeDialog("editDialog")
@@ -115,40 +96,35 @@ export function ActionForm({ data }: { data: IActivity | null }) {
             title: "Failed to submit",
             description: "Error: " + error + ". " + error?.response?.data?.message,
           })
-        }).finally(() => setIsLoading(false));
+        }).finally(() => setIsLoading(false))
+    } else {
+      axiosInstance.post('/admin/competition', sanitizedData)
+        .then(function (response) {
+          toast({ title: response.data?.message })
+          closeDialog("addDialog")
+        })
+        .catch(function (error) {
+          toast({
+            title: "Failed to submit",
+            description: "Error: " + error + ". " + error?.response?.data?.message,
+          })
+        }).finally(() => setIsLoading(false))
     }
   }
-
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6 md:space-y-0 md:grid md:grid-cols-2 md:gap-4">
         <FormField
           control={form.control}
-          name="event_id"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Event ID</FormLabel>
-              <FormControl>
-                <Input readOnly disabled autoComplete="" placeholder="event id (auto)" {...field} />
-              </FormControl>
-              <FormDescription>
-                Event ID.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="id"
+          name="activity_id"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Activity ID</FormLabel>
               <FormControl>
-                <Input readOnly disabled autoComplete="" placeholder="activity id (auto)" {...field} />
+                <Input readOnly disabled autoComplete="" placeholder="Activity ID (auto)" {...field} />
               </FormControl>
               <FormDescription>
-                Activity ID.
+                Activity ID
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -156,31 +132,62 @@ export function ActionForm({ data }: { data: IActivity | null }) {
         />
         <FormField
           control={form.control}
-          name="name"
+          name="game_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Activity Name</FormLabel>
-              <FormControl>
-                <Input autoComplete="" placeholder="activity name" {...field} />
-              </FormControl>
+              <FormLabel>Games</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className={cn(
+                        "w-full justify-between",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value && games
+                        ? games.find(
+                          (game) => game.id.toString() === field.value.toString()
+                        )?.name
+                        : "Select game name"}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0">
+                  <Command>
+                    <CommandInput placeholder="Search type..." />
+                    <CommandList>
+                      <CommandEmpty>No games found.</CommandEmpty>
+                      <CommandGroup>
+                        {games.map((game) => (
+                          <CommandItem
+                            value={game.id.toString()}
+                            key={game.id.toString()}
+                            onSelect={() => {
+                              form.setValue("game_id", game.id.toString())
+                            }}
+                          >
+                            {game.name}
+                            <Check
+                              className={cn(
+                                "ml-auto",
+                                game.id == field.value
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               <FormDescription>
-                Name of the activity.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="location"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Location</FormLabel>
-              <FormControl>
-                <Input autoComplete="" placeholder="location" {...field} />
-              </FormControl>
-              <FormDescription>
-                Location of the event.
+                Select the game name.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -224,7 +231,7 @@ export function ActionForm({ data }: { data: IActivity | null }) {
                 </PopoverContent>
               </Popover>
               <FormDescription>
-                Start Date of the event.
+                Select the start date.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -268,7 +275,7 @@ export function ActionForm({ data }: { data: IActivity | null }) {
                 </PopoverContent>
               </Popover>
               <FormDescription>
-                End Date of the event.
+                Select the end date.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -276,15 +283,15 @@ export function ActionForm({ data }: { data: IActivity | null }) {
         />
         <FormField
           control={form.control}
-          name="map_link"
+          name="price"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Map Link</FormLabel>
+              <FormLabel>Price</FormLabel>
               <FormControl>
-                <Input autoComplete="" placeholder="map link" {...field} />
+                <Input autoComplete="" placeholder="Set price" {...field} />
               </FormControl>
               <FormDescription>
-                Link to the location of the event.
+                Input the price.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -292,68 +299,21 @@ export function ActionForm({ data }: { data: IActivity | null }) {
         />
         <FormField
           control={form.control}
-          name="type_id"
+          name="quantity"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Type of Activity</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      className={cn(
-                        "w-full justify-between",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value
-                        ? types.find(
-                          (type) => type.id.toString() === field.value.toString()
-                        )?.name
-                        : "Select type name"}
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0">
-                  <Command>
-                    <CommandInput placeholder="Search type..." />
-                    <CommandList>
-                      <CommandEmpty>No type found.</CommandEmpty>
-                      <CommandGroup>
-                        {types.map((type) => (
-                          <CommandItem
-                            value={type.id.toString()}
-                            key={type.id.toString()}
-                            onSelect={() => {
-                              form.setValue("type_id", type.id.toString())
-                            }}
-                          >
-                            {type.name}
-                            <Check
-                              className={cn(
-                                "ml-auto",
-                                type.id == field.value
-                                  ? "opacity-100"
-                                  : "opacity-0"
-                              )}
-                            />
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              <FormLabel>Quantity</FormLabel>
+              <FormControl>
+                <Input autoComplete="" placeholder="Set quantity" {...field} />
+              </FormControl>
               <FormDescription>
-                Type of the activity.
+                Input the quantity.
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit">Submit{isLoading && (<LoadingSpinner />)}</Button>
+        <Button type="submit">Submit{isLoading && <LoadingSpinner />}</Button>
       </form>
     </Form>
   )

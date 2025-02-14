@@ -15,47 +15,12 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { DataTable } from "./data-table"
-import { columns } from "./columns"
-import useSWR from 'swr'
-import { LoadingSpinner } from "@/components/loading-spinner"
 import { DialogProvider } from "@/context/dialog-context"
-import { useToast } from "@/hooks/use-toast"
-import { useEffect, useState } from "react"
-import axiosInstance from "@/lib/axios"
 import { IApplication } from "@/types/application"
-import { ActionDialog } from "./partials/action-dialog"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { ChampionForm } from "./champion-form"
 
 export default function ApplicationPage() {
-  const [interval, setRefreshInterval] = useState<number>(600000)
-  const { toast } = useToast()
-  const fetcher = (url: string) => axiosInstance.get(url).then((r) => r.data)
-
-  const { data, error, isLoading } = useSWR(
-    process.env.NEXT_PUBLIC_API_URL + '/admin/applications',
-    fetcher, { refreshInterval: interval, revalidateOnFocus: false, revalidateIfStale: false, revalidateOnReconnect: false })
-
-  useEffect(() => {
-    if (error) {
-      setRefreshInterval(600000)
-      toast({ title: "Action Failed", description: error?.response?.data?.message })
-    } else {
-      setRefreshInterval(10000)
-    }
-  }, [error, toast])
-
-  const confirmDelete = async (id: string) => {
-    axiosInstance.delete('/admin/application/'+id.toString())
-      .then(function (response) {
-        toast({title: response.data?.message})
-      })
-      .catch(function (error) {
-        toast({
-          title: "Failed to submit",
-          description: "Error: " + error + ". " + error?.response?.data?.message,
-        })
-      });
-  }
 
   return (
     <SidebarProvider>
@@ -75,7 +40,7 @@ export default function ApplicationPage() {
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />
                   <BreadcrumbItem>
-                    <BreadcrumbPage className="flex gap-2 items-center">Event Applications{isLoading ? <LoadingSpinner className="size-4" /> : ""}</BreadcrumbPage>
+                    <BreadcrumbPage className="flex gap-2 items-center">Champion Form</BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
@@ -83,8 +48,16 @@ export default function ApplicationPage() {
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0 md:w-full w-screen">
             <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min">
-              <DataTable columns={columns} data={data?.data ?? []} />
-              <ActionDialog dialogName="Application" onRemoveConfirm={confirmDelete} />
+              <Card>
+                <CardHeader>
+                  <CardTitle>Formulir Pendataan Pemenang</CardTitle>
+                  <CardDescription>Formulir data pemenang dari tiap kompetisi yang diadakan</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ChampionForm/>
+                </CardContent>
+                <CardFooter></CardFooter>
+              </Card>
             </div>
           </div>
         </SidebarInset>

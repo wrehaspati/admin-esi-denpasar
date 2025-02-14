@@ -20,7 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import React from "react"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { useDialog } from "@/hooks/use-dialog"
-import { Event } from "@/types/EventType"
+import { IEvent } from "@/types/event"
 
 const FormSchema = z.object({
   id: z.string().min(1, {
@@ -37,7 +37,7 @@ const FormSchema = z.object({
   }),
 })
 
-export function ActionForm({ data }: { data: Event | null }) {
+export function ActionForm({ data }: { data: IEvent | null }) {
   const [isLoading, setIsLoading] = React.useState(false)
   const { closeDialog } = useDialog()
 

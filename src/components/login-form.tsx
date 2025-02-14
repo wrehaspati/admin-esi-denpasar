@@ -37,16 +37,20 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const mainUrl = process.env.NEXT_PUBLIC_FE_URL
   const router = useRouter()
   const [isLoading, setIsLoading] = React.useState(false)
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      email: "admin@esi.com",
-      password: "password",
+      email: "",
+      password: "",
       remember_token: true
     },
   })
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("activeEvent");
+  }
   function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true)
     axios.post(process.env.NEXT_PUBLIC_API_URL + "/login", {...data, role_id: 1})
@@ -55,7 +59,6 @@ export function LoginForm({
           if (response.data?.data?.role.id == 1 || response.data?.data?.role.id == 3) {
             saveToken(response.data?.meta?.token)
             toast({ title: response.data?.message })
-            localStorage.removeItem("activeEvent");
             router.replace("/dashboard")
           } else {
             toast({
@@ -145,7 +148,7 @@ export function LoginForm({
                 </div>
                 <div className="text-center text-sm">
                   Back to {" "}
-                  <a href="#" className="underline underline-offset-4">
+                  <a href={mainUrl} className="underline underline-offset-4">
                     ESI Kota Denpasar
                   </a>
                 </div>

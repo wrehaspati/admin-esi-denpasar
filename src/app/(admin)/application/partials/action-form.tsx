@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input"
 import { toast } from "@/hooks/use-toast"
 import { format } from "date-fns"
 import axiosInstance from "@/lib/axios"
-import { Application } from "@/types/ApplicationType"
+import { IApplication } from "@/types/application"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
@@ -28,7 +28,7 @@ import React from "react"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { useDialog } from "@/hooks/use-dialog"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
-import { User } from "@/types/UserType"
+import { IUser } from "@/types/user"
 
 const FormSchema = z.object({
   id: z.string().min(1, {
@@ -59,10 +59,10 @@ const FormSchema = z.object({
   })
 })
 
-export function ActionForm({ data }: { data: Application | null }) {
+export function ActionForm({ data }: { data: IApplication | null }) {
   const [isLoading, setIsLoading] = React.useState(false)
   const { closeDialog } = useDialog()
-  const [users, setUsers] = React.useState<User[]>([])
+  const [users, setUsers] = React.useState<IUser[]>([])
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),

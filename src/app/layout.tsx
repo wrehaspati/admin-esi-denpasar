@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "next-themes";
 import { ThemeHandler } from "@/lib/theme-handler";
 import GARDevTeamNotch from "@/components/gardevteam-notch";
-import { UserProvider } from "@/context/UserContext";
+import { UserProvider } from "@/context/user-context";
 
 export const metadata: Metadata = {
   title: "ESI KOTA DENPASAR",
@@ -25,7 +25,9 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <ThemeHandler />
           <UserProvider>
-            {children}
+            <div className="overflow-y-hidden">
+              {children}
+            </div>
           </UserProvider>
         </ThemeProvider>
         <Toaster />

@@ -1,5 +1,5 @@
 
-export interface Type {
+export interface ITypeEvent {
   id: string
   name: string
   flow: string

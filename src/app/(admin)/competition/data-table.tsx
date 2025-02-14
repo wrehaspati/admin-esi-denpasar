@@ -24,15 +24,17 @@ import {
 import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { ChevronDown, PrinterIcon } from "lucide-react"
+import { ChevronDown, CirclePlus, PrinterIcon } from "lucide-react"
 import React from "react"
 import XLSEXPORT from "@/components/xls-export"
 import { toast } from "@/hooks/use-toast"
-import { IApplication } from "@/types/application"
+import { ICompetition } from "@/types/competition"
+import { useDialog } from "@/hooks/use-dialog"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  activityId: number | undefined
 }
 
 interface GlobalFilter {
@@ -42,20 +44,22 @@ interface GlobalFilter {
 export function DataTable<TData, TValue>({
   columns,
   data,
+  activityId
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
   const [globalFilter, setGlobalFilter] = React.useState<GlobalFilter>()
-  
+  const { openDialog } = useDialog()
+
   React.useEffect(() => {
     setColumnVisibility({
-      note: false,
       updated_at: false,
       created_at: false,
     })
-  ;}, [])
- 
+      ;
+  }, [])
+
   const table = useReactTable({
     data,
     columns,
@@ -74,23 +78,24 @@ export function DataTable<TData, TValue>({
       rowSelection
     }
   })
-  
+
   const printSelectedRows = () => {
-    if(table.getFilteredSelectedRowModel().rows.length === 0) {
-      toast({title: "No rows selected", description: "Please select rows to print"});
+    if (table.getFilteredSelectedRowModel().rows.length === 0) {
+      toast({ title: "No rows selected", description: "Please select rows to print" });
       return;
     }
-    XLSEXPORT<IApplication>({data: table.getFilteredSelectedRowModel().rows, fileName: "export-esi-request"});
+    XLSEXPORT<ICompetition>({ data: table.getFilteredSelectedRowModel().rows, fileName: "export-esi-competitions" });
   }
- 
+
   return (
     <div className="w-full">
       <div className="flex items-center py-4 gap-2">
-        <Button variant={"outline"} onClick={printSelectedRows}><PrinterIcon/></Button>
+        <Button variant={"outline"} onClick={() => openDialog("addDialog", { activity: { id: activityId } })}><CirclePlus /></Button>
+        <Button variant={"outline"} onClick={printSelectedRows}><PrinterIcon /></Button>
         <Input
           type="search"
           name="search"
-          placeholder="Filter events..."
+          placeholder="Filter activities..."
           value={globalFilter?.globalFilter}
           onChange={e => table.setGlobalFilter(String(e.target.value))}
           className="max-w-sm"
@@ -133,9 +138,9 @@ export function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   )
                 })}

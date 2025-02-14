@@ -1,8 +1,8 @@
-import { Role } from "./RoleType"
+import { IRole } from "./role"
 
-export interface User {
+export interface IUser {
   id: string
-  role: Role
+  role: IRole
   username: string
   email: string
   password?: string

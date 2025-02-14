@@ -5,9 +5,9 @@ import { ActionsCell } from "./action-cell"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import { ArrowUpDown } from "lucide-react"
-import { IActivity } from "@/types/activity"
+import { ICompetition } from "@/types/competition"
 
-export const columns: ColumnDef<IActivity>[] = [
+export const columns: ColumnDef<ICompetition>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -48,18 +48,12 @@ export const columns: ColumnDef<IActivity>[] = [
     },
   },
   {
-    accessorKey: "name",
+    accessorKey: "game",
     enableColumnFilter: true,
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Activity Name
-          <ArrowUpDown />
-        </Button>
-      )
+    header: "Game",
+    cell(props) {
+      const data = props.row.original;
+      return data?.game?.name;
     },
   },
   {
@@ -91,33 +85,12 @@ export const columns: ColumnDef<IActivity>[] = [
     },
   },
   {
-    accessorKey: "location",
-    header: "Location",
+    accessorKey: "price",
+    header: "Price",
   },
   {
-    accessorKey: "map_link",
-    header: "Map Link",
-    cell: ({ row }) => {
-      const data = row.original;
-      return (
-        <a
-          href={data.map_link}
-          target="_blank"
-          rel="noreferrer"
-          className="text-blue-500"
-        >
-          Link
-        </a>
-      );
-    }
-  },
-  {
-    accessorKey: "type",
-    header: "Type",
-    cell: ({ row }) => {
-      const data = row.original;
-      return data.type.name;
-    }
+    accessorKey: "quantity",
+    header: "Quantity",
   },
   {
     accessorKey: "created_at",

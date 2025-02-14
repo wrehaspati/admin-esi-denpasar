@@ -13,6 +13,19 @@ export function ActionDialog({ onRemoveConfirm, dialogName }: ActionsCellProps) 
 
   return (
     <>
+      {/* Add Dialog */}
+      <Dialog open={dialogs["addDialog"]?.isOpen} onOpenChange={() => closeDialog("addDialog")}>
+        <DialogContent className="max-h-screen overflow-y-auto no-scrollbar max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Form Create Competition</DialogTitle>
+            <DialogDescription>
+              Create a competition account.
+            </DialogDescription>
+          </DialogHeader>
+          <ActionForm data={dialogs["addDialog"]?.currentItem} />
+        </DialogContent>
+      </Dialog>
+
       {/* Edit Dialog */}
       <Dialog open={dialogs["editDialog"]?.isOpen} onOpenChange={() => closeDialog("editDialog")}>
         <DialogContent className="max-h-screen overflow-y-auto no-scrollbar max-w-3xl">
@@ -23,19 +36,6 @@ export function ActionDialog({ onRemoveConfirm, dialogName }: ActionsCellProps) 
             </DialogDescription>
           </DialogHeader>
           <ActionForm data={dialogs["editDialog"]?.currentItem} />
-        </DialogContent>
-      </Dialog>
-
-      {/* Add Dialog */}
-      <Dialog open={dialogs["addDialog"]?.isOpen} onOpenChange={() => closeDialog("addDialog")}>
-        <DialogContent className="max-h-screen overflow-y-auto no-scrollbar max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>{dialogName}</DialogTitle>
-            <DialogDescription>
-              Add the {dialogName}&apos;s information.
-            </DialogDescription>
-          </DialogHeader>
-          <ActionForm data={null} />
         </DialogContent>
       </Dialog>
 
