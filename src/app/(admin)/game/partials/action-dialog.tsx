@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useDialog } from "@/hooks/use-dialog";
 import { ActionForm } from "./action-form";
+import { EditImage } from "./edit-image";
 
 interface ActionsCellProps {
   onRemoveConfirm: (id: string) => void
@@ -17,12 +18,12 @@ export function ActionDialog({ onRemoveConfirm, dialogName }: ActionsCellProps) 
       <Dialog open={dialogs["addDialog"]?.isOpen} onOpenChange={() => closeDialog("addDialog")}>
         <DialogContent className="max-h-screen overflow-y-auto no-scrollbar max-w-3xl">
           <DialogHeader>
-            <DialogTitle>{dialogName}</DialogTitle>
+            <DialogTitle>Form Create User</DialogTitle>
             <DialogDescription>
-              Add {dialogName} information.
+              Create an user account.
             </DialogDescription>
           </DialogHeader>
-          <ActionForm data={dialogs["addDialog"]?.currentItem} />
+          <ActionForm data={null} />
         </DialogContent>
       </Dialog>
 
@@ -36,6 +37,7 @@ export function ActionDialog({ onRemoveConfirm, dialogName }: ActionsCellProps) 
             </DialogDescription>
           </DialogHeader>
           <ActionForm data={dialogs["editDialog"]?.currentItem} />
+          <EditImage data={dialogs["editDialog"]?.currentItem} />
         </DialogContent>
       </Dialog>
 

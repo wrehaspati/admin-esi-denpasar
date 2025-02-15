@@ -68,8 +68,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               url: "/event",
             },
             {
-              title: "Tickets",
-              url: "",
+              title: "Games",
+              url: "/game",
             },    
             {
               title: "Payments",

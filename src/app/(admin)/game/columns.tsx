@@ -5,9 +5,9 @@ import { ActionsCell } from "./action-cell"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import { ArrowUpDown } from "lucide-react"
-import { ICompetition } from "@/types/competition"
+import { IGame } from "@/types/game"
 
-export const columns: ColumnDef<ICompetition>[] = [
+export const columns: ColumnDef<IGame>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -34,7 +34,6 @@ export const columns: ColumnDef<ICompetition>[] = [
   },
   {
     accessorKey: "id",
-    enableColumnFilter: true,
     header: ({ column }) => {
       return (
         <Button
@@ -49,66 +48,36 @@ export const columns: ColumnDef<ICompetition>[] = [
   },
   {
     accessorKey: "name",
-    header: "Name",
-  },
-  {
-    accessorKey: "price",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Price
+          Name
           <ArrowUpDown />
         </Button>
       )
     },
   },
   {
-    accessorKey: "quantity",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Quantity
-          <ArrowUpDown />
-        </Button>
-      )
-    },
+    accessorKey: "genre",
+    header: "Genre",
   },
   {
-    accessorKey: "start_at",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Start At
-          <ArrowUpDown />
-        </Button>
-      )
-    },
+    accessorKey: "platform",
+    header: "Platform",
   },
   {
-    accessorKey: "end_at",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          End At
-          <ArrowUpDown />
-        </Button>
-      )
+    accessorKey: "image",
+    header: "Banner Image",
+    cell(props) {
+      return <a target="_blank" className="text-blue-500 underline" href={props.row.original.image}>View Image</a>
     },
   },
   {
     accessorKey: "created_at",
+    id: "created_at",
     header: ({ column }) => {
       return (
         <Button
@@ -119,10 +88,11 @@ export const columns: ColumnDef<ICompetition>[] = [
           <ArrowUpDown />
         </Button>
       )
-    }
+    },
   },
   {
     accessorKey: "updated_at",
+    id: "updated_at",
     header: ({ column }) => {
       return (
         <Button
@@ -133,15 +103,15 @@ export const columns: ColumnDef<ICompetition>[] = [
           <ArrowUpDown />
         </Button>
       )
-    }
+    },
   },
   {
     id: "actions",
     enableHiding: false,
     enableSorting: false,
     cell: ({ row }) => {
-      const data = row.original
-      return <ActionsCell data={data} />;
+      const user = row.original
+      return <ActionsCell data={user} />
     },
   }
 ]

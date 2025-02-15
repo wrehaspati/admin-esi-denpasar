@@ -58,11 +58,13 @@ export function ActionForm({ data }: { data: IActivity | null }) {
   const [types, setTypes] = React.useState<ITypeEvent[]>([])
   const { closeDialog } = useDialog()
 
+  console.log(data)
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       id: data?.id?.toString() ?? "",
-      type_id: data?.type.id.toString() ?? "",
+      type_id: data?.type?.id?.toString() ?? "",
       event_id: data?.event_id?.toString(),
       name: data?.name ?? "",
       start_at: data?.start_at ? new Date(data.start_at) : undefined,
@@ -215,7 +217,7 @@ export function ActionForm({ data }: { data: IActivity | null }) {
                     selected={field.value ? new Date(field.value) : undefined}
                     onSelect={field.onChange}
                     disabled={(date) =>
-                      date < new Date() || date < new Date("1900-01-01")
+                      date < new Date("1900-01-01")
                     }
                     initialFocus
                   />
@@ -259,7 +261,7 @@ export function ActionForm({ data }: { data: IActivity | null }) {
                     selected={field.value ? new Date(field.value) : undefined}
                     onSelect={field.onChange}
                     disabled={(date) =>
-                      date < new Date() || date < new Date("1900-01-01")
+                      date < new Date("1900-01-01") || date < new Date(form.getValues("start_at"))
                     }
                     initialFocus
                   />

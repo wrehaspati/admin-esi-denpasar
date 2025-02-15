@@ -22,51 +22,19 @@ import { LoadingSpinner } from "@/components/loading-spinner"
 import { DialogProvider } from "@/context/dialog-context"
 import { useToast } from "@/hooks/use-toast"
 import { useEffect, useState } from "react"
+import { IUser } from "@/types/user"
 import axiosInstance from "@/lib/axios"
-import { IActivity } from "@/types/activity"
 import { ActionDialog } from "./partials/action-dialog"
 
-export default function ActivityPage() {
-  const [interval, setRefreshInterval] = useState<number>(600000) 
+export default function GamePage() {
+  const [interval, setRefreshInterval] = useState<number>(600000)
   const { toast } = useToast()
+
   const fetcher = (url: string) => axiosInstance.get(url).then((r) => r.data)
-  const [processedData, setProcessedData] = useState<IActivity[]>([])
-  
-  const urlParams = new URLSearchParams(window.location.search);
-  const key = urlParams.get("id");
 
   const { data, error, isLoading } = useSWR(
-    process.env.NEXT_PUBLIC_API_URL + "/admin/activities" + (key ? "/" + key : ""),
-    fetcher,
-    {
-      refreshInterval: interval,
-      revalidateOnFocus: false,
-      revalidateIfStale: false,
-      revalidateOnReconnect: false,
-    }
-  )
-
-  const { data: eventData, isLoading: eventLoading } = useSWR(
-    process.env.NEXT_PUBLIC_API_URL + "/admin/event" + (key ? "/" + key : ""),
-    fetcher,
-    {
-      refreshInterval: interval,
-      revalidateOnFocus: false,
-      revalidateIfStale: false,
-      revalidateOnReconnect: false,
-    }
-  )
-
-  useEffect(() => {
-    if (data?.data && key) {
-      const updatedData = data.data.map((item: IActivity) => ({
-        ...item, event_id: key,
-      }));
-      setProcessedData(updatedData);
-    } else {
-      setProcessedData(data?.data || []); 
-    }
-  }, [data, key]);
+    process.env.NEXT_PUBLIC_API_URL + '/admin/games',
+    fetcher, { refreshInterval: interval, revalidateOnFocus: false, revalidateIfStale: false, revalidateOnReconnect: false })
 
   useEffect(() => {
     if (error) {
@@ -78,21 +46,21 @@ export default function ActivityPage() {
   }, [error, toast])
 
   const confirmDelete = async (id: string) => {
-    axiosInstance.delete('/admin/activity/'+id.toString())
+    axiosInstance.delete('/admin/game/' + id.toString())
       .then(function (response) {
-        toast({title: response.data?.message})
+        toast({ title: response.data?.message })
       })
       .catch(function (error) {
         toast({
           title: "Failed to submit",
           description: "Error: " + error + ". " + error?.response?.data?.message,
         })
-      });
+      })
   }
 
   return (
     <SidebarProvider>
-      <DialogProvider<IActivity>>
+      <DialogProvider<IUser>>
         <AppSidebar />
         <SidebarInset>
           <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
@@ -107,14 +75,8 @@ export default function ActivityPage() {
                     </BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />
-                  <BreadcrumbItem className="hidden md:block">
-                    <BreadcrumbLink href="/event">
-                      { eventLoading ? <LoadingSpinner className="size-4" /> : eventData?.data?.name }
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator className="hidden md:block" />
                   <BreadcrumbItem>
-                    <BreadcrumbPage className="flex gap-2 items-center">Activities{isLoading ? <LoadingSpinner className="size-4" /> : ""}</BreadcrumbPage>
+                    <BreadcrumbPage className="flex gap-2 items-center">Games{isLoading ? <LoadingSpinner className="size-4" /> : ""}</BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
@@ -122,8 +84,8 @@ export default function ActivityPage() {
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0 md:w-full w-screen">
             <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min">
-              <DataTable columns={columns} data={processedData?.length ? processedData : []} event={key ?? null} />
-              <ActionDialog onRemoveConfirm={confirmDelete} dialogName="Activity"/>
+              <DataTable columns={columns} data={data?.data ?? []} />
+              <ActionDialog onRemoveConfirm={confirmDelete} dialogName="Game" />
             </div>
           </div>
         </SidebarInset>
