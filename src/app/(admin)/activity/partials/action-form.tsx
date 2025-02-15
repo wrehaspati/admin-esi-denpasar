@@ -58,8 +58,6 @@ export function ActionForm({ data }: { data: IActivity | null }) {
   const [types, setTypes] = React.useState<ITypeEvent[]>([])
   const { closeDialog } = useDialog()
 
-  console.log(data)
-
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {

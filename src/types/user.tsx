@@ -1,3 +1,4 @@
+import { IBankAccount } from "./bank-account"
 import { IRole } from "./role"
 
 export interface IUser {
@@ -9,4 +10,5 @@ export interface IUser {
   avatar?: string
   token: string
   created_at: string
+  bank_accounts?: IBankAccount[]
 }
