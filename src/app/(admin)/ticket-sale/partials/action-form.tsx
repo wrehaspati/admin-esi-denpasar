@@ -19,21 +19,20 @@ import axiosInstance from "@/lib/axios"
 import { useDialog } from "@/hooks/use-dialog"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import React from "react"
-import { ICompetition } from "@/types/competition"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { IGame } from "@/types/game"
-import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { CalendarIcon } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
+import { ITicket } from "@/types/ticket"
 
 const FormSchema = z.object({
   activity_id: z.string().min(1, {
     message: "Activity must be filled.",
   }),
-  game_id: z.string().min(1, {
-    message: "Game must be filled.",
+  name: z.string().min(1, {
+    message: "Name must be filled.",
   }),
   start_at: z.date({
     message: "Start date must be filled",
@@ -49,7 +48,7 @@ const FormSchema = z.object({
   })
 })
 
-export function ActionForm({ data }: { data: ICompetition | null }) {
+export function ActionForm({ data }: { data: ITicket | null }) {
   const [isLoading, setIsLoading] = React.useState(false)
   const [games, setGames] = React.useState<IGame[]>([])
   const { closeDialog } = useDialog()
@@ -57,7 +56,7 @@ export function ActionForm({ data }: { data: ICompetition | null }) {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       activity_id: data?.activity?.id?.toString() ?? "",
-      game_id: data?.game?.id.toString() ?? "",
+      name: data?.name ?? "",
       start_at: data?.start_at ? new Date(data.start_at) : undefined,
       end_at: data?.end_at ? new Date(data.end_at) : undefined,
       price: data?.price?.toString() ?? "",
@@ -86,7 +85,7 @@ export function ActionForm({ data }: { data: ICompetition | null }) {
       end_at: format(formData.end_at, "yyyy-MM-dd"),
     }
     if (data?.id != null) {
-      axiosInstance.put('/admin/competition/' + data?.id, sanitizedData)
+      axiosInstance.put('/admin/ticket-sale/' + data?.id, sanitizedData)
         .then(function (response) {
           toast({ title: response.data?.message })
           closeDialog("editDialog")
@@ -98,7 +97,7 @@ export function ActionForm({ data }: { data: ICompetition | null }) {
           })
         }).finally(() => setIsLoading(false))
     } else {
-      axiosInstance.post('/admin/competition', sanitizedData)
+      axiosInstance.post('/admin/ticket-sale', sanitizedData)
         .then(function (response) {
           toast({ title: response.data?.message })
           closeDialog("addDialog")
@@ -132,62 +131,15 @@ export function ActionForm({ data }: { data: ICompetition | null }) {
         />
         <FormField
           control={form.control}
-          name="game_id"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Games</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      className={cn(
-                        "w-full justify-between",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value && games
-                        ? games.find(
-                          (game) => game.id.toString() === field.value.toString()
-                        )?.name
-                        : "Select game name"}
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0">
-                  <Command>
-                    <CommandInput placeholder="Search type..." />
-                    <CommandList>
-                      <CommandEmpty>No games found.</CommandEmpty>
-                      <CommandGroup>
-                        {games.map((game) => (
-                          <CommandItem
-                            value={game.id.toString()}
-                            key={game.id.toString()}
-                            onSelect={() => {
-                              form.setValue("game_id", game.id.toString())
-                            }}
-                          >
-                            {game.name}
-                            <Check
-                              className={cn(
-                                "ml-auto",
-                                game.id == field.value
-                                  ? "opacity-100"
-                                  : "opacity-0"
-                              )}
-                            />
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              <FormLabel>Ticket Name</FormLabel>
+              <FormControl>
+                <Input autoComplete="" placeholder="Ticket name" {...field} />
+              </FormControl>
               <FormDescription>
-                Select the game name.
+                Name of the ticket.
               </FormDescription>
               <FormMessage />
             </FormItem>

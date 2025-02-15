@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 import { useDialog } from "@/hooks/use-dialog";
 import { IEvent } from "@/types/event";
@@ -23,7 +23,8 @@ export const ActionsCell: React.FC<ActionsCellProps> = ({ data }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => router.replace("/activity/?id="+data.id)}>View</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => router.replace("/activity/?id="+data.id)}>View Details</DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => openDialog("editDialog", data)}>Edit</DropdownMenuItem>
         <DropdownMenuItem onClick={() => openDialog("deleteDialog", data)}>Remove</DropdownMenuItem>
       </DropdownMenuContent>

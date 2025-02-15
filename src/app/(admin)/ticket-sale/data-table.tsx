@@ -28,12 +28,13 @@ import { ChevronDown, CirclePlus, PrinterIcon } from "lucide-react"
 import React from "react"
 import XLSEXPORT from "@/components/xls-export"
 import { toast } from "@/hooks/use-toast"
-import { IActivity } from "@/types/activity"
+import { ICompetition } from "@/types/competition"
 import { useDialog } from "@/hooks/use-dialog"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  activityId: number | undefined
 }
 
 interface GlobalFilter {
@@ -43,20 +44,22 @@ interface GlobalFilter {
 export function DataTable<TData, TValue>({
   columns,
   data,
+  activityId
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
   const [globalFilter, setGlobalFilter] = React.useState<GlobalFilter>()
   const { openDialog } = useDialog()
-  
+
   React.useEffect(() => {
     setColumnVisibility({
       updated_at: false,
       created_at: false,
     })
-  ;}, [])
- 
+      ;
+  }, [])
+
   const table = useReactTable({
     data,
     columns,
@@ -75,20 +78,20 @@ export function DataTable<TData, TValue>({
       rowSelection
     }
   })
-  
+
   const printSelectedRows = () => {
-    if(table.getFilteredSelectedRowModel().rows.length === 0) {
-      toast({title: "No rows selected", description: "Please select rows to print"});
+    if (table.getFilteredSelectedRowModel().rows.length === 0) {
+      toast({ title: "No rows selected", description: "Please select rows to print" });
       return;
     }
-    XLSEXPORT<IActivity>({data: table.getFilteredSelectedRowModel().rows, fileName: "export-esi-activities"});
+    XLSEXPORT<ICompetition>({ data: table.getFilteredSelectedRowModel().rows, fileName: "export-esi-competitions" });
   }
- 
+
   return (
     <div className="w-full">
       <div className="flex items-center py-4 gap-2">
-        <Button variant={"outline"} onClick={() => openDialog("addDialog", null)}><CirclePlus /></Button>
-        <Button variant={"outline"} onClick={printSelectedRows}><PrinterIcon/></Button>
+        <Button variant={"outline"} onClick={() => openDialog("addDialog", { activity: { id: activityId } })}><CirclePlus /></Button>
+        <Button variant={"outline"} onClick={printSelectedRows}><PrinterIcon /></Button>
         <Input
           type="search"
           name="search"
@@ -135,9 +138,9 @@ export function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   )
                 })}

@@ -15,20 +15,20 @@ export function ActionDialog({ onRemoveConfirm, dialogName }: ActionsCellProps) 
     <>
       {/* Add Dialog */}
       <Dialog open={dialogs["addDialog"]?.isOpen} onOpenChange={() => closeDialog("addDialog")}>
-        <DialogContent className="max-h-screen overflow-y-auto no-scrollbar">
+        <DialogContent className="max-h-screen overflow-y-auto no-scrollbar max-w-3xl">
           <DialogHeader>
-            <DialogTitle>Form Create User</DialogTitle>
+            <DialogTitle>Form Create Competition</DialogTitle>
             <DialogDescription>
-              Create an user account.
+              Create a competition account.
             </DialogDescription>
           </DialogHeader>
-          <ActionForm data={null} />
+          <ActionForm data={dialogs["addDialog"]?.currentItem} />
         </DialogContent>
       </Dialog>
 
       {/* Edit Dialog */}
       <Dialog open={dialogs["editDialog"]?.isOpen} onOpenChange={() => closeDialog("editDialog")}>
-        <DialogContent className="max-h-screen overflow-y-auto no-scrollbar">
+        <DialogContent className="max-h-screen overflow-y-auto no-scrollbar max-w-3xl">
           <DialogHeader>
             <DialogTitle>{dialogName}</DialogTitle>
             <DialogDescription>

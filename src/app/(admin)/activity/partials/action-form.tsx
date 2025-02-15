@@ -29,9 +29,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { ITypeEvent } from "@/types/event-type"
 
 const FormSchema = z.object({
-  id: z.string().min(1, {
-    message: "ID must be filled.",
-  }),
+  id: z.string(),
   type_id: z.string().min(1, {
     message: "Type ID must be filled.",
   }),
@@ -65,7 +63,7 @@ export function ActionForm({ data }: { data: IActivity | null }) {
     defaultValues: {
       id: data?.id?.toString() ?? "",
       type_id: data?.type.id.toString() ?? "",
-      event_id: data?.event_id ?? "",
+      event_id: data?.event_id?.toString(),
       name: data?.name ?? "",
       start_at: data?.start_at ? new Date(data.start_at) : undefined,
       end_at: data?.end_at ? new Date(data.end_at) : undefined,
@@ -86,23 +84,37 @@ export function ActionForm({ data }: { data: IActivity | null }) {
     }
   }, [types])
   function onSubmit(formData: z.infer<typeof FormSchema>) {
-    setIsLoading(true);
     const sanitizedData = {
       ...formData,
       start_at: format(formData.start_at, "yyyy-MM-dd"),
       end_at: format(formData.end_at, "yyyy-MM-dd"),
     }
-    axiosInstance.put('/admin/activity/' + sanitizedData?.id, sanitizedData)
-      .then(function (response) {
-        toast({ title: response.data?.message })
-        closeDialog("editDialog")
-      })
-      .catch(function (error) {
-        toast({
-          title: "Failed to submit",
-          description: "Error: " + error + ". " + error?.response?.data?.message,
+    setIsLoading(true);
+    if (sanitizedData.id == null || sanitizedData.id == "") {
+      axiosInstance.post('/admin/activity', sanitizedData)
+        .then(function (response) {
+          toast({ title: response.data?.message })
+          closeDialog("addDialog")
         })
-      }).finally(() => setIsLoading(false));
+        .catch(function (error) {
+          toast({
+            title: "Failed to submit",
+            description: "Error: " + error + ". " + error?.response?.data?.message,
+          })
+        }).finally(() => setIsLoading(false));
+    } else {
+      axiosInstance.put('/admin/activity/' + sanitizedData?.id, sanitizedData)
+        .then(function (response) {
+          toast({ title: response.data?.message })
+          closeDialog("editDialog")
+        })
+        .catch(function (error) {
+          toast({
+            title: "Failed to submit",
+            description: "Error: " + error + ". " + error?.response?.data?.message,
+          })
+        }).finally(() => setIsLoading(false));
+    }
   }
 
   return (
@@ -115,7 +127,7 @@ export function ActionForm({ data }: { data: IActivity | null }) {
             <FormItem>
               <FormLabel>Event ID</FormLabel>
               <FormControl>
-                <Input readOnly disabled autoComplete="" placeholder="event id" {...field} />
+                <Input readOnly disabled autoComplete="" placeholder="Event ID (auto)" {...field} />
               </FormControl>
               <FormDescription>
                 Event ID.
@@ -131,7 +143,7 @@ export function ActionForm({ data }: { data: IActivity | null }) {
             <FormItem>
               <FormLabel>Activity ID</FormLabel>
               <FormControl>
-                <Input readOnly disabled autoComplete="" placeholder="activity id" {...field} />
+                <Input readOnly disabled autoComplete="" placeholder="Activity ID (auto)" {...field} />
               </FormControl>
               <FormDescription>
                 Activity ID.
@@ -147,7 +159,7 @@ export function ActionForm({ data }: { data: IActivity | null }) {
             <FormItem>
               <FormLabel>Activity Name</FormLabel>
               <FormControl>
-                <Input autoComplete="" placeholder="activity name" {...field} />
+                <Input autoComplete="" placeholder="Activity name" {...field} />
               </FormControl>
               <FormDescription>
                 Name of the activity.
@@ -163,7 +175,7 @@ export function ActionForm({ data }: { data: IActivity | null }) {
             <FormItem>
               <FormLabel>Location</FormLabel>
               <FormControl>
-                <Input autoComplete="" placeholder="location" {...field} />
+                <Input autoComplete="" placeholder="Location" {...field} />
               </FormControl>
               <FormDescription>
                 Location of the event.
@@ -176,7 +188,7 @@ export function ActionForm({ data }: { data: IActivity | null }) {
           control={form.control}
           name="start_at"
           render={({ field }) => (
-            <FormItem className="flex flex-col">
+            <FormItem>
               <FormLabel>Start At</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
@@ -203,7 +215,7 @@ export function ActionForm({ data }: { data: IActivity | null }) {
                     selected={field.value ? new Date(field.value) : undefined}
                     onSelect={field.onChange}
                     disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
+                      date < new Date() || date < new Date("1900-01-01")
                     }
                     initialFocus
                   />
@@ -220,7 +232,7 @@ export function ActionForm({ data }: { data: IActivity | null }) {
           control={form.control}
           name="end_at"
           render={({ field }) => (
-            <FormItem className="flex flex-col">
+            <FormItem>
               <FormLabel>End At</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
@@ -247,7 +259,7 @@ export function ActionForm({ data }: { data: IActivity | null }) {
                     selected={field.value ? new Date(field.value) : undefined}
                     onSelect={field.onChange}
                     disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
+                      date < new Date() || date < new Date("1900-01-01")
                     }
                     initialFocus
                   />
@@ -267,7 +279,7 @@ export function ActionForm({ data }: { data: IActivity | null }) {
             <FormItem>
               <FormLabel>Map Link</FormLabel>
               <FormControl>
-                <Input autoComplete="" placeholder="map link" {...field} />
+                <Input autoComplete="" placeholder="Map link" {...field} />
               </FormControl>
               <FormDescription>
                 Link to the location of the event.
@@ -280,7 +292,7 @@ export function ActionForm({ data }: { data: IActivity | null }) {
           control={form.control}
           name="type_id"
           render={({ field }) => (
-            <FormItem className="flex flex-col">
+            <FormItem>
               <FormLabel>Type of Activity</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>

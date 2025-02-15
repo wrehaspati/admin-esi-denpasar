@@ -27,16 +27,24 @@ import { IActivity } from "@/types/activity"
 import { ActionDialog } from "./partials/action-dialog"
 
 export default function EventPage() {
-  const [interval, setRefreshInterval] = useState<number>(600000) 
+  const [interval, setRefreshInterval] = useState<number>(600000)
   const { toast } = useToast()
   const fetcher = (url: string) => axiosInstance.get(url).then((r) => r.data)
-  const [processedData, setProcessedData] = useState<IActivity[]>([])
-  
+
   const urlParams = new URLSearchParams(window.location.search);
   const key = urlParams.get("id");
 
+  const { data: activityData, isLoading: activityLoading } = useSWR("/admin/competition" + (key ? "/" + key : ""),
+    fetcher,
+    {
+      refreshInterval: interval,
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
+      revalidateOnReconnect: false
+    })
+
   const { data, error, isLoading } = useSWR(
-    process.env.NEXT_PUBLIC_API_URL + "/admin/activities" + (key ? "/" + key : ""),
+    process.env.NEXT_PUBLIC_API_URL + "/admin/ticket-sales" + (key ? "/" + key : ""),
     fetcher,
     {
       refreshInterval: interval,
@@ -45,28 +53,6 @@ export default function EventPage() {
       revalidateOnReconnect: false,
     }
   )
-
-  const { data: eventData, isLoading: eventLoading } = useSWR(
-    process.env.NEXT_PUBLIC_API_URL + "/admin/event" + (key ? "/" + key : ""),
-    fetcher,
-    {
-      refreshInterval: interval,
-      revalidateOnFocus: false,
-      revalidateIfStale: false,
-      revalidateOnReconnect: false,
-    }
-  )
-
-  useEffect(() => {
-    if (data?.data && key) {
-      const updatedData = data.data.map((item: IActivity) => ({
-        ...item, event_id: key,
-      }));
-      setProcessedData(updatedData);
-    } else {
-      setProcessedData(data?.data || []); 
-    }
-  }, [data, key]);
 
   useEffect(() => {
     if (error) {
@@ -78,9 +64,9 @@ export default function EventPage() {
   }, [error, toast])
 
   const confirmDelete = async (id: string) => {
-    axiosInstance.delete('/admin/activity/'+id.toString())
+    axiosInstance.delete('/admin/ticket-sale/' + id.toString())
       .then(function (response) {
-        toast({title: response.data?.message})
+        toast({ title: response.data?.message })
       })
       .catch(function (error) {
         toast({
@@ -107,14 +93,16 @@ export default function EventPage() {
                     </BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />
-                  <BreadcrumbItem className="hidden md:block">
-                    <BreadcrumbLink href="/event">
-                      { eventLoading ? <LoadingSpinner className="size-4" /> : eventData?.data?.name }
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
+                  {activityLoading ? <LoadingSpinner className="size-4" /> : (
+                    <BreadcrumbItem className="hidden md:block">
+                      <BreadcrumbLink href={"/event"}>
+                        {activityData?.data?.name}
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                  )}
                   <BreadcrumbSeparator className="hidden md:block" />
                   <BreadcrumbItem>
-                    <BreadcrumbPage className="flex gap-2 items-center">Activities{isLoading ? <LoadingSpinner className="size-4" /> : ""}</BreadcrumbPage>
+                    <BreadcrumbPage className="flex gap-2 items-center">Competitions{isLoading ? <LoadingSpinner className="size-4" /> : ""}</BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
@@ -122,8 +110,8 @@ export default function EventPage() {
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0 md:w-full w-screen">
             <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min">
-              <DataTable columns={columns} data={processedData?.length ? processedData : []} />
-              <ActionDialog onRemoveConfirm={confirmDelete} dialogName="Activity"/>
+              <DataTable columns={columns} data={data?.data?.length ? data?.data : []} activityId={key ? parseInt(key) : undefined} />
+              <ActionDialog onRemoveConfirm={confirmDelete} dialogName="Activity" />
             </div>
           </div>
         </SidebarInset>

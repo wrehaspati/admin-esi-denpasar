@@ -1,17 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 import { useDialog } from "@/hooks/use-dialog";
-import { IActivity } from "@/types/activity";
-import { useRouter } from "next/navigation";
+import { ICompetition } from "@/types/competition";
 
 interface ActionsCellProps {
-  data: IActivity;
+  data: ICompetition;
 }
 
 export const ActionsCell: React.FC<ActionsCellProps> = ({ data }) => {
   const { openDialog } = useDialog();
-  const router = useRouter();
 
   return (
     <DropdownMenu>
@@ -23,13 +21,7 @@ export const ActionsCell: React.FC<ActionsCellProps> = ({ data }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        {data.type.flow === "competition" ? (
-          <DropdownMenuItem onClick={() => router.push("/competition?id="+data.id)}>View Details</DropdownMenuItem>
-        ) : (
-          <DropdownMenuItem onClick={() => router.push("/ticket-sale?id="+data.id)}>View Details</DropdownMenuItem>
-        )}
-        <DropdownMenuSeparator />
-        {data.event_id && (
+        {data.id && (
           <DropdownMenuItem onClick={() => openDialog("editDialog", data)}>Edit</DropdownMenuItem>
         )}
         <DropdownMenuItem onClick={() => openDialog("deleteDialog", data)}>Remove</DropdownMenuItem>
