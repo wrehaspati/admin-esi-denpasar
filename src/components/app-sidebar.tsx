@@ -76,8 +76,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               url: "/transaction",
             },
             {
-              title: "Leaderboards",
-              url: "",
+              title: "Registrations",
+              url: "/registration",
             },
           ],
         },

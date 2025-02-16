@@ -1,22 +1,22 @@
 import { IActivity } from "./activity"
 
 export interface ITicket {
-  id: string,
+  id: number,
   start_at: string,
   end_at: string,
-  price: string,
-  quantity: string,
+  price: number,
+  quantity: number,
   name: string,
   status: {
     is_open: boolean,
     message: string,
     ticket_sales: {
-      in_cart: string,
+      in_cart: number,
       in_transaction: {
-        pending: string,
-        success: string
+        pending: number,
+        success: number
       },
-      total_sold: string
+      total_sold: number
     }
   },
   created_at: string,

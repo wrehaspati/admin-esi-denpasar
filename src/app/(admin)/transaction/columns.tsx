@@ -4,13 +4,15 @@ import { ColumnDef } from "@tanstack/react-table"
 import { ActionsCell } from "./action-cell"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
-import { ArrowUpDown, CircleCheckIcon, CircleMinusIcon, CircleXIcon, Eye, PlusCircleIcon } from "lucide-react"
+import { ArrowUpDown, CircleCheckIcon, CircleMinusIcon, CircleStopIcon, CircleXIcon, Eye, PlusCircleIcon } from "lucide-react"
 import { ITransaction } from "@/types/transaction"
 import FormatToRupiah from "@/lib/format-to-rupiah"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Card } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import Image from "next/image"
+import { ITicket } from "@/types/ticket"
+import { ICompetitionRegistration } from "@/types/competition"
 
 export const columns: ColumnDef<ITransaction>[] = [
   {
@@ -100,15 +102,15 @@ export const columns: ColumnDef<ITransaction>[] = [
       const data = props.row.original;
       return (
         <Popover>
-          <PopoverTrigger className="flex gap-2 items-center">{data.method}<PlusCircleIcon className="size-4" /></PopoverTrigger>
+          <PopoverTrigger className="flex gap-2 items-center">{data?.method}<PlusCircleIcon className="size-4" /></PopoverTrigger>
           <PopoverContent>
             <div className="p-2 grid grid-cols-2 gap-2">
               <p className="text-sm font-semibold">Payment Method</p>
-              <p className="text-sm">&ldquo;{data.method}&ldquo;</p>
+              <p className="text-sm">&ldquo;{data?.method}&ldquo;</p>
               <p className="text-sm font-semibold">Account Number</p>
-              <p className="text-sm">&ldquo;{data.bank_account.account_number}&ldquo;</p>
+              <p className="text-sm">&ldquo;{data?.bank_account?.account_number}&ldquo;</p>
               <p className="text-sm font-semibold">Account Name</p>
-              <p className="text-sm">&ldquo;{data.bank_account.account_name}&ldquo;</p>
+              <p className="text-sm">&ldquo;{data?.bank_account?.account_name}&ldquo;</p>
             </div>
           </PopoverContent>
         </Popover>
@@ -131,7 +133,7 @@ export const columns: ColumnDef<ITransaction>[] = [
     },
     cell(props) {
       const data = props.row.original;
-      return <span>{FormatToRupiah(data.total_price)}</span>
+      return <span>{FormatToRupiah(data?.total_price)}</span>
     },
   },
   {
@@ -142,13 +144,16 @@ export const columns: ColumnDef<ITransaction>[] = [
       return (
         <Dialog>
           <DialogTrigger className="flex gap-2 items-center">View<Eye className="size-4" /></DialogTrigger>
-          <DialogContent className="max-h-screen overflow-y-auto no-scrollbar max-w-6xl">
+          <DialogContent className="max-h-screen overflow-y-auto no-scrollbar">
             <DialogHeader>
-              <DialogTitle>{data.created_at} | {data.method} | {FormatToRupiah(data.total_price)}</DialogTitle>
+              <DialogTitle className="text-sm">{data?.created_at} | {data?.method} | {FormatToRupiah(data?.total_price)}</DialogTitle>
               <DialogDescription>
-                <Image src={data.proof_image} alt="receipt" className="w-full h-auto" width={500} height={500} />
+                <Image src={data?.proof_image} alt="receipt" className="w-full h-auto" width={500} height={500} />
               </DialogDescription>
             </DialogHeader>
+            <DialogFooter>
+                <Button variant="ghost" onClick={() => window.open(data?.proof_image, '_blank')}>Open in new Tab</Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       )
@@ -161,13 +166,22 @@ export const columns: ColumnDef<ITransaction>[] = [
       const data = props.row.original;
       return (
         <Popover>
-          <PopoverTrigger className="flex gap-2 items-center">{data.orders.length} Items<PlusCircleIcon className="size-4" /></PopoverTrigger>
-          <PopoverContent>
+          <PopoverTrigger className="flex gap-2 items-center">Order:{data.orders.length}<PlusCircleIcon className="size-4" /></PopoverTrigger>
+          <PopoverContent className="space-y-2">
             {data.orders.map((order, index) => (
               <Card key={index} className="p-2">
-                <div className="font-semibold">{order.orderable.activity.name}</div>
-                <div className="text-sm">{order.orderable.name}</div>
-                <div className="text-sm font-light">{FormatToRupiah(order.orderable.price)} x {order.quantity} Pcs</div>
+                <div className="font-semibold">
+                  {"ticket_type" in order.orderable ?
+                    (order.orderable as ITicket)?.activity?.name : (order.orderable as ICompetitionRegistration)?.competition?.activity?.name}
+                </div>
+                <div className="text-sm">
+                  {"ticket_type" in order.orderable ? (order.orderable as ITicket)?.name : (order.orderable as ICompetitionRegistration)?.competition?.game?.name}
+                </div>
+                <div className="text-sm font-light">
+                  { "ticket_type" in order.orderable ? FormatToRupiah((order.orderable as ITicket)?.price) : FormatToRupiah((order.orderable as ICompetitionRegistration)?.competition?.price)} 
+                  x 
+                  {order.quantity} 
+                  Pcs</div>
               </Card>
             ))}
           </PopoverContent>
@@ -198,11 +212,13 @@ export const columns: ColumnDef<ITransaction>[] = [
       const status = props.row.original;
       switch (status.status) {
         case "pending":
-          return <CircleMinusIcon className="text-yellow-600" />
+          return <div className="flex items-center gap-1"><CircleMinusIcon className="text-yellow-600" /> Pending</div>
         case "success":
-          return <CircleCheckIcon className="text-green-600" />
-        case "rejected":
-          return <CircleXIcon className="text-red-600" />
+          return <div className="flex items-center gap-1"><CircleCheckIcon className="text-green-600" />Success</div>
+        case "failed":
+          return <div className="flex items-center gap-1"><CircleXIcon className="text-red-600" />Failed</div>
+        case "expired":
+          return <div className="flex items-center gap-1"><CircleStopIcon className="text-muted-foreground" />Expired</div>
         default:
           return "Undefined"
       }
