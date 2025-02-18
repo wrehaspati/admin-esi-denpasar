@@ -97,7 +97,7 @@ export function DataTable<TData, TValue>({
         <Input
           type="search"
           name="search"
-          placeholder="Filter events..."
+          placeholder="Search..."
           value={globalFilter?.globalFilter}
           onChange={e => table.setGlobalFilter(String(e.target.value))}
           className="max-w-sm"
