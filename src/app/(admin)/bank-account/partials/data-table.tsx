@@ -24,14 +24,21 @@ import {
 import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { ChevronDown, PrinterIcon } from "lucide-react"
+import { ChevronDown, CirclePlus, PrinterIcon } from "lucide-react"
 import React from "react"
 import XLSEXPORT from "@/components/xls-export"
 import { toast } from "@/hooks/use-toast"
+import { useDialog } from "@/hooks/use-dialog"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  config: {
+    appName: string
+    pageName: string
+    dataURL: string
+    deleteURL: string
+  }
 }
 
 interface GlobalFilter {
@@ -41,18 +48,19 @@ interface GlobalFilter {
 export function DataTable<TData, TValue>({
   columns,
   data,
+  config
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
   const [globalFilter, setGlobalFilter] = React.useState<GlobalFilter>()
+  const { openDialog } = useDialog()
   
   React.useEffect(() => {
     setColumnVisibility({
       note: false,
       updated_at: false,
       created_at: false,
-      actions: false
     })
   ;}, [])
  
@@ -80,12 +88,15 @@ export function DataTable<TData, TValue>({
       toast({title: "No rows selected", description: "Please select rows to print"});
       return;
     }
-    XLSEXPORT<TValue>({data: table.getFilteredSelectedRowModel().rows, fileName: "export-esi-registrations"});
+    XLSEXPORT<TValue>({data: table.getFilteredSelectedRowModel().rows, fileName: `export-esi-${config.pageName.toLowerCase()}`});
   }
  
   return (
     <div className="w-full">
       <div className="flex items-center py-4 gap-2">
+        {/* Create Button */}
+        <Button variant={"outline"} onClick={() => openDialog("addDialog", null)}><CirclePlus /></Button>
+        {/* Print Button */}
         <Button variant={"outline"} onClick={printSelectedRows}><PrinterIcon/></Button>
         <Input
           type="search"

@@ -19,10 +19,6 @@ import {
 } from "@/components/ui/chart"
 import { TrendingUp } from "lucide-react"
 
-const chartData = [
-  { type: "Seminar", count: 25, fill: "var(--color-seminar)" },
-  { type: "Lomba", count: 25, fill: "var(--color-online)" }]
-
 const chartConfig = {
   Tickets: {
     label: "Tickets",
@@ -37,10 +33,18 @@ const chartConfig = {
   }
 } satisfies ChartConfig
 
-export function ChartTicketInfo() {
+interface ChartTicketInfoProps {
+  type: string
+  count: number
+}
+
+const justAColor = ["var(--color-ongoing)",  "var(--color-finished)", "var(--color-request)"]
+
+export function ChartTicketInfo({ data }: { data: ChartTicketInfoProps[] }) {
+  const refinedData = data.map((item) => ({ ...item, fill: justAColor[data.indexOf(item)] }))
   const totalTickets = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.count, 1)
-  }, [])
+    return refinedData.reduce((acc, curr) => acc + curr.count, 1)
+  }, [refinedData])
 
   return (
     <Card className="flex flex-col h-full">
@@ -59,7 +63,7 @@ export function ChartTicketInfo() {
               content={<ChartTooltipContent hideLabel />}
             />
             <Pie
-              data={chartData}
+              data={refinedData}
               dataKey="count"
               nameKey="type"
               innerRadius={45}

@@ -26,10 +26,23 @@ import Image from "next/image"
 import { cn } from "@/lib/utils"
 import FormatToRupiah from "@/lib/format-to-rupiah"
 import { Button } from "@/components/ui/button"
+import useSWR from "swr"
+import axiosInstance from "@/lib/axios"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function DashboardPage() {
   const { userData, activeEvent } = useUser()
   const isEO = userData?.role?.name?.includes("event_organizer")
+
+  const fetcher = (url: string) => axiosInstance.get(url).then((res) => res.data)
+
+  const { data: transaction, isLoading: transactionLoad } = useSWR("/admin/statistic/transaction-trend?status=success", fetcher)
+
+  const { data: eventInfo, isLoading: eventInfoLoad } = useSWR("/admin/statistic/event-information", fetcher)
+
+  const { data: userTrend, isLoading: userTrendLoad } = useSWR("/admin/statistic/user-trend", fetcher)
+
+  const { data: ticketInfo, isLoading: ticketInfoLoad } = useSWR("/admin/statistic/ticket-sales", fetcher)
 
   return (
     <SidebarProvider>
@@ -126,24 +139,40 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="flex-1 rounded-xl min-h-min">
-              <ChartTransaction />
+              <></>
             </div>
           </div>
         ) : (
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             <div className="grid auto-rows-min gap-4 md:grid-cols-3 h-fit">
               <div className="rounded-xl h-full">
-                <ChartUserTrend />
+                {userTrendLoad ? (
+                  <Skeleton className="w-full h-full" />
+                ) : (
+                  <ChartUserTrend data={userTrend?.data}  />
+                )}
               </div>
               <div className="rounded-xl h-full">
-                <ChartEventInfo />
+                {eventInfoLoad ? (
+                  <Skeleton className="w-full h-full" />
+                ) : (
+                  <ChartEventInfo data={eventInfo?.data}  />
+                )}
               </div>
               <div className="rounded-xl h-full">
-                <ChartTicketInfo />
+                {ticketInfoLoad ? (
+                  <Skeleton className="w-full h-full" />
+                ) : (
+                  <ChartTicketInfo data={ticketInfo?.data} />
+                )}
               </div>
             </div>
             <div className="flex-1 rounded-xl min-h-min">
-              <ChartTransaction />
+              {transactionLoad ? (
+                <Skeleton className="w-full h-full" />
+              ) : (
+                <ChartTransaction data={transaction?.data} />
+              )}
             </div>
           </div>
         )}

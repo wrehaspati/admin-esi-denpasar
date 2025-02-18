@@ -14,7 +14,7 @@ const CertificatePage = () => {
   return (
     <div className="bg-muted/50 grid place-items-center">
       <div className="relative w-auto h-screen">
-        <div className="absolute" style={titleConfig}>Kimi no nama e wa</div>
+        <div className="absolute" style={titleConfig}>Your Name</div>
         <img src="/assets/images/template_cert.webp" alt="" className="w-auto h-screen" />
       </div>
     </div>

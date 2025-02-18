@@ -1,14 +1,15 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { ActionsCell } from "./action-cell"
+import { ActionsCell } from "./partials/action-cell"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import { ArrowUpDown } from "lucide-react"
-import { ICompetitionRegistration } from "@/types/competition"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
-export const columns: ColumnDef<ICompetitionRegistration>[] = [
+// Define the data type for the table
+type DataType = unknown
+
+export const columns: ColumnDef<DataType>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -34,51 +35,24 @@ export const columns: ColumnDef<ICompetitionRegistration>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "team_name",
+    accessorKey: "id",
     enableColumnFilter: true,
-    header: "Team Name",
-  },
-  {
-    accessorKey: "no_hp",
-    enableColumnFilter: true,
-    header: "Phone Number",
-  },
-  {
-    accessorKey: "team_members",
-    enableColumnFilter: true,
-    header: "Team Members",
-    cell(props) {
-      const data = props.row.original.team_members
+    header: ({ column }) => {
       return (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[100px]">Name</TableHead>
-              <TableHead>Address</TableHead>
-              <TableHead>Nickname</TableHead>
-              <TableHead className="text-right">Position</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.map((item, index) => (
-              <TableRow key={index}>
-                <TableCell className="font-medium">{item.name}</TableCell>
-                <TableCell>{item.domicile}</TableCell>
-                <TableCell>{item.nickname}</TableCell>
-                <TableCell className="text-right">{item.position}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          ID
+          <ArrowUpDown />
+        </Button>
       )
     },
   },
-  {
-    accessorKey: "activity.name",
-    enableColumnFilter: true,
-    header: "Activity Name",
-  },
+
+  // Define the columns for the table here
+
+
   {
     accessorKey: "created_at",
     header: ({ column }) => {
@@ -112,8 +86,8 @@ export const columns: ColumnDef<ICompetitionRegistration>[] = [
     enableHiding: false,
     enableSorting: false,
     cell: ({ row }) => {
-      const data = row.original
-      return <ActionsCell data={data} />;
+      const event = row.original
+      return <ActionsCell data={event} />;
     },
   }
 ]

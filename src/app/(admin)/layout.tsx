@@ -15,20 +15,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   React.useEffect(() => {
     async function fetchUser() {
       try {
-        if (!userData){
+        if(userData){
+          const isAdmin = userData?.role?.name?.includes("admin")
+          if (!isAdmin) {
+            message.current = "You are not authorized to access this page"
+            setIsAuthorized(false)
+            setIsLoading(false)
+            return
+          }
+          setIsAuthorized(true)
+          setIsLoading(false)
+        } else {
           const user = await axiosInstance.get("/auth/user").then((res) => { return res.data?.data })
           setUserData(user)
         }
-        const isAdmin = userData?.role?.name?.includes("admin")
-        if (!isAdmin) {
-          setIsAuthorized(false)
-          message.current = "You are not authorized to access this page"
-          return
-        }
-        setIsAuthorized(true)
       } catch {
         setIsAuthorized(false)
-      } finally {
         setIsLoading(false)
       }
     }

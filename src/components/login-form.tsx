@@ -65,6 +65,7 @@ export function LoginForm({
               title: "Login Failed",
               description: "You are not authorized to access this page",
             })
+            console.log(response.data)
             setIsLoading(false)
           }
         }
@@ -125,12 +126,12 @@ export function LoginForm({
                           <FormLabel>
                             <div className="flex items-center">
                               <Label htmlFor="password">Password</Label>
-                              <a
+                              {/* <a
                                 href="#"
                                 className="ml-auto text-sm underline-offset-4 hover:underline"
                               >
                                 Forgot your password?
-                              </a>
+                              </a> */}
                             </div>
                           </FormLabel>
                           <FormControl>

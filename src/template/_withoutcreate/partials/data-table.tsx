@@ -32,6 +32,12 @@ import { toast } from "@/hooks/use-toast"
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  config: {
+    appName: string
+    pageName: string
+    dataURL: string
+    deleteURL: string
+  }
 }
 
 interface GlobalFilter {
@@ -41,6 +47,7 @@ interface GlobalFilter {
 export function DataTable<TData, TValue>({
   columns,
   data,
+  config
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -52,7 +59,6 @@ export function DataTable<TData, TValue>({
       note: false,
       updated_at: false,
       created_at: false,
-      actions: false
     })
   ;}, [])
  
@@ -80,12 +86,13 @@ export function DataTable<TData, TValue>({
       toast({title: "No rows selected", description: "Please select rows to print"});
       return;
     }
-    XLSEXPORT<TValue>({data: table.getFilteredSelectedRowModel().rows, fileName: "export-esi-registrations"});
+    XLSEXPORT<TValue>({data: table.getFilteredSelectedRowModel().rows, fileName: `export-esi-${config.pageName.toLowerCase()}`});
   }
  
   return (
     <div className="w-full">
       <div className="flex items-center py-4 gap-2">
+        {/* Print Button */}
         <Button variant={"outline"} onClick={printSelectedRows}><PrinterIcon/></Button>
         <Input
           type="search"

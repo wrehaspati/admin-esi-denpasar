@@ -2,14 +2,13 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 import { useDialog } from "@/hooks/use-dialog";
-import { ITicket } from "@/types/ticket";
 
-interface ActionsCellProps {
-  data: ITicket;
+interface ActionsCellProps<T> {
+  data: T
 }
 
-export const ActionsCell: React.FC<ActionsCellProps> = ({ data }) => {
-  const { openDialog } = useDialog();
+export function ActionsCell<T,>({ data }: ActionsCellProps<T>) {
+  const { openDialog } = useDialog()
 
   return (
     <DropdownMenu>
@@ -21,9 +20,7 @@ export const ActionsCell: React.FC<ActionsCellProps> = ({ data }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        {data.id && (
-          <DropdownMenuItem onClick={() => openDialog("editDialog", data)}>Edit</DropdownMenuItem>
-        )}
+        <DropdownMenuItem onClick={() => openDialog("editDialog", data)}>Edit</DropdownMenuItem>
         <DropdownMenuItem onClick={() => openDialog("deleteDialog", data)}>Remove</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

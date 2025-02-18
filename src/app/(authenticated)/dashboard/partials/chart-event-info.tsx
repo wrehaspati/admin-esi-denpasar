@@ -19,11 +19,6 @@ import {
 } from "@/components/ui/chart"
 import { SquareArrowOutUpRight } from "lucide-react"
 
-const chartData = [
-  { type: "On Going", events: 10, fill: "var(--color-ongoing)" },
-  { type: "Finished", events: 37, fill: "var(--color-finished)" },
-  { type: "Request", events: 2, fill: "var(--color-request)" },]
-
 const chartConfig = {
   Events: {
     label: "Events",
@@ -42,10 +37,18 @@ const chartConfig = {
   }
 } satisfies ChartConfig
 
-export function ChartEventInfo() {
+interface ChartEventInfoProps {
+  type: string
+  events: number
+}
+
+const justAColor = ["var(--color-ongoing)",  "var(--color-finished)", "var(--color-request)"]
+
+export function ChartEventInfo({ data }: { data: ChartEventInfoProps[] }) {
+  const refinedData = data.map((item) => ({ ...item, fill: justAColor[data.indexOf(item)] }))
   const totalEvents = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.events, 0)
-  }, [])
+    return refinedData.reduce((acc, curr) => acc + curr.events, 0)
+  }, [refinedData])
 
   return (
     <Card className="flex flex-col h-full">
@@ -64,7 +67,7 @@ export function ChartEventInfo() {
               content={<ChartTooltipContent hideLabel />}
             />
             <Pie
-              data={chartData}
+              data={refinedData}
               dataKey="events"
               nameKey="type"
               innerRadius={45}
@@ -104,7 +107,7 @@ export function ChartEventInfo() {
         </ChartContainer>
       </CardContent>
       <CardFooter>
-        <a href="#" className="mx-auto flex items-center gap-1 font-medium leading-none text-sm h-5">
+        <a href="/request/application" className="mx-auto flex items-center gap-1 font-medium leading-none text-sm h-5">
           Event Request<SquareArrowOutUpRight className="size-4"/>
         </a>
       </CardFooter>

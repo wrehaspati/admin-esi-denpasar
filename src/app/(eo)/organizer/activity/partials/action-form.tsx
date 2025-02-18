@@ -64,7 +64,7 @@ export function ActionForm({ data }: { data: IActivity | null }) {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       id: data?.id?.toString() ?? "",
-      type_id: data?.type.id.toString() ?? "",
+      type_id: data?.type?.id?.toString() ?? "",
       event_id: activeEvent?.id?.toString(),
       name: data?.name ?? "",
       start_at: data?.start_at ? new Date(data.start_at) : undefined,

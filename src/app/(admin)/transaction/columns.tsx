@@ -11,8 +11,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Card } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import Image from "next/image"
-import { ITicket } from "@/types/ticket"
-import { ICompetitionRegistration } from "@/types/competition"
 
 export const columns: ColumnDef<ITransaction>[] = [
   {
@@ -170,18 +168,9 @@ export const columns: ColumnDef<ITransaction>[] = [
           <PopoverContent className="space-y-2">
             {data.orders.map((order, index) => (
               <Card key={index} className="p-2">
-                <div className="font-semibold">
-                  {"ticket_type" in order.orderable ?
-                    (order.orderable as ITicket)?.activity?.name : (order.orderable as ICompetitionRegistration)?.competition?.activity?.name}
-                </div>
                 <div className="text-sm">
-                  {"ticket_type" in order.orderable ? (order.orderable as ITicket)?.name : (order.orderable as ICompetitionRegistration)?.competition?.game?.name}
+                  {order?.orderable?.activity?.name} {`(id${order?.orderable?.activity?.id})`}
                 </div>
-                <div className="text-sm font-light">
-                  { "ticket_type" in order.orderable ? FormatToRupiah((order.orderable as ITicket)?.price) : FormatToRupiah((order.orderable as ICompetitionRegistration)?.competition?.price)} 
-                  x 
-                  {order.quantity} 
-                  Pcs</div>
               </Card>
             ))}
           </PopoverContent>

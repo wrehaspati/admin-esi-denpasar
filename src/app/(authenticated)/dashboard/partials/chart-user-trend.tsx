@@ -16,35 +16,33 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 
-const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
-]
-
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  user: {
+    label: "User",
     color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig
 
-export function ChartUserTrend() {
-  const year = new Date().getFullYear();  
+interface ChartUserTrendProps {
+  data: {
+    month: string
+    user: number
+  }[]
+}
+
+export function ChartUserTrend({ data }: ChartUserTrendProps) {
+  const year = new Date().getFullYear();
   return (
     <Card className="flex flex-col h-full">
       <CardHeader>
         <CardTitle>App User Trends</CardTitle>
-        <CardDescription>{chartData.at(0)?.month.toString() + " - " + chartData.at(-1)?.month.toString() + " " + year}</CardDescription>
+        <CardDescription>{data.at(0)?.month.toString() + " - " + data.at(-1)?.month.toString() + " " + year}</CardDescription>
       </CardHeader>
       <CardContent className="h-full">
         <ChartContainer config={chartConfig} className="aspect-auto h-full min-h-32">
           <LineChart
             accessibilityLayer
-            data={chartData}
+            data={data}
             margin={{
               left: 12,
               right: 12,
@@ -63,9 +61,9 @@ export function ChartUserTrend() {
               content={<ChartTooltipContent hideLabel />}
             />
             <Line
-              dataKey="desktop"
+              dataKey="user"
               type="natural"
-              stroke="var(--color-desktop)"
+              stroke="var(--color-user)"
               strokeWidth={2}
               dot={false}
             />

@@ -15,7 +15,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { DataTable } from "./data-table"
+import { DataTable } from "./partials/data-table"
 import { columns } from "./columns"
 import useSWR from 'swr'
 import { LoadingSpinner } from "@/components/loading-spinner"
@@ -23,19 +23,36 @@ import { DialogProvider } from "@/context/dialog-context"
 import { useToast } from "@/hooks/use-toast"
 import { useEffect, useState } from "react"
 import axiosInstance from "@/lib/axios"
-import { IApplication } from "@/types/application"
 import { ActionDialog } from "./partials/action-dialog"
-import { Badge } from "@/components/ui/badge"
 
-export default function RegistrationPage() {
+/**
+ * Page configuration.
+ */
+const pageConfig = {
+  appName: "ESI Kota Denpasar",
+  pageName: "",
+  dataURL: "/admin/changeme",
+  deleteURL: "/admin/changeme/",
+}
+
+type DataType = unknown // Change this to match the data type
+
+/**
+ * Default function to export. 
+ * Remember to change the function name to match the filename.
+ * @returns
+ */
+export default function EventPage() {
+  const fetcher = (url: string) => axiosInstance.get(url).then((r) => r.data)
   const [interval, setRefreshInterval] = useState<number>(600000)
   const { toast } = useToast()
-  const fetcher = (url: string) => axiosInstance.get(url).then((r) => r.data)
 
-  const { data, error, isLoading } = useSWR(
-    process.env.NEXT_PUBLIC_API_URL + '/admin/registrations?transaction_status=success',
-    fetcher, { refreshInterval: interval, revalidateOnFocus: false, revalidateIfStale: false, revalidateOnReconnect: false })
+  // Fetch data from API
+  const { data, error, isLoading } = useSWR(pageConfig.dataURL, fetcher, { refreshInterval: interval, revalidateOnFocus: false, revalidateIfStale: false, revalidateOnReconnect: false })
 
+  /**
+   * Set refresh interval based on error
+   */
   useEffect(() => {
     if (error) {
       setRefreshInterval(600000)
@@ -45,10 +62,14 @@ export default function RegistrationPage() {
     }
   }, [error, toast])
 
+  /**
+   * Request to delete data by id
+   * @param id 
+   */
   const confirmDelete = async (id: string) => {
-    axiosInstance.delete('/admin/registration/'+id.toString())
+    axiosInstance.delete(pageConfig.deleteURL + id.toString())
       .then(function (response) {
-        toast({title: response.data?.message})
+        toast({ title: response.data?.message })
       })
       .catch(function (error) {
         toast({
@@ -60,7 +81,7 @@ export default function RegistrationPage() {
 
   return (
     <SidebarProvider>
-      <DialogProvider<IApplication>>
+      <DialogProvider<DataType>>
         <AppSidebar />
         <SidebarInset>
           <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
@@ -71,12 +92,15 @@ export default function RegistrationPage() {
                 <BreadcrumbList>
                   <BreadcrumbItem className="hidden md:block">
                     <BreadcrumbLink href="/dashboard">
-                      ESI Kota Denpasar
+                      {pageConfig.appName}
                     </BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />
                   <BreadcrumbItem>
-                    <BreadcrumbPage className="flex gap-2 items-center">Team Registration{isLoading ? <LoadingSpinner className="size-4" /> : ""}<Badge>Beta</Badge></BreadcrumbPage>
+                    <BreadcrumbPage className="flex gap-2 items-center">
+                      {pageConfig.pageName}
+                      {isLoading ? <LoadingSpinner className="size-4" /> : ""}
+                    </BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
@@ -84,8 +108,8 @@ export default function RegistrationPage() {
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0 md:w-full w-screen">
             <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min">
-              <DataTable columns={columns} data={data?.data ?? []} />
-              <ActionDialog dialogName="Team Registration" onRemoveConfirm={confirmDelete} />
+              <DataTable columns={columns} data={data?.data ?? []} config={pageConfig} />
+              <ActionDialog onRemoveConfirm={confirmDelete} dialogName={pageConfig.pageName} />
             </div>
           </div>
         </SidebarInset>
