@@ -51,6 +51,7 @@ export function DataTable<TData, TValue>({
   React.useEffect(() => {
     setColumnVisibility({
       note: false,
+      response_letter: false,
       updated_at: false,
       created_at: false,
     })

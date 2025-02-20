@@ -72,7 +72,10 @@ const FormSchema = z.object({
   }).refine((file) => file.type.includes("image"), { message: 'File must be an image.' }),
   event_banner: z.instanceof(File).refine((file) => file.size < 3000000, {
     message: 'File must be less than 3MB.'
-  }).refine((file) => file.type.includes("image"), { message: 'File must be an image.' })
+  }).refine((file) => file.type.includes("image"), { message: 'File must be an image.' }),
+  response_letter: z.instanceof(File).refine((file) => file.size < 3000000, {
+    message: 'File must be less than 3MB.',
+  }).optional(),
 })
 
 interface EventFormProps {
@@ -122,7 +125,18 @@ export function ActionForm({ data }: { data: IApplication | null }) {
       const event: EventFormProps = { ...formData, prizepool: formData.total_prizepool, application_id: formData.id, name: formData.event_name, event_logo: formData.event_logo, event_banner: formData.event_banner }
       const err = await axiosInstance.post('/admin/event', event, { headers: { "Content-Type": "multipart/form-data" } }).catch(function (error) { throw error })
       if (err.status !== 201) {
-        throw err.data
+        throw err.data?.message
+      }
+    }
+  }
+
+  async function postResponseFile(formData: z.infer<typeof FormSchema>) {
+    if (formData.response_letter) {
+      const data = new FormData()
+      data.append('response_letter', formData.response_letter)
+      const err = await axiosInstance.post('/admin/application/' + formData?.id + '/response-letter', data, { headers: { "Content-Type": "multipart/form-data" } }).catch(function (error) { throw error })
+      if (err.status !== 200) {
+        throw err.data?.message
       }
     }
   }
@@ -130,6 +144,7 @@ export function ActionForm({ data }: { data: IApplication | null }) {
   async function onSubmit(formData: z.infer<typeof FormSchema>) {
     setIsLoading(true);
     try {
+      if (formData.response_letter) await postResponseFile(formData)
       await axiosInstance.put('/admin/application/' + formData?.id, formData)
         .then(function (response) {
           toast({ title: response.data?.message })
@@ -143,7 +158,6 @@ export function ActionForm({ data }: { data: IApplication | null }) {
         })
       createEvent(formData)
     } catch (error) {
-      console.log(error)
       toast({
         title: "Action Failed",
         description: "Error: " + error
@@ -422,6 +436,30 @@ export function ActionForm({ data }: { data: IApplication | null }) {
             </FormItem>
           )}
         />
+        <div className="col-span-2">
+          <FormField
+            control={form.control}
+            name="response_letter"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Response Letter</FormLabel>
+                <FormControl>
+                  <Input
+                    type="file"
+                    onChange={(e) => field.onChange(e.target.files?.[0])}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Response letter for the application.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         <Button type="button" asChild>
           <a href={data?.application_file} target="_blank">
             Download Document

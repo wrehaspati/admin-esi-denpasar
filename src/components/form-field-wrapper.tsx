@@ -63,7 +63,7 @@ export function FormFieldWrapper({
             ) : type === "combobox" && options ? (
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" role="combobox" className={cn("w-full justify-between", !value && "text-muted-foreground")}> 
+                  <Button variant="outline" disabled={disabled} role="combobox" className={cn("w-full justify-between", !value && "text-muted-foreground")}> 
                     {options.find((option) => option.value === value)?.label || "Select an option"}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>

@@ -9,6 +9,7 @@ export interface IApplication {
   application_file: string
   status: string
   note: string
+  response_letter: string
   created_at: string
   updated_at: string
   user: IUser

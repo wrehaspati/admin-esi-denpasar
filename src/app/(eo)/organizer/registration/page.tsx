@@ -23,28 +23,17 @@ import { DialogProvider } from "@/context/dialog-context"
 import { useToast } from "@/hooks/use-toast"
 import { useEffect, useState } from "react"
 import axiosInstance from "@/lib/axios"
-import { IActivity } from "@/types/activity"
-import { ActionDialog } from "./partials/action-dialog"
-import { useUser } from "@/hooks/use-user"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { InfoIcon } from "lucide-react"
+import { IApplication } from "@/types/application"
+import { Badge } from "@/components/ui/badge"
 
-export default function EventPage() {
+export default function RegistrationPage() {
   const [interval, setRefreshInterval] = useState<number>(600000)
   const { toast } = useToast()
   const fetcher = (url: string) => axiosInstance.get(url).then((r) => r.data)
-  const { activeEvent } = useUser()
 
   const { data, error, isLoading } = useSWR(
-    process.env.NEXT_PUBLIC_API_URL + "/eo/activities/" + activeEvent?.id,
-    fetcher,
-    {
-      refreshInterval: interval,
-      revalidateOnFocus: false,
-      revalidateIfStale: false,
-      revalidateOnReconnect: false,
-    }
-  )
+    process.env.NEXT_PUBLIC_API_URL + '/eo/registrations?transaction_status=success',
+    fetcher, { refreshInterval: interval, revalidateOnFocus: false, revalidateIfStale: false, revalidateOnReconnect: false })
 
   useEffect(() => {
     if (error) {
@@ -55,22 +44,9 @@ export default function EventPage() {
     }
   }, [error, toast])
 
-  const confirmDelete = async (id: string) => {
-    axiosInstance.delete('/eo/activity/' + id.toString())
-      .then(function (response) {
-        toast({ title: response.data?.message })
-      })
-      .catch(function (error) {
-        toast({
-          title: "Failed to submit",
-          description: "Error: " + error + ". " + error?.response?.data?.message,
-        })
-      });
-  }
-
   return (
     <SidebarProvider>
-      <DialogProvider<IActivity>>
+      <DialogProvider<IApplication>>
         <AppSidebar />
         <SidebarInset>
           <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
@@ -86,11 +62,7 @@ export default function EventPage() {
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />
                   <BreadcrumbItem>
-                    <BreadcrumbPage className="flex gap-2 items-center">{activeEvent?.name}</BreadcrumbPage>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator className="hidden md:block" />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage className="flex gap-2 items-center">Activities{isLoading ? <LoadingSpinner className="size-4" /> : ""}</BreadcrumbPage>
+                    <BreadcrumbPage className="flex gap-2 items-center">Team Registration{isLoading ? <LoadingSpinner className="size-4" /> : ""}<Badge>Beta</Badge></BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
@@ -98,16 +70,7 @@ export default function EventPage() {
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0 md:w-full w-screen">
             <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min">
-              <Alert>
-                <InfoIcon className="h-4 w-4" />
-                <AlertTitle>Pemberitahuan</AlertTitle>
-                <AlertDescription>
-                  {'Setelah berhasil menambahkan aktivitas, silahkan melakukan pengajuan untuk rancangan tiket yang diperjualkan dan informasi administrasi terkait penjualan.'} <br />
-                  {' Contact Person: +62 813-3960-0701 (Geni)'}
-                </AlertDescription>
-              </Alert>
-              <DataTable columns={columns} data={data ? data.data : []} />
-              <ActionDialog onRemoveConfirm={confirmDelete} dialogName="Activity" />
+              <DataTable columns={columns} data={data?.data ?? []} />
             </div>
           </div>
         </SidebarInset>

@@ -43,7 +43,7 @@ export function ActionDialog({ onRemoveConfirm, dialogName }: ActionsCellProps) 
       <AlertDialog open={dialogs["deleteDialog"]?.isOpen} onOpenChange={() => closeDialog("deleteDialog")}>
         <AlertDialogContent>
           <pre className="mt-2 w-full text-left no-scrollbar rounded-md bg-slate-950 p-4 overflow-x-auto max-h-96">
-            <code className="text-white text-xs">{JSON.stringify(dialogs["deleteDialog"]?.currentItem, null, 2)}</code>
+            <code className="text-white text-xs">{JSON.stringify(dialogs["deleteDialog"]?.currentItem?.name, null, 2)}</code>
           </pre>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>

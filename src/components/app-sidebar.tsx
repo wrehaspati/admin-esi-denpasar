@@ -4,6 +4,7 @@ import * as React from "react"
 import {
   Box,
   Gamepad2,
+  HelpCircle,
   LayoutDashboard,
   Mail,
   QrCode,
@@ -30,6 +31,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { userData, userEvents } = useUser()
   const user: IUser | null = userData
   const isAdmin = user?.role?.name?.includes("admin")
+
   let configuration
   
   if (isAdmin){
@@ -105,6 +107,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           icon: Settings2,
           url: "/setting"
         },
+        {
+          title: "Support",
+          icon: HelpCircle,
+          url: "/help",
+        },
       ],
       projects: [
         {
@@ -128,6 +135,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           title: "Event Activities",
           icon: Gamepad2,
           url: "/organizer/activity",
+        },
+        {
+          title: "Team Registrations",
+          icon: Mail,
+          url: "/organizer/registration",
         },
         {
           title: "Champions Form",
@@ -158,7 +170,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <EventSwitcher event={configuration.teams} />
+        <EventSwitcher event={configuration.teams} isAdmin={isAdmin ?? false} />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={configuration.navMain} />

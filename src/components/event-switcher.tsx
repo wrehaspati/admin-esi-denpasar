@@ -21,9 +21,10 @@ import { IEvent } from "@/types/event"
 import { AppIcon } from "./app-icon"
 
 export function EventSwitcher({
-  event,
+  event, isAdmin
 }: {
-  event: IEvent[]
+  event: IEvent[],
+  isAdmin: boolean
 }) {
   const { isMobile } = useSidebar()
   const { activeEvent, setActiveEvent } = useUser()
@@ -53,7 +54,7 @@ export function EventSwitcher({
                   {activeEvent?.name}
                 </span>
                 <span className="truncate text-xs">
-                  {typeof activeEvent?.organizer !== "string" ? activeEvent?.organizer.username : activeEvent?.organizer}
+                  {isAdmin ? "Admin ESI" : "Event Organizer"}
                 </span>
               </div>
               <ChevronsUpDown className="ml-auto" />

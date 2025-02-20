@@ -1,7 +1,6 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { ActionsCell } from "./action-cell"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import { ArrowUpDown } from "lucide-react"
@@ -44,11 +43,6 @@ export const columns: ColumnDef<ICompetitionRegistration>[] = [
     header: "Phone Number",
   },
   {
-    accessorKey: "activity.name",
-    enableColumnFilter: true,
-    header: "Activity Name",
-  },
-  {
     accessorKey: "team_members",
     enableColumnFilter: true,
     header: "Team Members",
@@ -80,6 +74,11 @@ export const columns: ColumnDef<ICompetitionRegistration>[] = [
     },
   },
   {
+    accessorKey: "activity.name",
+    enableColumnFilter: true,
+    header: "Activity Name",
+  },
+  {
     accessorKey: "created_at",
     header: ({ column }) => {
       return (
@@ -106,14 +105,5 @@ export const columns: ColumnDef<ICompetitionRegistration>[] = [
         </Button>
       )
     }
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    enableSorting: false,
-    cell: ({ row }) => {
-      const data = row.original
-      return <ActionsCell data={data} />;
-    },
   }
 ]

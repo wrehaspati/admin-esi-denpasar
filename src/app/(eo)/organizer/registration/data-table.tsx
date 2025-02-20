@@ -28,7 +28,6 @@ import { ChevronDown, PrinterIcon } from "lucide-react"
 import React from "react"
 import XLSEXPORT from "@/components/xls-export"
 import { toast } from "@/hooks/use-toast"
-import { IApplication } from "@/types/application"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -50,10 +49,10 @@ export function DataTable<TData, TValue>({
   
   React.useEffect(() => {
     setColumnVisibility({
-      user: false,
       note: false,
       updated_at: false,
       created_at: false,
+      actions: false
     })
   ;}, [])
  
@@ -81,7 +80,7 @@ export function DataTable<TData, TValue>({
       toast({title: "No rows selected", description: "Please select rows to print"});
       return;
     }
-    XLSEXPORT<IApplication>({data: table.getFilteredSelectedRowModel().rows, fileName: "export-esi-application"});
+    XLSEXPORT<TValue>({data: table.getFilteredSelectedRowModel().rows, fileName: "export-esi-registrations"});
   }
  
   return (

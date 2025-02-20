@@ -26,9 +26,13 @@ import { cn } from "@/lib/utils"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { LoadingSpinner } from "@/components/loading-spinner"
+import { FormFieldWrapper } from "@/components/form-field-wrapper"
+import { ICategory } from "@/types/category"
+import useSWR from "swr"
+import { useUser } from "@/hooks/use-user"
 
 const FormSchema = z.object({
-  game_id: z.string().min(1,{
+  game_id: z.string().min(1, {
     message: "Please select a game."
   }),
   category_id: z.string().min(1, {
@@ -51,7 +55,7 @@ const FormSchema = z.object({
       nickname: z.string().min(1, {
         message: "Please enter a player nickname."
       }),
-      phone: z.string().min(1, { 
+      phone: z.string().min(1, {
         message: "Please enter a player phone number."
       }),
       id_game: z.string().min(1, {
@@ -64,12 +68,13 @@ const FormSchema = z.object({
 export function ChampionForm() {
   const [games, setGames] = React.useState<IGame[]>([])
   const [isLoading, setIsLoading] = React.useState(false)
+  const { activeEvent } = useUser()
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       game_id: "",
-      category_id: "",
+      category_id: activeEvent?.category?.id,
       tournament_name: "",
       team_name: "",
       rank: "",
@@ -82,6 +87,14 @@ export function ChampionForm() {
       ],
     },
   })
+
+  const fetcher = (url: string) => axiosInstance.get(url).then((r) => r.data)
+  const { data: category } = useSWR("/categories", fetcher)
+
+  const categoryOptions = category?.data?.map((category: ICategory) => ({
+    value: category?.id,
+    label: category?.name,
+  }));
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -201,6 +214,7 @@ export function ChampionForm() {
             </FormItem>
           )}
         />
+        <FormFieldWrapper control={form.control} name="category_id" label="Category" description="Automatically selects the current event category." options={categoryOptions ?? []} type="combobox" disabled={true} />
         <FormField
           control={form.control}
           name="team_name"
@@ -326,7 +340,7 @@ export function ChampionForm() {
             </Button>
           )}
         </div>
-        <Button type="submit">Submit {isLoading && <LoadingSpinner/>}</Button>
+        <Button type="submit">Submit {isLoading && <LoadingSpinner />}</Button>
       </form>
     </Form>
   )

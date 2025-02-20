@@ -98,13 +98,30 @@ export const columns: ColumnDef<IApplication>[] = [
     }
   },
   {
+    accessorKey: "response_letter",
+    header: "Response Letter",
+    cell: ({ row }) => {
+      const application = row.original;
+      return (
+        <a
+          href={application?.response_letter}
+          target="_blank"
+          rel="noreferrer"
+          className="text-blue-500"
+        >
+          Download
+        </a>
+      );
+    }
+  },
+  {
     accessorKey: "application_file",
     header: "Application File",
     cell: ({ row }) => {
       const application = row.original;
       return (
         <a
-          href={application.application_file}
+          href={application?.application_file}
           target="_blank"
           rel="noreferrer"
           className="text-blue-500"
