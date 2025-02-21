@@ -1,6 +1,33 @@
-import { ICompetitionRegistration } from "./competition"
+import { IActivity } from "./activity"
+import { IGame } from "./game"
 import { ITicket } from "./ticket"
 import { IUser } from "./user"
+
+export interface IOrderableCompetition {
+  id: string
+  start_at: string
+  end_at: string
+  price: string
+  quantity: number
+  status: {
+    data: {
+      is_open: boolean
+      message: string
+      competition_sales: {
+        in_cart: number
+        in_transaction: {
+          pending: number
+          success: number
+        }
+        total_sold: number
+      }
+    }
+  }
+  created_at: string
+  updated_at: string
+  game: IGame
+  activity: IActivity
+}
 
 export interface IOrder {
   id: string
@@ -9,6 +36,6 @@ export interface IOrder {
   quantity?: number
   created_at: string
   updated_at: string
-  orderable: ITicket | ICompetitionRegistration
+  orderable: ITicket | IOrderableCompetition
   user: IUser
 }

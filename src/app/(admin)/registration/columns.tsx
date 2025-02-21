@@ -49,6 +49,15 @@ export const columns: ColumnDef<ICompetitionRegistration>[] = [
     header: "Activity Name",
   },
   {
+    accessorKey: "competition",
+    enableColumnFilter: true,
+    header: "Competition",
+    cell(props) {
+      const data = props.row.original.competition
+      return (data?.game?.name);
+    },
+  },
+  {
     accessorKey: "team_members",
     enableColumnFilter: true,
     header: "Team Members",

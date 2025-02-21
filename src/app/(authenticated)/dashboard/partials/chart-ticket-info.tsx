@@ -23,13 +23,21 @@ const chartConfig = {
   Tickets: {
     label: "Tickets",
   },
+  lomba: {
+    label: "On Lomba",
+    color: "hsl(var(--chart-1))",
+  },
   seminar: {
     label: "On Seminar",
     color: "hsl(var(--chart-4))",
   },
-  online: {
-    label: "On Lomba",
+  workshop: {
+    label: "On Workshop",
     color: "hsl(var(--chart-2))",
+  },
+  webinar: {
+    label: "On Webinar",
+    color: "hsl(var(--chart-3))",
   }
 } satisfies ChartConfig
 
@@ -38,7 +46,7 @@ interface ChartTicketInfoProps {
   count: number
 }
 
-const justAColor = ["var(--color-ongoing)",  "var(--color-finished)", "var(--color-request)"]
+const justAColor = ["var(--color-seminar)",  "var(--color-lomba)", "var(--color-workshop)", "var(--color-webinar)"]
 
 export function ChartTicketInfo({ data }: { data: ChartTicketInfoProps[] }) {
   const refinedData = data.map((item) => ({ ...item, fill: justAColor[data.indexOf(item)] }))
@@ -50,7 +58,7 @@ export function ChartTicketInfo({ data }: { data: ChartTicketInfoProps[] }) {
     <Card className="flex flex-col h-full">
       <CardHeader className="items-start pb-0">
         <CardTitle>Ticket Information</CardTitle>
-        <CardDescription>January - June 2025</CardDescription>
+        <CardDescription>Tickets Sales</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0 h-full">
         <ChartContainer
@@ -104,7 +112,7 @@ export function ChartTicketInfo({ data }: { data: ChartTicketInfoProps[] }) {
       </CardContent>
       <CardFooter>
         <div className="mx-auto flex items-center gap-2 font-medium text-sm leading-none h-5">
-          <TrendingUp className="size-4"/>54 tickets was created this month
+          <TrendingUp className="size-4"/>{ data.length } tickets was created recently
         </div>
       </CardFooter>
     </Card>

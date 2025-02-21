@@ -11,6 +11,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Card } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import Image from "next/image"
+import { ITicket } from "@/types/ticket"
+import { IOrderableCompetition } from "@/types/order"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 export const columns: ColumnDef<ITransaction>[] = [
   {
@@ -150,7 +153,7 @@ export const columns: ColumnDef<ITransaction>[] = [
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-                <Button variant="ghost" onClick={() => window.open(data?.proof_image, '_blank')}>Open in new Tab</Button>
+              <Button variant="ghost" onClick={() => window.open(data?.proof_image, '_blank')}>Open in new Tab</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -165,14 +168,25 @@ export const columns: ColumnDef<ITransaction>[] = [
       return (
         <Popover>
           <PopoverTrigger className="flex gap-2 items-center">Order:{data.orders.length}<PlusCircleIcon className="size-4" /></PopoverTrigger>
-          <PopoverContent className="space-y-2">
-            {data.orders.map((order, index) => (
-              <Card key={index} className="p-2">
-                <div className="text-sm">
-                  {order?.orderable?.activity?.name} {`(id${order?.orderable?.activity?.id})`}
-                </div>
-              </Card>
-            ))}
+          <PopoverContent>
+            <ScrollArea className="h-[200px] w-full pr-3">
+              {data.orders.map((order, index) => (
+                <Card key={index} className="p-2 mb-1">
+                  <div className="font-semibold">
+                    {"ticket_type" in order.orderable ?
+                      (order.orderable as ITicket)?.activity?.name : (order.orderable as IOrderableCompetition)?.activity?.name}
+                  </div>
+                  <div className="text-sm">
+                    {"ticket_type" in order.orderable ? (order.orderable as ITicket)?.name : (order.orderable as IOrderableCompetition)?.game?.name}
+                  </div>
+                  <div className="text-sm font-light">
+                    {"ticket_type" in order.orderable ? FormatToRupiah((order.orderable as ITicket)?.price) : FormatToRupiah(parseInt((order.orderable as IOrderableCompetition)?.price))}
+                    x
+                    {order?.quantity}
+                    Pcs</div>
+                </Card>
+              ))}
+            </ScrollArea>
           </PopoverContent>
         </Popover>
       )

@@ -45,6 +45,7 @@ interface ChartEventInfoProps {
 const justAColor = ["var(--color-ongoing)",  "var(--color-finished)", "var(--color-request)"]
 
 export function ChartEventInfo({ data }: { data: ChartEventInfoProps[] }) {
+  console.log(data)
   const refinedData = data.map((item) => ({ ...item, fill: justAColor[data.indexOf(item)] }))
   const totalEvents = React.useMemo(() => {
     return refinedData.reduce((acc, curr) => acc + curr.events, 0)
@@ -54,7 +55,9 @@ export function ChartEventInfo({ data }: { data: ChartEventInfoProps[] }) {
     <Card className="flex flex-col h-full">
       <CardHeader className="items-start pb-0">
         <CardTitle>Event Information</CardTitle>
-        <CardDescription>January - June 2025</CardDescription>
+        <CardDescription>
+          Stastistic of Events
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0 h-full">
         <ChartContainer
