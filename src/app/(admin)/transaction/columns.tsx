@@ -183,7 +183,13 @@ export const columns: ColumnDef<ITransaction>[] = [
                     {"ticket_type" in order.orderable ? FormatToRupiah((order.orderable as ITicket)?.price) : FormatToRupiah(parseInt((order.orderable as IOrderableCompetition)?.price))}
                     x
                     {order?.quantity}
-                    Pcs</div>
+                    Pcs
+                  </div>
+                  {!("ticket_type" in order.orderable) && (
+                    <div className="text-sm font-bold">
+                      <span className="font-medium">Team Name: </span>{order?.team_name} 
+                    </div>
+                  )}
                 </Card>
               ))}
             </ScrollArea>

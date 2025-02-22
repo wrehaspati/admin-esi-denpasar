@@ -82,6 +82,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               url: "/registration",
             },
             {
+              title: "All Registrations",
+              url: "/all-registration",
+            },
+            {
               title: "Bank Accounts",
               url: "/bank-account",
             },

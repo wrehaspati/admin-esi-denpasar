@@ -25,6 +25,8 @@ import { useEffect, useState } from "react"
 import axiosInstance from "@/lib/axios"
 import { ActionDialog } from "./partials/action-dialog"
 import { ICompetitionRegistration } from "@/types/competition"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { AlertCircle } from "lucide-react"
 
 export default function RegistrationPage() {
   const [interval, setRefreshInterval] = useState<number>(600000)
@@ -32,7 +34,7 @@ export default function RegistrationPage() {
   const fetcher = (url: string) => axiosInstance.get(url).then((r) => r.data)
 
   const { data, error, isLoading } = useSWR(
-    process.env.NEXT_PUBLIC_API_URL + '/admin/registrations?transaction_status=success',
+    process.env.NEXT_PUBLIC_API_URL + '/admin/registrations',
     fetcher, { refreshInterval: interval, revalidateOnFocus: false, revalidateIfStale: false, revalidateOnReconnect: false })
 
   useEffect(() => {
@@ -75,7 +77,7 @@ export default function RegistrationPage() {
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />
                   <BreadcrumbItem>
-                    <BreadcrumbPage className="flex gap-2 items-center">Team Registration{isLoading ? <LoadingSpinner className="size-4" /> : ""}</BreadcrumbPage>
+                    <BreadcrumbPage className="flex gap-2 items-center">All Team Registration{isLoading ? <LoadingSpinner className="size-4" /> : ""}</BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
@@ -83,6 +85,13 @@ export default function RegistrationPage() {
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0 md:w-full w-screen">
             <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min">
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Peringatan</AlertTitle>
+                <AlertDescription>
+                  Halaman menampilkan seluruh data registrasi. mohon berhati-hati dalam mencatat data yang ada. <br /> Data tercantum <b>tidak melalui tahap filterisasi dan validasi dengan transaksi yang telah lunas</b>.
+                </AlertDescription>
+              </Alert>
               <DataTable columns={columns} data={data?.data ?? []} />
               <ActionDialog dialogName="Team Registration" onRemoveConfirm={confirmDelete} />
             </div>

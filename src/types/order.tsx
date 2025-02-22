@@ -34,6 +34,7 @@ export interface IOrder {
   order_number: string
   amount: string
   quantity?: number
+  team_name?: string
   created_at: string
   updated_at: string
   orderable: ITicket | IOrderableCompetition

@@ -51,14 +51,14 @@ const justAColor = ["var(--color-seminar)",  "var(--color-lomba)", "var(--color-
 export function ChartTicketInfo({ data }: { data: ChartTicketInfoProps[] }) {
   const refinedData = data.map((item) => ({ ...item, fill: justAColor[data.indexOf(item)] }))
   const totalTickets = React.useMemo(() => {
-    return refinedData.reduce((acc, curr) => acc + curr.count, 1)
+    return refinedData.reduce((acc, curr) => acc + curr.count, 0)
   }, [refinedData])
 
   return (
     <Card className="flex flex-col h-full">
       <CardHeader className="items-start pb-0">
-        <CardTitle>Ticket Information</CardTitle>
-        <CardDescription>Tickets Sales</CardDescription>
+        <CardTitle>Sales Information</CardTitle>
+        <CardDescription>Purchased Item Statistics</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0 h-full">
         <ChartContainer
@@ -99,7 +99,7 @@ export function ChartTicketInfo({ data }: { data: ChartTicketInfoProps[] }) {
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground text-xs"
                         >
-                          Tickets
+                          Items
                         </tspan>
                       </text>
                     )
@@ -112,7 +112,7 @@ export function ChartTicketInfo({ data }: { data: ChartTicketInfoProps[] }) {
       </CardContent>
       <CardFooter>
         <div className="mx-auto flex items-center gap-2 font-medium text-sm leading-none h-5">
-          <TrendingUp className="size-4"/>{ data.length } tickets was created recently
+          <TrendingUp className="size-4"/> Realtime Sales Counting
         </div>
       </CardFooter>
     </Card>
