@@ -49,7 +49,7 @@ export const columns: ColumnDef<ICompetitionRegistration>[] = [
     header: "Activity Name",
   },
   {
-    accessorKey: "competition",
+    accessorKey: "competition.game.name",
     enableColumnFilter: true,
     header: "Competition",
     cell(props) {

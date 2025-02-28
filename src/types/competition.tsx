@@ -40,10 +40,10 @@ export interface ITeamMember {
 export interface ICompetitionRegistration {
   id: number
   team_name: string
+  team_members: ITeamMember[]
   no_hp: string
   created_at: string
   updated_at: string
-  team_members: ITeamMember[]
   competition: ICompetition
   activity: IActivity
   transaction?: ITransaction
