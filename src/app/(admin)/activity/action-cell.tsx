@@ -26,6 +26,7 @@ export const ActionsCell: React.FC<ActionsCellProps> = ({ data }) => {
         {data.type.flow === "competition" ? (
           <DropdownMenuItem onClick={() => router.push("/competition?id="+data.id)}>View Details</DropdownMenuItem>
         ) : (
+          // Add view sold tickets
           <DropdownMenuItem onClick={() => router.push("/ticket-sale?id="+data.id)}>View Details</DropdownMenuItem>
         )}
         <DropdownMenuSeparator />

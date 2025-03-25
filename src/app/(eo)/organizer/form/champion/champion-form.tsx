@@ -35,7 +35,7 @@ const FormSchema = z.object({
   game_id: z.string().min(1, {
     message: "Please select a game."
   }),
-  category_id: z.string().min(1, {
+  category_id: z.number().min(1, {
     message: "Please select a category."
   }),
   tournament_name: z.string().min(1, {
@@ -74,15 +74,11 @@ export function ChampionForm() {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       game_id: "",
-      category_id: activeEvent?.category?.id,
+      category_id: parseInt(activeEvent?.category?.id ?? ""),
       tournament_name: "",
       team_name: "",
       rank: "",
       teams: [
-        { name: "", nickname: "", phone: "", id_game: "" },
-        { name: "", nickname: "", phone: "", id_game: "" },
-        { name: "", nickname: "", phone: "", id_game: "" },
-        { name: "", nickname: "", phone: "", id_game: "" },
         { name: "", nickname: "", phone: "", id_game: "" },
       ],
     },
@@ -113,7 +109,12 @@ export function ChampionForm() {
         })
     }
   }, [games])
-
+  React.useEffect(() => {
+    const subscription = form.watch((value) => {
+      console.log("Current form values:", value);
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
   function onSubmit(formData: z.infer<typeof FormSchema>) {
     setIsLoading(true);
     axiosInstance.post('/eo/leaderboard', formData)
@@ -134,7 +135,7 @@ export function ChampionForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="lg:w-2/3 space-y-6">
         <FormField
           control={form.control}
           name="game_id"
@@ -334,7 +335,7 @@ export function ChampionForm() {
               </CardContent>
             </Card>
           ))}
-          {fields.length < 5 && (
+          {fields.length < 6 && (
             <Button type="button" onClick={() => append({ id_game: "", name: "", nickname: "", phone: "" })}>
               Add Player
             </Button>

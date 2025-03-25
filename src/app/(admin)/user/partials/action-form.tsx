@@ -47,7 +47,7 @@ export function ActionForm({ data }: { data: IUser | null }) {
     defaultValues: {
       id: data?.id.toString() ?? "",
       email: data?.email ?? "",
-      role_id: data?.role.id.toString() ?? "",
+      role_id: data?.role?.id.toString() ?? "",
       username: data?.username ?? "",
       password: data?.id ? "********" : "",
     },

@@ -62,17 +62,19 @@ export const columns: ColumnDef<IUser>[] = [
     },
   },
   {
-    id: "role",
+    accessorKey: "role.name",
     header: "Role",
     cell: ({ row }) => {
       const user = row.original
-      switch (user.role.id) {
+      switch (user.role?.id) {
         case IUserRole.ADMIN:
           return "["+IUserRole.ADMIN+"] Admin"
         case IUserRole.ORGANIZER:
           return "["+IUserRole.ORGANIZER+"] Organizer"
         case IUserRole.USER:
           return "["+IUserRole.USER+"] User"
+        case IUserRole.ATHLETE:
+          return "["+IUserRole.ATHLETE+"] Athlete"
         default:
           return "Undefined"
       }

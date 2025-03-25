@@ -27,16 +27,16 @@ const flattenObject = (obj: any, prefix = ""): Record<string, unknown> => {
     }, {} as Record<string, unknown>)
 }
 
-const autoFitColumns = (worksheet: XLSX.WorkSheet, jsonData: Record<string, unknown>[]) => {
-    const colWidths = Object.keys(jsonData[0] || {}).map((key) => ({
-        wch: Math.max(
-            key.length, // Header length
-            ...jsonData.map((row) => (row[key] ? String(row[key]).length : 10)) // Default min width 10
-        ),
-    }))
+// const autoFitColumns = (worksheet: XLSX.WorkSheet, jsonData: Record<string, unknown>[]) => {
+//     const colWidths = Object.keys(jsonData[0] || {}).map((key) => ({
+//         wch: Math.max(
+//             key.length, // Header length
+//             ...jsonData.map((row) => (row[key] ? String(row[key]).length : 10)) // Default min width 10
+//         ),
+//     }))
 
-    worksheet["!cols"] = colWidths // Apply column widths
-}
+//     worksheet["!cols"] = colWidths // Apply column widths
+// }
 
 const expandDataToRows = (data: any[], dataSpreadFn?: (item: any) => Record<string, unknown>) => {
     const expandedRows: Record<string, unknown>[] = []
@@ -89,7 +89,7 @@ const XLSEXPORT = <T,>({ data, fileName, dataSpreadFn }: XLSEXPORTProps<T>) => {
     const flatData = expandDataToRows(data, dataSpreadFn)
 
     const worksheet = XLSX.utils.json_to_sheet(flatData)
-    autoFitColumns(worksheet, flatData) // Auto-fit column widths
+    // autoFitColumns(worksheet, flatData) // Auto-fit column widths
 
     const workbook = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1')

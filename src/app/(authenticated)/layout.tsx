@@ -50,6 +50,7 @@ export default function AuthenticatedLayout({ children }: { children: React.Reac
     return (
       <div className="flex flex-col justify-center items-center h-screen bg-muted mx-auto text-center">
         <h1 className="font-semibold text-lg">{message.current}</h1>
+        <a href="/logout" className="mt-4 font-medium">Logout</a>
       </div>
     )
   }
