@@ -24,19 +24,19 @@ import { useToast } from "@/hooks/use-toast"
 import { useEffect, useState } from "react"
 import axiosInstance from "@/lib/axios"
 import { ActionDialog } from "./partials/action-dialog"
-import { ILeaderboard } from "@/types/leaderboard"
+import { IMembership } from "@/types/membership"
 
 /**
  * Page configuration.
  */
 const pageConfig = {
   appName: "ESI Kota Denpasar",
-  pageName: "Champions Request",
-  dataURL: "/admin/leaderboards",
-  deleteURL: "/admin/leaderboard/",
+  pageName: "Memberships",
+  dataURL: "/admin/memberships",
+  deleteURL: "/admin/membership/",
 }
 
-type DataType = ILeaderboard // Change this to match the data type
+type DataType = IMembership // Change this to match the data type
 
 /**
  * Default function to export. 

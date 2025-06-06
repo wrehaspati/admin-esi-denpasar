@@ -169,7 +169,7 @@ export function ActionForm({ data }: { data: IApplication | null }) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full grid grid-cols-1 md:grid-cols-2 gap-6" encType="multipart/form-data">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full md:grid flex flex-col md:grid-cols-2 gap-6" encType="multipart/form-data">
         <FormField
           control={form.control}
           name="id"

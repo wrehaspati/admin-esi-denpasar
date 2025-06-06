@@ -43,7 +43,7 @@ export function FormFieldWrapper({
     <Controller
       name={name}
       control={control}
-      render={({ field: { value, onChange, ...field } }) => (
+      render={({ field: { value, onChange, ...field }, fieldState: { error } }) => (
         <FormItem className={clsx("w-full", className)}>
           <FormLabel>{label}</FormLabel>
           <FormControl>
@@ -108,7 +108,7 @@ export function FormFieldWrapper({
             )}
           </FormControl>
           {description && <FormDescription>{description}</FormDescription>}
-          <FormMessage />
+          <FormMessage>{error?.message}</FormMessage>
         </FormItem>
       )}
     />

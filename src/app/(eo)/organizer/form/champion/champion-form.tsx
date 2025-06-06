@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { toast } from "@/hooks/use-toast"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { Check, ChevronsUpDown, Info } from "lucide-react"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import React from "react"
 import { IGame } from "@/types/game"
@@ -30,6 +30,8 @@ import { FormFieldWrapper } from "@/components/form-field-wrapper"
 import { ICategory } from "@/types/category"
 import useSWR from "swr"
 import { useUser } from "@/hooks/use-user"
+import { useRouter, useSearchParams } from "next/navigation"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 const FormSchema = z.object({
   game_id: z.string().min(1, {
@@ -69,6 +71,10 @@ export function ChampionForm() {
   const [games, setGames] = React.useState<IGame[]>([])
   const [isLoading, setIsLoading] = React.useState(false)
   const { activeEvent } = useUser()
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const success = searchParams.get("success")
+  const error = searchParams.get("error")
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -109,19 +115,17 @@ export function ChampionForm() {
         })
     }
   }, [games])
-  React.useEffect(() => {
-    const subscription = form.watch((value) => {
-      console.log("Current form values:", value);
-    });
-    return () => subscription.unsubscribe();
-  }, [form]);
+
   function onSubmit(formData: z.infer<typeof FormSchema>) {
     setIsLoading(true);
     axiosInstance.post('/eo/leaderboard', formData)
       .then(function (response) {
+        router.push("/organizer/form/champion?success=1")
+        form.reset()
         toast({ title: response.data?.message })
       })
       .catch(function (error) {
+        router.push("/organizer/form/champion?success=1")
         toast({
           title: "Failed to submit",
           description: "Error: " + error + ". " + error?.response?.data?.message,
@@ -136,6 +140,23 @@ export function ChampionForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="lg:w-2/3 space-y-6">
+        
+        {success === "1" && (
+          <Alert variant="default">
+            <Info className="h-4 w-4" />
+            <AlertTitle>Success!</AlertTitle>
+            <AlertDescription>Champion Request form was submitted successfully.</AlertDescription>
+          </Alert>
+        )}
+
+        {error === "1" && (
+          <Alert variant="destructive">
+            <Info className="h-4 w-4" />
+            <AlertTitle>Submission Failed</AlertTitle>
+            <AlertDescription>There was an error submitting your form.</AlertDescription>
+          </Alert>
+        )}
+
         <FormField
           control={form.control}
           name="game_id"
@@ -238,7 +259,7 @@ export function ChampionForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Team Ranking</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select winner team rank" />

@@ -28,11 +28,11 @@ type DataType = IBankAccount // Modify this to match the data type
 
 // Modify this to match the data type
 const FormSchema = z.object({
-  id: z.string(),
-  user_id: z.number(),
-  bank_name: z.string(),
-  account_name: z.string(),
-  account_number: z.string(),
+  id: z.string({message: "ID is required" }),
+  user_id: z.number({message: "User ID is required" }),
+  bank_name: z.string().min(3, { message: "Bank name must be at least 3 characters long" }),
+  account_name: z.string().min(3, { message: "Account name must be at least 3 characters long" }),
+  account_number: z.string().min(3, { message: "Account number must be at least 3 characters long" }),
   is_default: z.boolean(),
 })
 
