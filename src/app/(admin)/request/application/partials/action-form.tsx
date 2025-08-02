@@ -64,29 +64,29 @@ const FormSchema = z.object({
   user_id: z.string().min(1, {
     message: "User must be filled.",
   }),
-  category_id: z.string({
-    message: "Category must be selected.",
-  }),
-  event_logo: z.instanceof(File).refine((file) => file.size < 3000000, {
-    message: 'File must be less than 3MB.',
-  }).refine((file) => file.type.includes("image"), { message: 'File must be an image.' }),
-  event_banner: z.instanceof(File).refine((file) => file.size < 3000000, {
-    message: 'File must be less than 3MB.'
-  }).refine((file) => file.type.includes("image"), { message: 'File must be an image.' }),
+  // category_id: z.string({
+  //   message: "Category must be selected.",
+  // }),
+  // event_logo: z.instanceof(File).refine((file) => file.size < 3000000, {
+  //   message: 'File must be less than 3MB.',
+  // }).refine((file) => file.type.includes("image"), { message: 'File must be an image.' }),
+  // event_banner: z.instanceof(File).refine((file) => file.size < 3000000, {
+  //   message: 'File must be less than 3MB.'
+  // }).refine((file) => file.type.includes("image"), { message: 'File must be an image.' }),
   response_letter: z.instanceof(File).refine((file) => file.size < 3000000, {
     message: 'File must be less than 3MB.',
   }).optional(),
 })
 
-interface EventFormProps {
-  application_id: string
-  user_id: string
-  category_id: string
-  name: string
-  prizepool: string
-  event_banner: File,
-  event_logo: File,
-}
+// interface EventFormProps {
+//   application_id: string
+//   user_id: string
+//   category_id: string
+//   name: string
+//   prizepool: string
+//   event_banner: File,
+//   event_logo: File,
+// }
 
 export function ActionForm({ data }: { data: IApplication | null }) {
   const [users, setUsers] = React.useState<IUser[]>([])
@@ -120,21 +120,23 @@ export function ActionForm({ data }: { data: IApplication | null }) {
     }
   }, [users])
 
-  async function createEvent(formData: z.infer<typeof FormSchema>) {
-    if (formData.status === "approved") {
-      const event: EventFormProps = { ...formData, prizepool: formData.total_prizepool, application_id: formData.id, name: formData.event_name, event_logo: formData.event_logo, event_banner: formData.event_banner }
-      const err = await axiosInstance.post('/admin/event', event, { headers: { "Content-Type": "multipart/form-data" } }).catch(function (error) { throw error })
-      if (err.status !== 201) {
-        throw err.data?.message
-      }
-    }
-  }
+  // async function createEvent(formData: z.infer<typeof FormSchema>) {
+  //   if (formData.status === "approved") {
+  //     const event: EventFormProps = { ...formData, prizepool: formData.total_prizepool, application_id: formData.id, name: formData.event_name, event_logo: formData.event_logo, event_banner: formData.event_banner }
+  //     const err = await axiosInstance.post('/admin/event', event, { headers: { "Content-Type": "multipart/form-data" } }).catch(function (error) { throw error })
+  //     if (err.status !== 201) {
+  //       throw err.data?.message
+  //     }
+  //   }
+  // }
 
   async function postResponseFile(formData: z.infer<typeof FormSchema>) {
     if (formData.response_letter) {
       const data = new FormData()
       data.append('response_letter', formData.response_letter)
       const err = await axiosInstance.post('/admin/application/' + formData?.id + '/response-letter', data, { headers: { "Content-Type": "multipart/form-data" } }).catch(function (error) { throw error })
+      toast({ title: "Successfully send response letter" })
+      console.log("Response letter sent successfully")
       if (err.status !== 200) {
         throw err.data?.message
       }
@@ -156,7 +158,7 @@ export function ActionForm({ data }: { data: IApplication | null }) {
             description: "Error: " + error + ". " + error?.response?.data?.message,
           })
         })
-      createEvent(formData)
+      // createEvent(formData)
     } catch (error) {
       toast({
         title: "Action Failed",
@@ -369,7 +371,7 @@ export function ActionForm({ data }: { data: IApplication | null }) {
             </FormItem>
           )}
         />
-        <FormField
+        {/* <FormField
           control={form.control}
           name="category_id"
           render={({ field }) => (
@@ -391,8 +393,8 @@ export function ActionForm({ data }: { data: IApplication | null }) {
               <FormMessage />
             </FormItem>
           )}
-        />
-        <FormField
+        /> */}
+        {/* <FormField
           control={form.control}
           name="event_logo"
           render={({ field }) => (
@@ -435,7 +437,7 @@ export function ActionForm({ data }: { data: IApplication | null }) {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
         <div className="col-span-2">
           <FormField
             control={form.control}

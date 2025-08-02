@@ -34,6 +34,21 @@ export const columns: ColumnDef<IApplication>[] = [
     enableHiding: false,
   },
   {
+    accessorKey: "id",
+    enableColumnFilter: true,
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          ID
+          <ArrowUpDown />
+        </Button>
+      )
+    },
+  },
+  {
     accessorKey: "event_name",
     enableColumnFilter: true,
     header: ({ column }) => {
@@ -72,7 +87,7 @@ export const columns: ColumnDef<IApplication>[] = [
     header: "Managed By",
     cell: ({ row }) => {
       const application = row.original;
-      return application.user?.email;
+      return " ( id:" + application.user?.id + " ) " + application.user?.email;
     }
   },
   {

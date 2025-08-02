@@ -26,6 +26,19 @@ export function ActionDialog({ onRemoveConfirm, dialogName }: ActionsCellProps) 
         </DialogContent>
       </Dialog>
 
+      {/* Add Dialog */}
+      <Dialog open={dialogs["addDialog"]?.isOpen} onOpenChange={() => closeDialog("addDialog")}>
+        <DialogContent className="max-h-screen overflow-y-auto no-scrollbar max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>{dialogName}</DialogTitle>
+            <DialogDescription>
+              Add {dialogName}.
+            </DialogDescription>
+          </DialogHeader>
+          <ActionForm data={dialogs["addDialog"]?.currentItem} />
+        </DialogContent>
+      </Dialog>
+
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={dialogs["deleteDialog"]?.isOpen} onOpenChange={() => closeDialog("deleteDialog")}>
         <AlertDialogContent>

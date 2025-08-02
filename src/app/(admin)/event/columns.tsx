@@ -126,6 +126,33 @@ export const columns: ColumnDef<IEvent>[] = [
     }
   },
   {
+    accessorKey: "event_banner",
+    header: "Event Banner",
+    cell: ({ row }) => {
+      const event = row.original;
+      return (
+        <a href={event.event_banner} target="_blank" rel="noreferrer" className="text-blue-500">
+          View Banner
+        </a>
+      );
+    }
+  },
+  {
+    accessorKey: "event_logo",
+    header: "Event Logo",
+    cell: ({ row }) => {
+      const event = row.original;
+      if (!event.event_logo) {
+        return "Using default logo";
+      }
+      return (
+        <a href={event.event_logo} target="_blank" rel="noreferrer" className="text-blue-500">
+          View Logo
+        </a>
+      );
+    }
+  },
+  {
     accessorKey: "created_at",
     header: ({ column }) => {
       return (
