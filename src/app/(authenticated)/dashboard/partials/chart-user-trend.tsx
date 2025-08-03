@@ -15,6 +15,10 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import useSWR from "swr"
+import axiosInstance from "@/lib/axios"
+import React from "react"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const chartConfig = {
   user: {
@@ -24,13 +28,23 @@ const chartConfig = {
 } satisfies ChartConfig
 
 interface ChartUserTrendProps {
-  data: {
-    month: string
-    user: number
-  }[]
+  month: string
+  user: number
 }
 
-export function ChartUserTrend({ data }: ChartUserTrendProps) {
+export function ChartUserTrend() {
+  const [data, setData] = React.useState<ChartUserTrendProps[]>([])
+  const fetcher = (url: string) => axiosInstance.get(url).then((res) => res.data)
+  const { data: userTrend } = useSWR("/admin/statistic/user-trend", fetcher)
+   React.useEffect(() => {
+    if (userTrend?.data) {
+      setData(userTrend.data as ChartUserTrendProps[])
+    }
+  }, [userTrend])
+
+  if (!userTrend?.data) {
+    return <Skeleton className="h-full w-full" />
+  }
   const year = new Date().getFullYear();
   return (
     <Card className="flex flex-col h-full">

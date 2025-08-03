@@ -26,48 +26,50 @@ import Image from "next/image"
 import { cn } from "@/lib/utils"
 import FormatToRupiah from "@/lib/format-to-rupiah"
 import { Button } from "@/components/ui/button"
-import useSWR from "swr"
-import axiosInstance from "@/lib/axios"
-import { Skeleton } from "@/components/ui/skeleton"
 
 export default function DashboardPage() {
-  const { userData, activeEvent } = useUser()
+  const { userData, activeEvent, userEvents, setActiveEvent } = useUser()
   const isEO = userData?.role?.name?.includes("event_organizer")
 
-  const fetcher = (url: string) => axiosInstance.get(url).then((res) => res.data)
-
-  const { data: transaction, isLoading: transactionLoad } = useSWR("/admin/statistic/transaction-trend?status=success", fetcher)
-
-  const { data: eventInfo, isLoading: eventInfoLoad } = useSWR("/admin/statistic/event-information", fetcher)
-
-  const { data: userTrend, isLoading: userTrendLoad } = useSWR("/admin/statistic/user-trend", fetcher)
-
-  const { data: ticketInfo, isLoading: ticketInfoLoad } = useSWR("/admin/statistic/ticket-sales", fetcher)
-
-  return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="/dashboard">
-                    ESI Kota Denpasar
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Dashboard</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-        </header>
-        {isEO ? (
+  if (isEO) {
+    if (!activeEvent) {
+      if (!userEvents) {
+        return (
+          <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>
+              <div className="flex flex-col items-center justify-center h-full">
+                <h1 className="text-2xl font-semibold mb-4">No Active Event</h1>
+              </div>
+            </SidebarInset>
+          </SidebarProvider>
+        )
+      }
+      setActiveEvent(userEvents[0])
+    }
+    return (
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+            <div className="flex items-center gap-2 px-4">
+              <SidebarTrigger className="-ml-1" />
+              <Separator orientation="vertical" className="mr-2 h-4" />
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem className="hidden md:block">
+                    <BreadcrumbLink href="/dashboard">
+                      ESI Kota Denpasar
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator className="hidden md:block" />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
+            </div>
+          </header>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             <div className="grid auto-rows-min gap-4 md:grid-cols-3 h-fit">
               <div className="rounded-xl h-full">
@@ -142,40 +144,50 @@ export default function DashboardPage() {
               <></>
             </div>
           </div>
-        ) : (
-          <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <div className="grid auto-rows-min gap-4 md:grid-cols-3 h-fit">
-              <div className="rounded-xl h-full">
-                {userTrendLoad ? (
-                  <Skeleton className="w-full h-full" />
-                ) : (
-                  <ChartUserTrend data={userTrend?.data}  />
-                )}
-              </div>
-              <div className="rounded-xl h-full">
-                {eventInfoLoad ? (
-                  <Skeleton className="w-full h-full" />
-                ) : (
-                  <ChartEventInfo data={eventInfo?.data}  />
-                )}
-              </div>
-              <div className="rounded-xl h-full">
-                {ticketInfoLoad ? (
-                  <Skeleton className="w-full h-full" />
-                ) : (
-                  <ChartTicketInfo data={ticketInfo?.data} />
-                )}
-              </div>
+        </SidebarInset>
+      </SidebarProvider>
+    )
+  }
+
+  return (
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+          <div className="flex items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="/dashboard">
+                    ESI Kota Denpasar
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
+        </header>
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <div className="grid auto-rows-min gap-4 md:grid-cols-3 h-fit">
+            <div className="rounded-xl h-full">
+              <ChartUserTrend />
             </div>
-            <div className="flex-1 rounded-xl min-h-min">
-              {transactionLoad ? (
-                <Skeleton className="w-full h-full" />
-              ) : (
-                <ChartTransaction data={transaction?.data} />
-              )}
+            <div className="rounded-xl h-full">
+              <ChartEventInfo />
+            </div>
+            <div className="rounded-xl h-full">
+              <ChartTicketInfo />
             </div>
           </div>
-        )}
+          <div className="flex-1 rounded-xl min-h-min">
+            <ChartTransaction />
+          </div>
+        </div>
       </SidebarInset>
     </SidebarProvider>
   )

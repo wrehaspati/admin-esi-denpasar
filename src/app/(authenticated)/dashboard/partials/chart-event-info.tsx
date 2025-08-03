@@ -18,6 +18,9 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 import { SquareArrowOutUpRight } from "lucide-react"
+import useSWR from "swr"
+import axiosInstance from "@/lib/axios"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const chartConfig = {
   Events: {
@@ -44,12 +47,23 @@ interface ChartEventInfoProps {
 
 const justAColor = ["var(--color-ongoing)",  "var(--color-finished)", "var(--color-request)"]
 
-export function ChartEventInfo({ data }: { data: ChartEventInfoProps[] }) {
-  console.log(data)
-  const refinedData = data.map((item) => ({ ...item, fill: justAColor[data.indexOf(item)] }))
+export function ChartEventInfo() {
+  const [data, setData] = React.useState<ChartEventInfoProps[]>([])
+  const fetcher = (url: string) => axiosInstance.get(url).then((res) => res.data)
+  const { data: eventInfo } = useSWR("/admin/statistic/event-information", fetcher)
+  const refinedData = data?.map((item) => ({ ...item, fill: justAColor[data.indexOf(item)] }))
   const totalEvents = React.useMemo(() => {
-    return refinedData.reduce((acc, curr) => acc + curr.events, 0)
+    return refinedData?.reduce((acc, curr) => acc + curr.events, 0)
   }, [refinedData])
+  React.useEffect(() => {
+    if (eventInfo?.data) {
+      setData(eventInfo.data as ChartEventInfoProps[])
+    }
+  }, [eventInfo])
+
+  if (!eventInfo?.data) {
+    return <Skeleton className="h-full w-full" />
+  }
 
   return (
     <Card className="flex flex-col h-full">

@@ -18,6 +18,9 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 import { TrendingUp } from "lucide-react"
+import useSWR from "swr"
+import axiosInstance from "@/lib/axios"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const chartConfig = {
   Tickets: {
@@ -48,11 +51,23 @@ interface ChartTicketInfoProps {
 
 const justAColor = ["var(--color-seminar)",  "var(--color-lomba)", "var(--color-workshop)", "var(--color-webinar)"]
 
-export function ChartTicketInfo({ data }: { data: ChartTicketInfoProps[] }) {
-  const refinedData = data.map((item) => ({ ...item, fill: justAColor[data.indexOf(item)] }))
+export function ChartTicketInfo() {
+  const [data, setData] = React.useState<ChartTicketInfoProps[]>([])
+  const fetcher = (url: string) => axiosInstance.get(url).then((res) => res.data)
+  const { data: ticketInfo } = useSWR("/admin/statistic/ticket-sales", fetcher)
+  const refinedData = data?.map((item) => ({ ...item, fill: justAColor[data.indexOf(item)] }))
   const totalTickets = React.useMemo(() => {
-    return refinedData.reduce((acc, curr) => acc + curr.count, 0)
+    return refinedData?.reduce((acc, curr) => acc + curr.count, 0)
   }, [refinedData])
+  React.useEffect(() => {
+     if (ticketInfo?.data) {
+       setData(ticketInfo.data as ChartTicketInfoProps[])
+     }
+   }, [ticketInfo])
+ 
+   if (!ticketInfo?.data) {
+     return <Skeleton className="h-full w-full" />
+   }
 
   return (
     <Card className="flex flex-col h-full">

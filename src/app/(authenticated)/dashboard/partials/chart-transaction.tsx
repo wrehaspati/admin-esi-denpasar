@@ -16,6 +16,9 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import useSWR from "swr"
+import axiosInstance from "@/lib/axios"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const chartConfig = {
   views: {
@@ -43,10 +46,11 @@ interface ChartTransactionProps {
   ]
 }
 
-export function ChartTransaction({ data }: { data: ChartTransactionProps }) {
-  const [activeChart, setActiveChart] =
-    React.useState<keyof typeof chartConfig>("transaction")
-
+export function ChartTransaction() {
+  const [data, setData] = React.useState<ChartTransactionProps>()
+  const fetcher = (url: string) => axiosInstance.get(url).then((res) => res.data)
+  const { data: transaction } = useSWR("/admin/statistic/transaction-trend?status=success", fetcher)
+  const [activeChart, setActiveChart] = React.useState<keyof typeof chartConfig>("transaction")
   const total = React.useMemo(
     () => ({
       transaction: data?.transaction_trend?.reduce((acc, curr) => acc + curr.transaction, 0),
@@ -54,6 +58,15 @@ export function ChartTransaction({ data }: { data: ChartTransactionProps }) {
     }),
     [data?.transaction_trend]
   )
+  React.useEffect(() => {
+    if (transaction?.data) {
+      setData(transaction.data as ChartTransactionProps)
+    }
+  }, [transaction])
+
+  if (!transaction?.data) {
+    return <Skeleton className="h-full w-full" />
+  }
 
   return (
     <Card>
@@ -78,7 +91,7 @@ export function ChartTransaction({ data }: { data: ChartTransactionProps }) {
                   {chartConfig[chart].label}
                 </span>
                 <span className="text-lg font-bold leading-none sm:text-3xl">
-                  {total[key as keyof typeof total].toLocaleString()}
+                  {(total[key as keyof typeof total] ?? 0).toLocaleString()}
                 </span>
               </button>
             )
