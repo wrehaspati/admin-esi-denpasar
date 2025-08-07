@@ -64,7 +64,7 @@ const FormSchema = z.object({
       id_game: z.string().min(1, {
         message: "Please enter a player in-game ID."
       }),
-      athlete_id: z.string().min(1, {
+      athlete_id: z.number().min(1, {
         message: "Please select an athlete."
       }),
     })
@@ -368,7 +368,7 @@ export function ChampionForm() {
             </Card>
           ))}
           {fields.length < 6 && (
-            <Button type="button" onClick={() => append({ id_game: "", name: "", nickname: "", phone: "", athlete_id: "" })}>
+            <Button type="button" onClick={() => append({ id_game: "", name: "", nickname: "", phone: "", athlete_id: 0 })}>
               Add Player
             </Button>
           )}
