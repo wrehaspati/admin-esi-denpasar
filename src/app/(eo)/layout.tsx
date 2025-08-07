@@ -28,7 +28,6 @@ export default function AuthenticatedLayout({ children }: { children: React.Reac
             message.current = "There is no event that you manage. Please contact the administrator for further information."
             return
           }
-          console.log("Events: ", events)
           setUserEvents(events)
         }
         setIsAuthorized(true)

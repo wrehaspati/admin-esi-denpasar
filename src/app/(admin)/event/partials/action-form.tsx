@@ -30,7 +30,7 @@ import { IApplication } from "@/types/application"
 const FormSchema = z.object({
   id: z.string(),
   application_id: z.string(),
-  user_id: z.string(),
+  user_id: z.string().optional(),
   category_id: z.string().min(1, {
     message: "Category ID must be filled.",
   }),
@@ -46,6 +46,7 @@ const FormSchema = z.object({
   event_banner: z.instanceof(File).optional().refine((file) => !file || file.size < 3000000, {
     message: 'File must be less than 3MB.'
   }).refine((file) => !file || file.type.includes("image"), { message: 'File must be an image.' }),
+  external_link: z.string().optional(),
 })
 
 export function ActionForm({ data }: { data: IEvent | null }) {
@@ -61,6 +62,7 @@ export function ActionForm({ data }: { data: IEvent | null }) {
       category_id: data?.category?.id?.toString() ?? "",
       name: data?.name ?? "",
       prizepool: data?.prizepool ?? "",
+      external_link: data?.external_link ?? "",
     },
   })
 
@@ -145,7 +147,7 @@ export function ActionForm({ data }: { data: IEvent | null }) {
           name="application_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Type of Activity</FormLabel>
+              <FormLabel>Application Event Name</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -204,7 +206,7 @@ export function ActionForm({ data }: { data: IEvent | null }) {
                 </PopoverContent>
               </Popover>
               <FormDescription>
-                Type of the activity.
+                Select the application for the event.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -304,6 +306,22 @@ export function ActionForm({ data }: { data: IEvent | null }) {
               </FormControl>
               <FormDescription>
                 Banner of the event.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="external_link"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>External Link</FormLabel>
+              <FormControl>
+                <Input autoComplete="" placeholder="event external link" {...field} />
+              </FormControl>
+              <FormDescription>
+                External link for the event.
               </FormDescription>
               <FormMessage />
             </FormItem>

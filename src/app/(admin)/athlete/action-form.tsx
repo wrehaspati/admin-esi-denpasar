@@ -26,7 +26,7 @@ const requestURL = {
 
 type DataType = { 
   id: string,
-  user_id: string,
+  user_id: number,
   school_name: string,
   full_name: string,
   domicile: string,
@@ -36,7 +36,7 @@ type DataType = {
 // Modify this to match the data type
 const FormSchema: z.ZodType<DataType> = z.object({
   id: z.string(),
-  user_id: z.string(),
+  user_id: z.number(),
   school_name: z.string(),
   full_name: z.string(),
   domicile: z.string(),
@@ -52,7 +52,7 @@ export function ActionForm({ data }: { data: IAthlete | null }) {
     defaultValues: {
       // Modify this to match the data type
       id: data?.id?.toString() ?? "",
-      user_id: data?.user?.id ?? "",
+      user_id: data?.user?.id ? Number(data.user.id) : 0,
       school_name: data?.school_name ?? "",
       full_name: data?.full_name ?? "",
       domicile: data?.domicile ?? "",

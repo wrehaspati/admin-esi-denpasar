@@ -51,12 +51,7 @@ export function ActionForm({ data }: { data: IMembership | null }) {
       address: data?.address || "",
       phone: data?.phone || ""
     },
-  })  
-
-  // how to check filled value in form to console log
-  console.log(form.getValues())
-
-  
+  })
 
   const fetcher = (url: string) => axiosInstance.get(url).then((r) => r.data)
   const { data: users } = useSWR("/admin/users", fetcher)

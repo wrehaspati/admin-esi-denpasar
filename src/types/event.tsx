@@ -9,6 +9,7 @@ export interface IEvent {
   event_logo?: string
   event_banner?: string
   is_active?: boolean
+  external_link?: string
   category: ICategory
   organizer: IUser
   application?: IApplication

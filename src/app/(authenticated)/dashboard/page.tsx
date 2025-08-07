@@ -19,7 +19,7 @@ import { ChartUserTrend } from "@/app/(authenticated)/dashboard/partials/chart-u
 import { ChartEventInfo } from "@/app/(authenticated)/dashboard/partials/chart-event-info"
 import { ChartTicketInfo } from "@/app/(authenticated)/dashboard/partials/chart-ticket-info"
 import { ChartTransaction } from "@/app/(authenticated)/dashboard/partials/chart-transaction"
-import React from "react"
+import React, { useEffect } from "react"
 import { useUser } from "@/hooks/use-user"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import Image from "next/image"
@@ -30,6 +30,12 @@ import { Button } from "@/components/ui/button"
 export default function DashboardPage() {
   const { userData, activeEvent, userEvents, setActiveEvent } = useUser()
   const isEO = userData?.role?.name?.includes("event_organizer")
+
+  useEffect(() => {
+    if (userEvents && userEvents.length > 0 && !activeEvent) {
+      setActiveEvent(userEvents[0])
+    }
+  }, [userEvents, activeEvent, setActiveEvent])
 
   if (isEO) {
     if (!activeEvent) {
@@ -45,7 +51,6 @@ export default function DashboardPage() {
           </SidebarProvider>
         )
       }
-      setActiveEvent(userEvents[0])
     }
     return (
       <SidebarProvider>

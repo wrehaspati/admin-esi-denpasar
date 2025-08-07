@@ -65,7 +65,6 @@ export function LoginForm({
               title: "Login Failed",
               description: "You are not authorized to access this page",
             })
-            console.log(response.data)
             setIsLoading(false)
           }
         }

@@ -32,6 +32,7 @@ import useSWR from "swr"
 import { useUser } from "@/hooks/use-user"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { IAthlete } from "@/types/athlete"
 
 const FormSchema = z.object({
   game_id: z.string().min(1, {
@@ -62,7 +63,10 @@ const FormSchema = z.object({
       }),
       id_game: z.string().min(1, {
         message: "Please enter a player in-game ID."
-      })
+      }),
+      athlete_id: z.string().min(1, {
+        message: "Please select an athlete."
+      }),
     })
   )
 })
@@ -92,10 +96,16 @@ export function ChampionForm() {
 
   const fetcher = (url: string) => axiosInstance.get(url).then((r) => r.data)
   const { data: category } = useSWR("/categories", fetcher)
+  const { data: athletes } = useSWR("/athletes", fetcher)
 
   const categoryOptions = category?.data?.map((category: ICategory) => ({
     value: category?.id,
     label: category?.name,
+  }));
+
+  const athleteOptions = athletes?.data?.map((athlete: IAthlete) => ({
+    value: athlete?.id,
+    label: athlete?.full_name,
   }));
 
   const { fields, append, remove } = useFieldArray({
@@ -140,7 +150,7 @@ export function ChampionForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="lg:w-2/3 space-y-6">
-        
+
         {success === "1" && (
           <Alert variant="default">
             <Info className="h-4 w-4" />
@@ -353,11 +363,12 @@ export function ChampionForm() {
                     </FormItem>
                   )}
                 />
+                <FormFieldWrapper control={form.control} name={`teams.${index}.athlete_id`} label="Athlete" description="Silahkan pilih akun ESI Player" options={athleteOptions ?? []} type="combobox" />
               </CardContent>
             </Card>
           ))}
           {fields.length < 6 && (
-            <Button type="button" onClick={() => append({ id_game: "", name: "", nickname: "", phone: "" })}>
+            <Button type="button" onClick={() => append({ id_game: "", name: "", nickname: "", phone: "", athlete_id: "" })}>
               Add Player
             </Button>
           )}

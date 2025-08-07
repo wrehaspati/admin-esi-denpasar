@@ -63,8 +63,6 @@ export function ActionForm({ data }: { data: IGame | null }) {
             title: "Failed to submit",
             description: "Error: " + error + ". " + error?.response?.data?.message,
           })
-          console.log(formData)
-          console.log(error)
         }).finally(() => setIsLoading(false))
     } else {
       axiosInstance.post('/admin/game', formData, { headers: { "Content-Type": "multipart/form-data" } })
